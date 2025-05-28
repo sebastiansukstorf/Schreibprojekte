@@ -1,0 +1,7 @@
+[
+  {
+    "key": "cmd+alt+e",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Exportiere zu DOCX"
+  }
+]

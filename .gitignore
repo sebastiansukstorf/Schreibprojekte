@@ -1,0 +1,4 @@
+# Ignoriere generierte Dateien
+docx/
+*.tmp
+*.log

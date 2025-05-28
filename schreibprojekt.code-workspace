@@ -1,0 +1,22 @@
+{
+  "folders": [{ "path": "." }],
+  "settings": {
+    "editor.fontFamily": "iA Writer Duo, Menlo, monospace",
+    "editor.fontSize": 18,
+    "editor.lineHeight": 32,
+    "editor.wordWrap": "on",
+    "editor.minimap.enabled": false,
+    "zenMode.fullScreen": true,
+    "zenMode.hideLineNumbers": true,
+    "zenMode.hideStatusBar": true,
+    "files.autoSave": "afterDelay",
+    "markdown.preview.fontSize": 18,
+    "ltex.experimental.externalServer.enabled": true,
+    "ltex.server.uri": "http://localhost:8081",
+    "ltex.enabled": true,
+    "ltex.language": "de",
+    "cSpell.words": [
+      "rausgeholt"
+    ]
+  }
+}
