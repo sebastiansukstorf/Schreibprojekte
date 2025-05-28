@@ -11,6 +11,18 @@
         "reveal": "always",
         "panel": "shared"
       }
-    }
+    },
+   {
+  "label": "Exportiere ausgewählte MD zu DOCX",
+  "type": "shell",
+  "command": "${workspaceFolder}/Skripte/convert-to-docx-single.sh",
+  "args": ["${file}"],
+  "problemMatcher": [],
+  "presentation": {
+    "echo": true,
+    "reveal": "always",
+    "panel": "shared"
+  }
+}
   ]
 }
