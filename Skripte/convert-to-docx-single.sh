@@ -1,25 +1,32 @@
 #!/bin/bash
 
-# ✅ Datei muss übergeben werden
-if [ -z "$1" ]; then
-  echo "❌ Bitte gib eine .md-Datei an."
+# 📂 Arbeitsverzeichnis
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DIR/.."
+
+# 📄 Eingabedatei prüfen
+INPUT="$1"
+if [ ! -f "$INPUT" ]; then
+  echo "❌ Eingabedatei nicht gefunden: $INPUT"
   exit 1
 fi
 
-MD_FILE="$1"
+# 🧠 Titel aus YAML Header extrahieren
+TITLE=$(grep '^title:' "$INPUT" | sed 's/title:[[:space:]]*//;s/ /_/g')
+if [ -z "$TITLE" ]; then
+  TITLE=$(basename "$INPUT" .md)
+fi
 
-# 📁 Zielordner sicherstellen
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$DIR/.."
+# 🕒 Zeitstempel & Ausgabe
+TIMESTAMP=$(date +"%Y%m%d_%H_%M")
+OUTFILE="docx/${TITLE}_${TIMESTAMP}.docx"
 mkdir -p docx
 
-# 📛 Dateiname ohne Pfad und Erweiterung extrahieren
-BASENAME=$(basename "$MD_FILE" .md)
-TIMESTAMP=$(date +"%Y%m%d_%H_%M")
-OUTFILE="docx/${BASENAME}_${TIMESTAMP}.docx"
+# 🐍 Python für Pandoc-Filter
+export PANDOC_PYTHON=/Library/Frameworks/Python.framework/Versions/3.13/bin/python3
 
-# 📤 Konvertieren mit YAML-Header der Datei
-pandoc "$MD_FILE" \
+# 🛠️ Konvertierung
+pandoc "$INPUT" \
   --from=markdown+hard_line_breaks \
   --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
   --filter=Skripte/insert-pagebreaks.py \
