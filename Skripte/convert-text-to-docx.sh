@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Pfad ins Projektverzeichnis
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR/.."
 mkdir -p docx
@@ -10,21 +11,16 @@ if [ ! -f "Metadaten/titlepage.yml" ]; then
   exit 1
 fi
 
-# Titel & Zeitstempel
+# Titel & Zeitstempel für Dateiname
 TITLE=$(grep '^title:' Metadaten/titlepage.yml | sed 's/title:[[:space:]]*//;s/ /_/g')
 TIMESTAMP=$(date +"%Y%m%d_%H_%M")
-OUTFILE="docx/${TITLE}_${TIMESTAMP}.docx"
+OUTFILE="docx/${TITLE}_AUSZUG_${TIMESTAMP}.docx"
 
-# Nur nummerische Markdown-Dateien aus 03_Content verarbeiten
+# Eingabe aus STDIN (markierter Text aus VS Code)
 TMPFILE=$(mktemp)
-for f in 03_Content/[0-9]*.md; do
-  if [[ "$f" =~ 03_Content/[0-9]+\.md$ ]]; then
-    cat "$f"
-    echo -e "\n"
-  fi
-done > "$TMPFILE"
+cat > "$TMPFILE"
 
-# 📤 Konvertieren mit Pandoc
+# Konvertierung
 pandoc "$TMPFILE" \
   --from=markdown+hard_line_breaks \
   --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
@@ -34,4 +30,4 @@ pandoc "$TMPFILE" \
   -o "$OUTFILE"
 
 rm "$TMPFILE"
-echo "✅ Exportiert nach: $OUTFILE"
+echo "✅ Markierter Text exportiert nach: $OUTFILE"

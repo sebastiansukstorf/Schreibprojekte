@@ -1,34 +1,24 @@
 #!/bin/bash
 
-echo "🔧 Setup gestartet..."
+# 🔧 Skripte ausführbar machen
+chmod +x Skripte/convert-to-docx.sh
+chmod +x Skripte/convert-to-docx-single.sh
+chmod +x Skripte/convert-text-to-docx.sh
 
-# Wechsle ins Verzeichnis des Skripts
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$DIR"
+# 📁 DOCX-Zielordner anlegen, falls nicht vorhanden
+mkdir -p docx
 
-# 1. Ausführbarkeitsrechte für Skripte setzen
-echo "🛠 Setze Ausführbarkeitsrechte für Shell-Skripte..."
-chmod +x Skripte/*.sh
-
-# 2. Prüfe auf Python
-if command -v python3 &>/dev/null; then
-    echo "✅ Python ist installiert: $(python3 --version)"
-else
-    echo "❌ Python ist nicht installiert. Bitte installiere Python 3."
+# 🧪 Prüfen, ob pandoc vorhanden ist
+if ! command -v pandoc &> /dev/null; then
+  echo "❌ Pandoc ist nicht installiert. Bitte installiere es mit 'brew install pandoc' oder über https://pandoc.org/installing.html"
+  exit 1
 fi
 
-# 3. Prüfe auf Pandoc
-if command -v pandoc &>/dev/null; then
-    echo "✅ Pandoc ist installiert: $(pandoc --version | head -n 1)"
-else
-    echo "❌ Pandoc ist nicht installiert. Bitte installiere Pandoc."
+# 🐍 Prüfen, ob python vorhanden ist
+if ! command -v python3 &> /dev/null; then
+  echo "❌ Python3 ist nicht installiert. Bitte installiere es über https://www.python.org/downloads/"
+  exit 1
 fi
 
-# 4. Prüfe ob Referenz-DOCX vorhanden ist
-if [ -f "Vorlage/Normseite.docx" ]; then
-    echo "✅ Referenz-Dokument gefunden: Vorlage/Normseite.docx"
-else
-    echo "⚠️  Referenz-Dokument fehlt: Vorlage/Normseite.docx"
-fi
-
-echo "✅ Setup abgeschlossen."
+# ✅ Alles bereit
+echo "✅ Setup abgeschlossen. Du kannst nun die Tasks in VS Code ausführen."

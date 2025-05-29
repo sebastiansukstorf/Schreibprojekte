@@ -23,6 +23,22 @@
     "reveal": "always",
     "panel": "shared"
   }
+},
+{
+  "label": "Exportiere markierten Text zu DOCX",
+  "type": "shell",
+  "command": "${workspaceFolder}/Skripte/convert-text-to-docx.sh",
+  "args": [],
+  "problemMatcher": [],
+  "presentation": {
+    "echo": true,
+    "reveal": "always",
+    "panel": "shared"
+  },
+  "options": {
+    "stdin": true
+  }
 }
+
   ]
 }

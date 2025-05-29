@@ -8,6 +8,12 @@
   "key": "cmd+alt+d",
   "command": "workbench.action.tasks.runTask",
   "args": "Exportiere ausgewählte MD zu DOCX"
+},
+{
+  "key": "cmd+alt+x",
+  "command": "workbench.action.tasks.runTask",
+  "args": "Exportiere markierten Text zu DOCX"
 }
+
 
 ]
