@@ -1,5 +1,5 @@
 # Ignoriere generierte Dateien
-docx/       # Ignoriert den gesamten docx-Ordner (z. B. exportierte Dateien)
-*.tmp       # Ignoriert temporäre Dateien
-*.log       # Ignoriert Log-Dateien
-.DS_Store   # Ignoriert macOS-Systemdateien
+docx/       
+*.tmp       
+*.log   
+.DS_Store
