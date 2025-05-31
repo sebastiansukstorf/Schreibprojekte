@@ -38,7 +38,26 @@
   "options": {
     "stdin": true
   }
+},
+{
+      "label": "Lektorat starten",
+      "type": "shell",
+      "command": "./Skripte/run_lektorat.sh",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      }
+    }     
+  ]
 }
+
 
   ]
 }

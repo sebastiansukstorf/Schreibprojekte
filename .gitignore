@@ -3,3 +3,4 @@ docx/
 *.tmp       
 *.log   
 .DS_Store
+echo ".env" >> .gitignore
