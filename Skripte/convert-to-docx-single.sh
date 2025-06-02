@@ -15,13 +15,14 @@ TITLE=$(awk '/^title:/ {gsub(/^title:[[:space:]]*/, "", $0); gsub(/[[:space:]]+/
 
 TIMESTAMP=$(date +"%Y%m%d_%H_%M")
 OUTFILE="docx/${TITLE}_${TIMESTAMP}.docx"
-TEMPLATE="Vorlage/Normseite.docx"
+TEMPLATE="Vorlage/Erzaehlung.docx"
 
 pandoc "$INPUT" \
   --from=markdown+hard_line_breaks \
   --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
   --filter=Skripte/insert-pagebreaks.py \
   --reference-doc="$TEMPLATE" \
+  --metadata-file= \
   -o "$OUTFILE"
 
 echo "✅ Exportiert nach: $OUTFILE"
