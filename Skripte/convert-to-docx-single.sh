@@ -22,7 +22,6 @@ pandoc "$INPUT" \
   --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
   --filter=Skripte/insert-pagebreaks.py \
   --reference-doc="$TEMPLATE" \
-  --metadata-file= \
   -o "$OUTFILE"
 
 echo "✅ Exportiert nach: $OUTFILE"
