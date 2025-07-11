@@ -12,34 +12,34 @@
         "panel": "shared"
       }
     },
-   {
-  "label": "Exportiere ausgewählte MD zu DOCX",
-  "type": "shell",
-  "command": "${workspaceFolder}/Skripte/convert-to-docx-single.sh",
-  "args": ["${file}"],
-  "problemMatcher": [],
-  "presentation": {
-    "echo": true,
-    "reveal": "always",
-    "panel": "shared"
-  }
-},
-{
-  "label": "Exportiere markierten Text zu DOCX",
-  "type": "shell",
-  "command": "${workspaceFolder}/Skripte/convert-text-to-docx.sh",
-  "args": [],
-  "problemMatcher": [],
-  "presentation": {
-    "echo": true,
-    "reveal": "always",
-    "panel": "shared"
-  },
-  "options": {
-    "stdin": true
-  }
-},
-{
+    {
+      "label": "Exportiere ausgewählte MD zu DOCX",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/convert-to-docx-single.sh",
+      "args": ["${file}"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Exportiere markierten Text zu DOCX",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/convert-text-to-docx.sh",
+      "args": [],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "options": {
+        "stdin": true
+      }
+    },
+    {
       "label": "Lektorat starten",
       "type": "shell",
       "command": "./Skripte/run_lektorat.sh",
@@ -54,10 +54,46 @@
         "focus": true,
         "panel": "shared"
       }
-    }     
-  ]
-}
-
-
+    },
+    {
+      "label": "Markierten Markdown-Text vorlesen",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/read-marked-tts.sh",
+      "args": [],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "options": {
+        "stdin": true
+      }
+    },
+    {
+      "label": "Exportiere ausgewählte MD zu EPUB (Tolino)",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/convert-to-epub-single.sh",
+      "args": ["${relativeFile}"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Bereinige alte DOCX & EPUB (älter als 1 Tag)",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/cleanup-exports.sh",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
   ]
 }
