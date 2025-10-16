@@ -28,7 +28,6 @@ done > "$TMPFILE"
 pandoc "$TMPFILE" \
   --from=markdown+hard_line_breaks \
   --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
-  --filter=Skripte/insert-pagebreaks.py \
   --metadata-file=Metadaten/titlepage.yml \
   --reference-doc=Vorlage/Normseite.docx \
   -o "$OUTFILE"

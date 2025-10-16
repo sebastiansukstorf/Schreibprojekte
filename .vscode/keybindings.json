@@ -18,5 +18,15 @@
     "key": "cmd+alt+l",
     "command": "workbench.action.tasks.runTask",
     "args": "Lektorat starten"
+  },
+  {
+    "key": "cmd+alt+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Audio transkribieren mit Dialogerkennung"
+  },
+  {
+    "key": "cmd+alt+shift+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Aktuelle Audiodatei transkribieren"
   }
 ]

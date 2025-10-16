@@ -56,42 +56,33 @@
       }
     },
     {
-      "label": "Markierten Markdown-Text vorlesen",
+      "label": "Audio transkribieren mit Dialogerkennung",
       "type": "shell",
-      "command": "${workspaceFolder}/Skripte/read-marked-tts.sh",
-      "args": [],
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/Skripte/transcribe_with_dialogs.py"
+      ],
       "problemMatcher": [],
       "presentation": {
         "echo": true,
         "reveal": "always",
         "focus": true,
         "panel": "shared"
-      },
-      "options": {
-        "stdin": true
       }
     },
     {
-      "label": "Exportiere ausgewählte MD zu EPUB (Tolino)",
+      "label": "Aktuelle Audiodatei transkribieren",
       "type": "shell",
-      "command": "${workspaceFolder}/Skripte/convert-to-epub-single.sh",
-      "args": ["${relativeFile}"],
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/Skripte/transcribe_with_dialogs.py",
+        "${file}"
+      ],
       "problemMatcher": [],
       "presentation": {
         "echo": true,
         "reveal": "always",
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Bereinige alte DOCX & EPUB (älter als 1 Tag)",
-      "type": "shell",
-      "command": "${workspaceFolder}/Skripte/cleanup-exports.sh",
-      "problemMatcher": [],
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
+        "focus": true,
         "panel": "shared"
       }
     }
