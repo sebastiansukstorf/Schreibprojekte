@@ -1,54 +1,27 @@
 #!/bin/bash
 
-# Datei als Argument übergeben
-file="$1"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DIR/.."
+mkdir -p docx
 
-# Überprüfen, ob eine Datei angegeben wurde
-if [ -z "$file" ]; then
-  echo "Bitte gib eine Markdown-Datei an."
+INPUT="$1"
+if [ ! -f "$INPUT" ]; then
+  echo "❌ Eingabedatei nicht gefunden: $INPUT"
   exit 1
 fi
 
-# Prüfen, ob Datei existiert
-if [ ! -f "$file" ]; then
-  echo "Datei nicht gefunden: $file"
-  exit 1
-fi
+TITLE=$(awk '/^title:/ {gsub(/^title:[[:space:]]*/, "", $0); gsub(/[[:space:]]+/, "_"); print; exit}' "$INPUT")
+[ -z "$TITLE" ] && TITLE="Export"
 
-# Zielordner für DOCX-Dateien
-output_dir="docx"
-mkdir -p "$output_dir"
+TIMESTAMP=$(date +"%Y%m%d_%H_%M")
+OUTFILE="docx/${TITLE}_${TIMESTAMP}.docx"
+TEMPLATE="Vorlage/Normseite.docx"
 
-# YAML-Header (title, subtitle, author) extrahieren
-title=$(awk '/^title:/ {gsub(/^title:[[:space:]]*/, "", $0); print; exit}' "$file")
-subtitle=$(awk '/^subtitle:/ {gsub(/^subtitle:[[:space:]]*/, "", $0); print; exit}' "$file")
-author=$(awk '/^author:/ {gsub(/^author:[[:space:]]*/, "", $0); print; exit}' "$file")
-
-# Fallbacks
-[ -z "$title" ] && title="Ohne_Titel"
-[ -z "$subtitle" ] && subtitle=""
-[ -z "$author" ] && author=""
-
-# Sicherer Dateiname
-safe_title=$(echo "$title" | tr ' ' '_')
-timestamp=$(date "+%Y-%m-%d_%H-%M")
-output_file="${output_dir}/${safe_title}_${timestamp}.docx"
-
-# Pfad zur DOCX-Vorlage
-reference_doc="Vorlage/Erzaehlung.docx"
-
-# Optionaler Lua-Filter (falls du author aus dem Fließtext entfernen willst)
-lua_filter="Skripte/filter_author_to_variable.lua"
-
-# Konvertierung mit Pandoc
-pandoc "$file" \
-  -o "$output_file" \
+pandoc "$INPUT" \
   --from=markdown+hard_line_breaks \
-  --metadata title="$title" \
-  --metadata subtitle="$subtitle" \
-  --metadata author="$author" \
-  --reference-doc="$reference_doc" \
-  --lua-filter="$lua_filter" \
-  --standalone
+  --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
+  --filter=Skripte/insert-pagebreaks.py \
+  --reference-doc="$TEMPLATE" \
+  -o "$OUTFILE"
 
-echo "Erstellt: $output_file"
+echo "✅ Exportiert nach: $OUTFILE"
