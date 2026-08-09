@@ -1,0 +1,21 @@
+[project]
+name = "schreibprojekte"
+version = "0.1.0"
+description = "Markdown-basierte Schreibumgebung mit DOCX-Export"
+requires-python = ">=3.11"
+dependencies = [
+    "pandocfilters>=1.5.0",
+]
+
+[project.scripts]
+manuskript = "Skripte.manuskript_cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["Skripte"]

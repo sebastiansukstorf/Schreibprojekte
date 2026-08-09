@@ -1,27 +1,35 @@
 #!/bin/bash
+set -euo pipefail
 
-# Pfad ins Projektverzeichnis
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$DIR/.."
-mkdir -p docx
+REPO_ROOT="$(cd "$DIR/.." && pwd)"
+cd "$REPO_ROOT"
+mkdir -p "$REPO_ROOT/docx"
 
-# Metadaten prüfen
 if [ ! -f "Metadaten/titlepage.yml" ]; then
   echo "❌ Metadaten-Datei fehlt: Metadaten/titlepage.yml"
   exit 1
 fi
 
-# Titel & Zeitstempel für Dateiname
-TITLE=$(grep '^title:' Metadaten/titlepage.yml | sed 's/title:[[:space:]]*//;s/ /_/g')
-TIMESTAMP=$(date +"%Y%m%d_%H_%M")
-OUTFILE="docx/${TITLE}_AUSZUG_${TIMESTAMP}.docx"
+if [ -f "$PWD/Metadaten/titlepage.yml" ]; then
+  METADATA_FILE="$PWD/Metadaten/titlepage.yml"
+elif [ -f "$REPO_ROOT/Metadaten/titlepage.yml" ]; then
+  METADATA_FILE="$REPO_ROOT/Metadaten/titlepage.yml"
+else
+  echo "❌ Metadaten-Datei fehlt. Erwartet unter: $PWD/Metadaten/titlepage.yml"
+  exit 1
+fi
 
-# Eingabe aus STDIN (markierter Text aus VS Code)
+PROJECT_ROOT="$(cd "$(dirname "$METADATA_FILE")/.." && pwd)"
+TITLE=$(grep '^title:' "$METADATA_FILE" | sed 's/title:[[:space:]]*//;s/ /_/g')
+TIMESTAMP=$(date +"%Y%m%d_%H_%M")
+mkdir -p "$PROJECT_ROOT/docx"
+OUTFILE="$PROJECT_ROOT/docx/${TITLE}_AUSZUG_${TIMESTAMP}.docx"
+
 TMPFILE=$(mktemp)
 cat > "$TMPFILE"
 
-# Konvertierung
-pandoc "$TMPFILE" \
+uv run --python 3.13 pandoc "$TMPFILE" \
   --from=markdown+hard_line_breaks \
   --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
   --filter=Skripte/insert-pagebreaks.py \
