@@ -61,6 +61,8 @@ def resolve_output_target(raw_path: str | None, repo_root: Path | None = None, s
 
     repo_root = repo_root or REPO_ROOT
     base_dir = source_dir or repo_root
+    if base_dir.name == "03_Content":
+        base_dir = base_dir.parent
     path = Path(raw_path).expanduser()
     if path.is_absolute():
         return str(path)

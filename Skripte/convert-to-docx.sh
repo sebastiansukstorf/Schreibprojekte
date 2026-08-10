@@ -14,6 +14,9 @@ if [ ! -d "$SOURCE_DIR" ]; then
 fi
 
 METADATA_FILE="$SOURCE_DIR/Metadaten/titlepage.yml"
+if [ ! -f "$METADATA_FILE" ] && [ -d "$SOURCE_DIR/.." ]; then
+  METADATA_FILE="$SOURCE_DIR/../Metadaten/titlepage.yml"
+fi
 if [ ! -f "$METADATA_FILE" ]; then
   echo "❌ Metadaten-Datei fehlt: $METADATA_FILE"
   exit 1
@@ -41,7 +44,12 @@ if [ -n "${2:-}" ]; then
     OUTFILE="${TARGET_DIR}/${TITLE}_${TIMESTAMP}.docx"
   fi
 else
-  TARGET_DIR="$SOURCE_DIR/docx"
+  PROJECT_DIR="$SOURCE_DIR"
+  if [ "$(basename "$SOURCE_DIR")" = "03_Content" ]; then
+    PROJECT_DIR="$(dirname "$SOURCE_DIR")"
+  fi
+
+  TARGET_DIR="$PROJECT_DIR/docx"
   mkdir -p "$TARGET_DIR"
   OUTFILE="${TARGET_DIR}/${TITLE}_${TIMESTAMP}.docx"
 fi
@@ -50,13 +58,18 @@ if [ -d "$TARGET_DIR" ]; then
   find "$TARGET_DIR" -maxdepth 1 -type f -name '*.docx' -delete
 fi
 
+CONTENT_DIR="$SOURCE_DIR"
+if [ -d "$SOURCE_DIR/03_Content" ]; then
+  CONTENT_DIR="$SOURCE_DIR/03_Content"
+fi
+
 TMPFILE=$(mktemp)
-for f in "$SOURCE_DIR"/[0-9]*.md; do
+for f in "$CONTENT_DIR"/[0-9]*.md; do
   if [ -f "$f" ]; then
     cat "$f"
     echo -e "\n"
   fi
-done > "$TMPFILE"
+ done > "$TMPFILE"
 
 if [ ! -s "$TMPFILE" ]; then
   echo "❌ Keine Markdown-Dateien im Quellordner gefunden: $SOURCE_DIR"

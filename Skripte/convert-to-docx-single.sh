@@ -20,6 +20,9 @@ fi
 SOURCE_DIR=$(cd "$(dirname "$INPUT")" && pwd)
 METADATA_FILE="$SOURCE_DIR/Metadaten/titlepage.yml"
 if [ ! -f "$METADATA_FILE" ]; then
+  METADATA_FILE="$SOURCE_DIR/../Metadaten/titlepage.yml"
+fi
+if [ ! -f "$METADATA_FILE" ]; then
   echo "❌ Metadaten-Datei fehlt: $METADATA_FILE"
   exit 1
 fi
