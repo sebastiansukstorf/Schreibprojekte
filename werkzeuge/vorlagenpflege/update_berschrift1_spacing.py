@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 NS = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
 ET.register_namespace('w', NS['w'])
 
-TEMPLATE = Path('Vorlage/Normseite.docx')
+TEMPLATE = Path('ressourcen/Normseite.docx')
 SPACING_AFTER = '720'  # Twips
 
 if not TEMPLATE.exists():

@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 PARENT_DIR = REPO_ROOT.parent
 DEFAULT_CONFIG = REPO_ROOT / ".manuskript.json"
 
@@ -55,18 +55,18 @@ def resolve_target(raw_path: str | None, cwd: Path | None = None, repo_root: Pat
     return path
 
 
-def resolve_output_target(raw_path: str | None, repo_root: Path | None = None, source_dir: Path | None = None) -> str | None:
-    if raw_path is None:
-        return None
-
+def resolve_output_target(raw_path: str | None, repo_root: Path | None = None, source_dir: Path | None = None) -> str:
     repo_root = repo_root or REPO_ROOT
     base_dir = source_dir or repo_root
     if base_dir.name == "03_Content":
         base_dir = base_dir.parent
+    if raw_path is None:
+        return str(base_dir / "docx")
+
     path = Path(raw_path).expanduser()
     if path.is_absolute():
         return str(path)
-    return str((base_dir / path).resolve())
+    return str(base_dir / path)
 
 
 def main() -> int:

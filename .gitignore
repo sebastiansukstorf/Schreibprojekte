@@ -1,6 +1,15 @@
-# Ignoriere generierte Dateien
-docx/       
-*.tmp       
-*.log   
+# Lokale Konfiguration und Entwicklungsumgebung
+.env
+.venv/
+
+# Python-Cache
+__pycache__/
+*.py[cod]
+
+# Generierte Dateien
+docx/
+*.tmp
+*.log
+
+# macOS
 .DS_Store
-echo ".env" >> .gitignore

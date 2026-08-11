@@ -58,12 +58,12 @@ if [ -d "$TARGET_DIR" ]; then
   find "$TARGET_DIR" -maxdepth 1 -type f -name '*.docx' -delete
 fi
 
-TEMPLATE="Vorlage/Normseite.docx"
+TEMPLATE="ressourcen/Normseite.docx"
 
 uv run --python 3.13 pandoc "$INPUT" \
   --from=markdown+hard_line_breaks \
-  --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
-  --filter=Skripte/insert-pagebreaks.py \
+  --lua-filter=ressourcen/filter/insert-visible-dummy-parabreak.lua \
+  --filter=ressourcen/filter/insert-pagebreaks.py \
   --metadata-file="$METADATA_FILE" \
   --reference-doc="$TEMPLATE" \
   -o "$OUTFILE"

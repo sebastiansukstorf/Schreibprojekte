@@ -38,53 +38,6 @@
       "options": {
         "stdin": true
       }
-    },
-    {
-      "label": "Lektorat starten",
-      "type": "shell",
-      "command": "./Skripte/run_lektorat.sh",
-      "problemMatcher": [],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Audio transkribieren mit Dialogerkennung",
-      "type": "shell",
-      "command": "python3",
-      "args": [
-        "${workspaceFolder}/Skripte/transcribe_with_dialogs.py"
-      ],
-      "problemMatcher": [],
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Aktuelle Audiodatei transkribieren",
-      "type": "shell",
-      "command": "python3",
-      "args": [
-        "${workspaceFolder}/Skripte/transcribe_with_dialogs.py",
-        "${file}"
-      ],
-      "problemMatcher": [],
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      }
     }
   ]
 }

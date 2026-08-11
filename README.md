@@ -1,55 +1,71 @@
-# ✍️ Meine Schreibprojekte mit Markdown zu DOCX
+# Schreibprojekte
 
-Dieses Repository bietet ein Skript-basiertes Setup zur Konvertierung von Markdown-Dateien (`*.md`) in ein formatiertes `.docx`-Dokument – inklusive:
-- Seitenumbrüchen zwischen Kapiteln
-- Sichtbaren Absatzumbrüchen
-- Einbindung einer benutzerdefinierten DOCX-Vorlage ("Normseite")
-- Metadaten aus der YAML-Datei (`titlepage.yml`)
+Zentrale Werkzeugbasis für Markdown-Manuskripte und deren Export als formatierte DOCX-Dateien. Konkrete Manuskripte werden in getrennten Projektordnern geführt.
 
-## 🔧 Voraussetzungen
+Der Export umfasst Kapitelreihenfolge, Seiten- und Absatzumbrüche, Metadaten sowie die gemeinsame Normseitenvorlage.
 
-- [Pandoc](https://pandoc.org/installing.html)
-- Python 3 mit Pandoc-Filtersupport
-- Lua (für Lua-Filter)
-- Optional: `python-docx` (für weiterführende DOCX-Verarbeitung)
+## Voraussetzungen
 
-## 📂 Struktur
+- Python 3.11 oder neuer
+- `uv`
+- Pandoc
 
-- `03_Content/`: Kapitel als `*.md` im jeweiligen Schreibprojekt
-- `Metadaten/titlepage.yml`: Metadaten inkl. `title:`
-- `Vorlage/Normseite.docx`: Formatierte Referenzdatei
-- `Skripte/convert-to-docx.sh`: Führt alles zusammen
-- `docx/`: erzeugte DOCX-Ausgaben im jeweiligen Projektordner
-
-## ▶️ Verwendung
-
-### Zentrale CLI
+Einrichtung:
 
 ```bash
-uv run manuskript docx
+uv sync
 ```
 
-Optional mit explizitem Quell- oder Zielordner:
+## Struktur
+
+- `src/manuskript/`: Python-CLI
+- `Skripte/`: aktive Shell-Aufrufe für den DOCX-Export
+- `ressourcen/`: Normseitenvorlage und Pandoc-Filter
+- `projektvorlage/`: empfohlene Struktur neuer Manuskripte
+- `docs/`: allgemeine Schreib- und Analysemethoden
+- `werkzeuge/`: optionale Vorlese- und Vorlagenpflegewerkzeuge
+- `tests/`: automatisierte Tests
+
+## Erwartete Projektstruktur
+
+```text
+MeinProjekt/
+├── 03_Content/
+│   ├── 100.md
+│   ├── 101.md
+│   └── ...
+├── Metadaten/
+│   └── titlepage.yml
+└── docx/
+```
+
+## Verwendung
+
+### Gesamtes Manuskript exportieren
 
 ```bash
-uv run manuskript docx ../Testprojekt --output docx/versuche
+uv run manuskript docx ../MeinProjekt
+```
+
+Ohne Projektpfad wird die Quelle aus `.manuskript.json` verwendet. Ein eigener Zielordner kann angegeben werden:
+
+```bash
+uv run manuskript docx ../MeinProjekt --output docx/versuche
 ```
 
 Für eine einzelne Datei:
 
 ```bash
-uv run manuskript single ../Testprojekt/100.md
+uv run manuskript single ../MeinProjekt/03_Content/100.md
 ```
 
-Die aktuell verwendete Konfiguration anzeigen:
+### Konfiguration anzeigen
 
 ```bash
 uv run manuskript config
 ```
 
-### Konfiguration
-
-Die CLI liest standardmäßig die Datei `.manuskript.json` im Repository:
+Die CLI liest standardmäßig `.manuskript.json` im Repository:
 
 ```json
 {
@@ -64,8 +80,8 @@ Alternativ kann eine andere Konfigurationsdatei verwendet werden:
 uv run manuskript docx --config /pfad/zur/konfiguration.json
 ```
 
-### Direktes Skript
+### Direkter Aufruf
 
 ```bash
-bash Skripte/convert-to-docx.sh ../Testprojekt
+bash Skripte/convert-to-docx.sh ../MeinProjekt
 ```

@@ -31,10 +31,10 @@ cat > "$TMPFILE"
 
 uv run --python 3.13 pandoc "$TMPFILE" \
   --from=markdown+hard_line_breaks \
-  --lua-filter=Skripte/insert-visible-dummy-parabreak.lua \
-  --filter=Skripte/insert-pagebreaks.py \
+  --lua-filter=ressourcen/filter/insert-visible-dummy-parabreak.lua \
+  --filter=ressourcen/filter/insert-pagebreaks.py \
   --metadata-file=Metadaten/titlepage.yml \
-  --reference-doc=Vorlage/Normseite.docx \
+  --reference-doc=ressourcen/Normseite.docx \
   -o "$OUTFILE"
 
 rm "$TMPFILE"
