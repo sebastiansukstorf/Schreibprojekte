@@ -65,6 +65,21 @@ uv run manuskript single ../MeinProjekt/03_Content/100.md
 uv run manuskript config
 ```
 
+### „sagte“ in Dialogen lektorieren
+
+Die ausgewählte Markdown-Datei wird ausschließlich darauf geprüft, ob Sprecherzuordnungen mit
+„sagte“ nötig sind. Das Manuskript bleibt unverändert; das Ergebnis wird standardmäßig als
+`Lektorat/<dateiname>-sagte-lektorat.md` im Projekt abgelegt.
+
+```bash
+uv run manuskript lektorat ../MeinProjekt/03_Content/100.md
+```
+
+In VS Code kann die Aufgabe `Lektorat starten` über `Tasks: Run Task` für die aktuell geöffnete
+Markdown-Datei aufgerufen werden. Ein Tastenkürzel muss in den globalen VS-Code-Tastenkürzeln
+eingerichtet werden; eine projektlokale `keybindings.json` wird von VS Code nicht geladen. Die
+Funktion nutzt die lokal angemeldete Codex-CLI und benötigt daher eine Internetverbindung.
+
 Die CLI liest standardmäßig `.manuskript.json` im Repository:
 
 ```json

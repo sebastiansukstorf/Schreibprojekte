@@ -38,6 +38,18 @@
       "options": {
         "stdin": true
       }
+    },
+    {
+      "label": "Lektorat starten",
+      "type": "shell",
+      "command": "${workspaceFolder}/.venv/bin/manuskript",
+      "args": ["lektorat", "${file}"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
     }
   ]
 }

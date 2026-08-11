@@ -6,6 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from manuskript.sagte_lektorat import run_sagte_lektorat
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PARENT_DIR = REPO_ROOT.parent
@@ -132,6 +134,12 @@ def main() -> int:
         default=str(DEFAULT_CONFIG),
         help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
     )
+
+    lektorat_parser = subparsers.add_parser(
+        "lektorat", help="Prüfe 'sagte' in der wörtlichen Rede einer Markdown-Datei"
+    )
+    lektorat_parser.add_argument("path", help="Pfad zur ausgewählten Markdown-Datei")
+    lektorat_parser.add_argument("--output", help="Optionaler Pfad für den Markdown-Bericht")
     single_parser.add_argument(
         "--output",
         help="Optionaler Zielordner oder Zielpfad für die DOCX-Ausgabe",
@@ -143,7 +151,7 @@ def main() -> int:
     )
 
     args = parser.parse_args()
-    config_path = Path(args.config).expanduser()
+    config_path = Path(getattr(args, "config", DEFAULT_CONFIG)).expanduser()
     if not config_path.is_absolute():
         config_path = (REPO_ROOT / config_path).resolve()
 
@@ -186,6 +194,17 @@ def main() -> int:
     if args.command == "config":
         cfg = load_config(config_path)
         print(json.dumps({"config": str(config_path), "source": cfg.get("source"), "output": cfg.get("output")}, indent=2))
+        return 0
+
+    if args.command == "lektorat":
+        input_path = Path(args.path).expanduser().resolve()
+        output_path = Path(args.output).expanduser().resolve() if args.output else None
+        try:
+            report = run_sagte_lektorat(input_path, output_path)
+        except (ValueError, RuntimeError, subprocess.CalledProcessError) as error:
+            print(f"❌ Lektorat fehlgeschlagen: {error}", file=sys.stderr)
+            return 1
+        print(f"✅ Lektoratsbericht: {report}")
         return 0
 
     if args.command == "export":
