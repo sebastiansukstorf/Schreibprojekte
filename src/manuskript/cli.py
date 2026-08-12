@@ -140,6 +140,11 @@ def main() -> int:
     )
     lektorat_parser.add_argument("path", help="Pfad zur ausgewählten Markdown-Datei")
     lektorat_parser.add_argument("--output", help="Optionaler Pfad für den Markdown-Bericht")
+    lektorat_parser.add_argument(
+        "--config",
+        default=str(DEFAULT_CONFIG),
+        help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
+    )
     single_parser.add_argument(
         "--output",
         help="Optionaler Zielordner oder Zielpfad für die DOCX-Ausgabe",
@@ -199,9 +204,17 @@ def main() -> int:
     if args.command == "lektorat":
         input_path = Path(args.path).expanduser().resolve()
         output_path = Path(args.output).expanduser().resolve() if args.output else None
+        lektorat_config = load_config(config_path).get("lektorat", {})
         try:
-            report = run_sagte_lektorat(input_path, output_path)
-        except (ValueError, RuntimeError, subprocess.CalledProcessError) as error:
+            report = run_sagte_lektorat(
+                input_path,
+                output_path,
+                base_url=lektorat_config.get("base_url", "http://127.0.0.1:11434"),
+                model=lektorat_config.get("model", "llama3.1:8b"),
+                context_lines=int(lektorat_config.get("context_lines", 4)),
+                batch_size=int(lektorat_config.get("batch_size", 4)),
+            )
+        except (TypeError, ValueError, RuntimeError) as error:
             print(f"❌ Lektorat fehlgeschlagen: {error}", file=sys.stderr)
             return 1
         print(f"✅ Lektoratsbericht: {report}")

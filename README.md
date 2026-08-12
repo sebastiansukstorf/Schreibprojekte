@@ -77,8 +77,23 @@ uv run manuskript lektorat ../MeinProjekt/03_Content/100.md
 
 In VS Code kann die Aufgabe `Lektorat starten` über `Tasks: Run Task` für die aktuell geöffnete
 Markdown-Datei aufgerufen werden. Ein Tastenkürzel muss in den globalen VS-Code-Tastenkürzeln
-eingerichtet werden; eine projektlokale `keybindings.json` wird von VS Code nicht geladen. Die
-Funktion nutzt die lokal angemeldete Codex-CLI und benötigt daher eine Internetverbindung.
+eingerichtet werden; eine projektlokale `keybindings.json` wird von VS Code nicht geladen.
+
+Die Prüfung filtert die Fundstellen samt Dialogumgebung zunächst lokal vor und sendet nur diese
+Ausschnitte an eine Ollama-Instanz. Der vollständige Text wird nicht übertragen. Die Ollama-Adresse,
+das Modell und die Zahl der Kontextzeilen stehen in `.manuskript.json`:
+
+```json
+{
+  "lektorat": {
+    "provider": "ollama",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3:8b",
+    "context_lines": 4,
+    "batch_size": 4
+  }
+}
+```
 
 Die CLI liest standardmäßig `.manuskript.json` im Repository:
 

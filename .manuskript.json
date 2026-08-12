@@ -1,4 +1,11 @@
 {
   "source": "../Testprojekt",
-  "output": "docx"
+  "output": "docx",
+  "lektorat": {
+    "provider": "ollama",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3:8b",
+    "context_lines": 4,
+    "batch_size": 4
+  }
 }
