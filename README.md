@@ -80,20 +80,45 @@ Markdown-Datei aufgerufen werden. Ein Tastenkürzel muss in den globalen VS-Code
 eingerichtet werden; eine projektlokale `keybindings.json` wird von VS Code nicht geladen.
 
 Die Prüfung filtert die Fundstellen samt Dialogumgebung zunächst lokal vor und sendet nur diese
-Ausschnitte an eine Ollama-Instanz. Der vollständige Text wird nicht übertragen. Die Ollama-Adresse,
-das Modell und die Zahl der Kontextzeilen stehen in `.manuskript.json`:
+Ausschnitte an eine Ollama-Instanz. Der vollständige Text wird nicht übertragen. Der Bericht nennt
+zu jeder Zeilennummer auch die unveränderte zitierte Textstelle. Sie wird lokal aus der Markdown-
+Datei übernommen und nicht vom Modell erzeugt.
+
+Die Ollama-Adresse, das Modell und die Zahl der Kontextzeilen stehen in `.manuskript.json`:
 
 ```json
 {
   "lektorat": {
     "provider": "ollama",
     "base_url": "http://127.0.0.1:11434",
-    "model": "qwen3:8b",
+    "model": "qwen3:4b",
     "context_lines": 4,
     "batch_size": 4
   }
 }
 ```
+
+### Erklärungen mit H–L–X prüfen
+
+Das H–L–X-Lektorat beurteilt alle inhaltlichen Zeilen danach, ob eine Information besser szenisch
+vermittelt werden sollte (H), als knapper notwendiger Satz bestehen bleibt (L) oder Dialog,
+Handlung beziehungsweise Reaktion nur noch einmal erklärt (X). Das Manuskript bleibt unverändert;
+der Bericht landet als `Lektorat/<dateiname>-hlx-lektorat.md` im Projekt.
+
+```bash
+uv run manuskript lektorat-hlx ../MeinProjekt/03_Content/101.md
+```
+
+Optional kann in `.manuskript.json` ein eigener Abschnitt `hlx_lektorat` mit `base_url`, `model`,
+`context_lines` und `batch_size` angelegt werden. Fehlt er, verwendet die Prüfung die allgemeine
+Konfiguration aus `lektorat`.
+
+Auf einem Apple-Silicon-Rechner mit 16 GB ist `qwen3:4b` zwar schneller, hält das verlangte
+strukturierte Ausgabeformat aber nicht zuverlässig ein. Für dieses Lektorat ist deshalb
+`qwen3:8b` voreingestellt. Das Modell bleibt zwischen den Paketen 15 Minuten im Speicher. Als
+anderer lokaler Server kann LM Studio verwendet werden,
+seine OpenAI-kompatible Schnittstelle benötigt jedoch eine eigene Anbindung und bietet bei demselben
+Modell keinen grundsätzlichen Qualitätsvorteil gegenüber Ollama.
 
 Die CLI liest standardmäßig `.manuskript.json` im Repository:
 

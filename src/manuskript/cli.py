@@ -6,6 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from manuskript.hlx_lektorat import run_hlx_lektorat
 from manuskript.sagte_lektorat import run_sagte_lektorat
 
 
@@ -145,6 +146,16 @@ def main() -> int:
         default=str(DEFAULT_CONFIG),
         help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
     )
+    hlx_parser = subparsers.add_parser(
+        "lektorat-hlx", help="Prüfe Erklärungen nach dem H-L-X-System"
+    )
+    hlx_parser.add_argument("path", help="Pfad zur ausgewählten Markdown-Datei")
+    hlx_parser.add_argument("--output", help="Optionaler Pfad für den Markdown-Bericht")
+    hlx_parser.add_argument(
+        "--config",
+        default=str(DEFAULT_CONFIG),
+        help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
+    )
     single_parser.add_argument(
         "--output",
         help="Optionaler Zielordner oder Zielpfad für die DOCX-Ausgabe",
@@ -218,6 +229,29 @@ def main() -> int:
             print(f"❌ Lektorat fehlgeschlagen: {error}", file=sys.stderr)
             return 1
         print(f"✅ Lektoratsbericht: {report}")
+        return 0
+
+    if args.command == "lektorat-hlx":
+        input_path = Path(args.path).expanduser().resolve()
+        output_path = Path(args.output).expanduser().resolve() if args.output else None
+        config = load_config(config_path)
+        common_config = config.get("lektorat", {})
+        hlx_config = config.get("hlx_lektorat", {})
+        try:
+            report = run_hlx_lektorat(
+                input_path,
+                output_path,
+                base_url=hlx_config.get(
+                    "base_url", common_config.get("base_url", "http://127.0.0.1:11434")
+                ),
+                model=hlx_config.get("model", common_config.get("model", "llama3.1:8b")),
+                context_lines=int(hlx_config.get("context_lines", 2)),
+                batch_size=int(hlx_config.get("batch_size", 8)),
+            )
+        except (TypeError, ValueError, RuntimeError) as error:
+            print(f"❌ H-L-X-Lektorat fehlgeschlagen: {error}", file=sys.stderr)
+            return 1
+        print(f"✅ H-L-X-Lektoratsbericht: {report}")
         return 0
 
     if args.command == "export":
