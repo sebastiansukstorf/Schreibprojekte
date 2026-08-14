@@ -41,6 +41,10 @@ MeinProjekt/
 
 ## Verwendung
 
+Die Bedienung, fachlichen Maßstäbe, Grenzen und geplante Homeserver-Architektur aller Prüfungen sind
+in [Lektorats- und Korrektoratsprüfungen](docs/analyse/Lektorats_und_Korrektoratspruefungen.md)
+zusammenhängend dokumentiert.
+
 ### Gesamtes Manuskript exportieren
 
 ```bash
@@ -112,6 +116,44 @@ uv run manuskript lektorat-hlx ../MeinProjekt/03_Content/101.md
 Optional kann in `.manuskript.json` ein eigener Abschnitt `hlx_lektorat` mit `base_url`, `model`,
 `context_lines` und `batch_size` angelegt werden. Fehlt er, verwendet die Prüfung die allgemeine
 Konfiguration aus `lektorat`.
+
+### Rechtschreibung und Zeichensetzung prüfen
+
+Das Korrektorat nutzt die offene LanguageTool-HTTP-API und beschränkt den Bericht auf
+Rechtschreibung und Zeichensetzung. Stil- und allgemeine Grammatikhinweise werden ausgefiltert.
+Standardmäßig wird aus Datenschutzgründen ein lokal laufender LanguageTool-Server erwartet:
+
+```bash
+uv run manuskript korrektorat ../MeinProjekt/03_Content/101.md
+```
+
+```json
+{
+  "korrektorat": {
+    "base_url": "http://127.0.0.1:8081",
+    "language": "de-DE"
+  }
+}
+```
+
+Der Bericht wird unter `Korrektorat/<dateiname>-rechtschreibung-zeichensetzung.md` abgelegt und
+enthält Zeile, Spalte, Originalzeile, Vorschläge und die LanguageTool-Regel-ID. Grundlage ist das
+[Amtliche Regelwerk der deutschen Rechtschreibung 2024](https://www.rechtschreibrat.com/DOX/RfdR_Amtliches-Regelwerk_2024.pdf);
+die technische Prüfung übernimmt das offene [LanguageTool](https://github.com/languagetool-org/languagetool).
+
+### Adjektive und Adverbien lektorieren
+
+Die Wortartenprüfung meldet nur stilistisch erwähnenswerte Adjektive und Adverbien. Sie unterscheidet
+zwischen `STREICHEN`, `ERSETZEN` und `BEHALTEN`, zitiert die Originalzeile und gibt einen konkreten
+Vorschlag. Figurenstimme und präzise, notwendige Details werden nicht mechanisch geglättet.
+
+```bash
+uv run manuskript lektorat-wortarten ../MeinProjekt/03_Content/101.md
+```
+
+Der Bericht wird als `Lektorat/<dateiname>-adjektive-adverbien-lektorat.md` gespeichert und enthält
+außerdem Vorschläge für weitere Lektoratsprüfungen. Eine eigene Modell- und Paketkonfiguration kann
+unter `wortarten_lektorat` in `.manuskript.json` hinterlegt werden.
 
 Auf einem Apple-Silicon-Rechner mit 16 GB ist `qwen3:4b` zwar schneller, hält das verlangte
 strukturierte Ausgabeformat aber nicht zuverlässig ein. Für dieses Lektorat ist deshalb

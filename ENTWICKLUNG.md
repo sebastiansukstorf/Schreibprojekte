@@ -97,6 +97,9 @@ VS Code verwendet einen Multi-Root-Workspace mit:
 - allgemeine Methoden unter `docs`
 - optionale Hilfsmittel unter `werkzeuge`
 
+Die implementierten Prüfwerkzeuge, ihre fachlichen Grenzen und die geplante Verteilung zwischen Mac
+und Homeserver beschreibt [Lektorats- und Korrektoratsprüfungen](docs/analyse/Lektorats_und_Korrektoratspruefungen.md).
+
 Pandoc wird beibehalten. Die bereits funktionierende Pandoc-/Lua-/Normseitenlogik soll zunächst nicht verändert werden.
 
 EPUB wird nicht mehr unterstützt.

@@ -7,7 +7,9 @@ import sys
 from pathlib import Path
 
 from manuskript.hlx_lektorat import run_hlx_lektorat
+from manuskript.korrektorat import run_korrektorat
 from manuskript.sagte_lektorat import run_sagte_lektorat
+from manuskript.wortarten_lektorat import run_wortarten_lektorat
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -156,6 +158,26 @@ def main() -> int:
         default=str(DEFAULT_CONFIG),
         help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
     )
+    korrektur_parser = subparsers.add_parser(
+        "korrektorat", help="Prüfe Rechtschreibung und Zeichensetzung mit LanguageTool"
+    )
+    korrektur_parser.add_argument("path", help="Pfad zur ausgewählten Markdown-Datei")
+    korrektur_parser.add_argument("--output", help="Optionaler Pfad für den Markdown-Bericht")
+    korrektur_parser.add_argument(
+        "--config",
+        default=str(DEFAULT_CONFIG),
+        help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
+    )
+    wortarten_parser = subparsers.add_parser(
+        "lektorat-wortarten", help="Prüfe Adjektive und Adverbien nach Leonard und Higgins"
+    )
+    wortarten_parser.add_argument("path", help="Pfad zur ausgewählten Markdown-Datei")
+    wortarten_parser.add_argument("--output", help="Optionaler Pfad für den Markdown-Bericht")
+    wortarten_parser.add_argument(
+        "--config",
+        default=str(DEFAULT_CONFIG),
+        help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
+    )
     single_parser.add_argument(
         "--output",
         help="Optionaler Zielordner oder Zielpfad für die DOCX-Ausgabe",
@@ -252,6 +274,47 @@ def main() -> int:
             print(f"❌ H-L-X-Lektorat fehlgeschlagen: {error}", file=sys.stderr)
             return 1
         print(f"✅ H-L-X-Lektoratsbericht: {report}")
+        return 0
+
+    if args.command == "korrektorat":
+        input_path = Path(args.path).expanduser().resolve()
+        output_path = Path(args.output).expanduser().resolve() if args.output else None
+        korrektur_config = load_config(config_path).get("korrektorat", {})
+        try:
+            report = run_korrektorat(
+                input_path,
+                output_path,
+                base_url=korrektur_config.get("base_url", "http://127.0.0.1:8081"),
+                language=korrektur_config.get("language", "de-DE"),
+            )
+        except (TypeError, ValueError, RuntimeError) as error:
+            print(f"❌ Korrektorat fehlgeschlagen: {error}", file=sys.stderr)
+            return 1
+        print(f"✅ Korrektoratsbericht: {report}")
+        return 0
+
+    if args.command == "lektorat-wortarten":
+        input_path = Path(args.path).expanduser().resolve()
+        output_path = Path(args.output).expanduser().resolve() if args.output else None
+        config = load_config(config_path)
+        common_config = config.get("lektorat", {})
+        wortarten_config = config.get("wortarten_lektorat", {})
+        try:
+            report = run_wortarten_lektorat(
+                input_path,
+                output_path,
+                base_url=wortarten_config.get(
+                    "base_url", common_config.get("base_url", "http://127.0.0.1:11434")
+                ),
+                model=wortarten_config.get(
+                    "model", common_config.get("model", "llama3.1:8b")
+                ),
+                batch_size=int(wortarten_config.get("batch_size", 8)),
+            )
+        except (TypeError, ValueError, RuntimeError) as error:
+            print(f"❌ Wortarten-Lektorat fehlgeschlagen: {error}", file=sys.stderr)
+            return 1
+        print(f"✅ Wortarten-Lektoratsbericht: {report}")
         return 0
 
     if args.command == "export":

@@ -152,7 +152,7 @@ def run_hlx_lektorat(
         last_error: RuntimeError | None = None
         for attempt in range(1, 4):
             retry = "" if attempt == 1 else f"\nGib exakt Urteile fuer diese Zeilen aus: {sorted(expected)}.\n"
-            answer = ollama_generate(base_url, model, prompt + retry)
+            answer = ollama_generate(base_url, model, prompt + retry, num_predict=700)
             try:
                 rendered = parse_hlx_answer(answer, expected, source_lines)
                 break

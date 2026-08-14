@@ -115,7 +115,9 @@ def extract_sagte_batches(
     return batches, [index + 1 for index in hit_indexes]
 
 
-def ollama_generate(base_url: str, model: str, prompt: str, timeout: int = 300) -> str:
+def ollama_generate(
+    base_url: str, model: str, prompt: str, timeout: int = 300, num_predict: int = 320
+) -> str:
     endpoint = f"{base_url.rstrip('/')}/api/generate"
     payload = json.dumps(
         {
@@ -124,7 +126,7 @@ def ollama_generate(base_url: str, model: str, prompt: str, timeout: int = 300) 
             "stream": False,
             "keep_alive": "15m",
             "think": False,
-            "options": {"temperature": 0.1, "num_ctx": 4096, "num_predict": 320},
+            "options": {"temperature": 0.1, "num_ctx": 4096, "num_predict": num_predict},
         }
     ).encode("utf-8")
     request = Request(endpoint, data=payload, headers={"Content-Type": "application/json"})
