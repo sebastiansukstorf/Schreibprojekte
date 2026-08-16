@@ -327,23 +327,28 @@ nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
     <div class="column">
       <section>
         <h2>Alle Szenen über Nacht prüfen</h2>
-        <div class="cmd"><div class="cmd-label">HINTERGRUNDLAUF STARTEN</div><code>homestories-lektorat start</code></div>
-        <p class="cmd-help">Prüft im Hintergrund alle konfigurierten Markdown-Dateien unter <code>03_Content</code>. Ein zweiter gleichzeitiger Lauf wird verhindert.</p>
+        <div class="cmd"><div class="cmd-label">STAND 4 PRÜFEN · AUFGABEN FÜR STAND 5</div><code>homestories-lektorat start 4 5</code></div>
+        <p class="cmd-help">Bindet den Nachtlauf per Prüfsummen an den abgeschlossenen Stand 4. Ein zweiter gleichzeitiger Lauf wird verhindert.</p>
         <div class="cmd"><div class="cmd-label">STATUS PRÜFEN</div><code>homestories-lektorat status</code></div>
         <p class="cmd-help">Zeigt, ob der Homestories-Nachtlauf gerade aktiv ist.</p>
         <h3>Fortschritt verfolgen</h3>
         <div class="cmd"><div class="cmd-label">LOG LIVE ANZEIGEN</div><code>homestories-lektorat log</code></div>
         <p class="cmd-help">Beendet nur die Anzeige mit <code>Ctrl+C</code>; der Hintergrundlauf arbeitet weiter.</p>
+        <div class="cmd"><div class="cmd-label">OPENPROJECT · ERST VORSCHAU</div><code>homestories-lektorat preview 4</code></div>
+        <div class="cmd"><div class="cmd-label">OPENPROJECT · DANACH ÜBERTRAGEN</div><code>homestories-lektorat sync 4</code></div>
+        <p class="cmd-help">Die Vorschau verändert nichts. Der Sync legt Projektversion, Szenenaufgaben und zeilenspezifische Unteraufgaben idempotent an.</p>
         <div class="box orange"><strong>Bewusst getrennt:</strong> Der Nachtlauf automatisiert Datei-/Szenenprüfungen. Teil-/Akt- und Gesamtromanlektorat werden weiterhin gezielt gestartet.</div>
       </section>
 
       <section>
         <h2>Berichte finden</h2>
         <pre class="box"><code>lektorat/
-├── szene/   205_lektorat.md
-├── teile/   teil_2_lektorat.md
-├── gesamt/  roman_lektorat.md
-└── logs/    nachtlauf_letzter.md</code></pre>
+├── ueberarbeitungen/4/LAUF/
+│   ├── manifest.json
+│   ├── findings.jsonl
+│   └── szene/
+├── teile/
+└── gesamt/</code></pre>
         <div class="box green"><strong>Befundfolge:</strong> Fundstelle → Diagnose → Relevanz → Begründung → Empfehlung → Querverweise</div>
       </section>
 

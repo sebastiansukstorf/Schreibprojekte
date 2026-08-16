@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "Verwendung: $0 PROJEKTORDNER [--context PFAD] [--force]" >&2
+  echo "Verwendung: $0 PROJEKTORDNER [--revision STAND --next-revision ZIEL] [--context PFAD] [--force]" >&2
   exit 64
 fi
 

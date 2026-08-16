@@ -356,3 +356,25 @@ serverseitigen Änderung der Vault-Struktur muss Remotely Save auf allen Geräte
 Das ist besonders auf dem Mac wichtig, weil dort `Lektorat` und `lektorat` nicht zuverlässig als
 getrennte Ordner behandelt werden. Die vollständige Betriebs- und Wiederanlaufanleitung steht in
 [Schreibprojekte auf Mac, NAS und Homeserver](docs/betrieb/Homeserver.md).
+
+## Überarbeitungsstände und OpenProject
+
+Ein produktiver Nachtlauf gehört immer zu einem ausdrücklich benannten, abgeschlossenen
+Überarbeitungsstand. Vor und nach der Prüfung werden SHA-256-Prüfsummen der berücksichtigten
+Markdown-Dateien verglichen. Dadurch kann ein während des mehrstündigen Laufs veränderter Textstand
+nicht versehentlich als konsistente Diagnose nach OpenProject übertragen werden.
+
+Für die eigentliche Prüfung wird beim Start eine temporäre Momentaufnahme unter
+`lektorat/.arbeitskopien/` erzeugt. Alle Module lesen diese Arbeitskopie und damit denselben
+eingefrorenen Textstand. Nach einem regulären Abschluss wird sie wieder entfernt.
+
+Die Berichte eines solchen Laufs liegen unter
+`lektorat/ueberarbeitungen/<stand>/<laufkennung>/`. Zusätzlich enthält `findings.jsonl` nur
+bearbeitbare, normalisierte Befunde. Nicht beanstandete H–L–X-Zeilen, `BEHALTEN`-Urteile und andere
+reine Bestätigungen werden nicht zu Aufgaben.
+
+OpenProject wird erst nach einer lokalen Vorschau verändert. `Homestories` bleibt dort ein
+dauerhaftes Projekt; jede folgende Überarbeitungsrunde wird als Version geführt. Pro Szene entsteht
+eine Sammelaufgabe mit zeilenspezifischen Unteraufgaben. Feste Befundkennungen verhindern Dubletten
+bei wiederholter Synchronisierung. Einzelheiten stehen in
+[Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).

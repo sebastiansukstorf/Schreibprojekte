@@ -77,17 +77,20 @@ cd /home/sebastian/schreiben/Schreibprojekte
 /home/sebastian/.local/bin/uv run manuskript lektorat-szene /mnt/nfs/schreiben/Homestories/03_Content/101.md --config /home/sebastian/schreiben/config/Homestories.json
 ```
 
-Den manuellen Nachtlauf bedienen:
+Den revisionsgebundenen Nachtlauf und die OpenProject-Übergabe bedienen:
 
 ```bash
-homestories-lektorat start
+homestories-lektorat start 4 5
 homestories-lektorat status
 homestories-lektorat log
+homestories-lektorat preview 4
+homestories-lektorat sync 4
 ```
 
-`start` führt alle Datei-/Szenenprüfungen für die konfigurierten Markdown-Dateien unter
-`03_Content` im Hintergrund aus. `status` meldet, ob der Prozess läuft. `log` zeigt das aktuelle
-Log fortlaufend; `Ctrl+C` beendet nur die Anzeige. Teil-/Akt- und Gesamtromanlektorat bleiben
+`start 4 5` prüft den abgeschlossenen Stand 4 und bereitet Aufgaben für Überarbeitung 5 vor.
+`status` meldet, ob der Prozess läuft. `log` zeigt das aktuelle Log fortlaufend; `Ctrl+C` beendet
+nur die Anzeige. `preview` verändert OpenProject nicht; erst `sync` legt Aufgaben an. Details stehen
+unter [Lektoratsbefunde in OpenProject](OpenProject.md). Teil-/Akt- und Gesamtromanlektorat bleiben
 bewusste Einzelstarts.
 
 ## Ergebnisstruktur

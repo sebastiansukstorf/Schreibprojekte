@@ -286,6 +286,24 @@ Für die eingerichtete Homestories-Umgebung wird der Nachtlauf nach der SSH-Anme
 beziehungsweise `homestories-lektorat log`. Ergebnisse liegen ausschließlich unter dem
 kleingeschriebenen Projektordner `lektorat/`.
 
+### Überarbeitungsstände nach OpenProject übertragen
+
+Ein Nachtlauf kann mit `--revision STAND --next-revision ZIEL` fest an die Prüfsummen eines
+abgeschlossenen Manuskriptstands gebunden werden. Er erzeugt neben den Markdown-Berichten ein
+Manifest und normalisierte Befunde in `findings.jsonl`. Erst eine separate Vorschau und ein
+bewusster Sync erzeugen daraus hierarchische OpenProject-Arbeitspakete.
+
+```bash
+uv run manuskript lektorat-nacht ../MeinProjekt --revision 4 --next-revision 5
+uv run manuskript openproject-preview ../MeinProjekt --run 4
+uv run manuskript openproject-sync ../MeinProjekt --run 4
+```
+
+Der Sync ist idempotent: Bereits übertragene Befunde werden über feste Kennungen erkannt. Nur ein
+vollständig erfolgreicher Lauf, dessen Manuskript-Prüfsummen sich während der Ausführung nicht
+verändert haben, darf übertragen werden. Konfiguration, Aufgabenmodell und sichere Token-Ablage
+beschreibt [Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).
+
 ### Direkter Aufruf
 
 ```bash

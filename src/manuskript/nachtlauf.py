@@ -73,6 +73,7 @@ def run_night_checks(
     *,
     force: bool = False,
     context_path: Path | None = None,
+    output_root: Path | None = None,
     progress: Callable[[str], None] = print,
 ) -> list[CheckResult]:
     """Fuehre alle Szenenpruefungen aus und fahre nach Einzelfehlern fort."""
@@ -81,6 +82,9 @@ def run_night_checks(
     if not isinstance(raw_exclude, list) or not all(isinstance(item, str) for item in raw_exclude):
         raise ValueError("nachtlauf.exclude muss eine Liste von Dateinamen oder Glob-Mustern sein.")
     files = manuscript_files(project, exclude=tuple(raw_exclude))
+    if output_root is not None:
+        output_root = output_root.expanduser().resolve()
+        output_root.mkdir(parents=True, exist_ok=True)
     if context_path is None and night_config.get("context"):
         configured_context = Path(str(night_config["context"])).expanduser()
         root = project.resolve().parent if project.resolve().name == "03_Content" else project.resolve()
@@ -95,18 +99,20 @@ def run_night_checks(
         checks = (
             (
                 "korrektorat",
-                korrektur_report_path(source),
+                output_root / f"{source.stem}-korrektorat.md" if output_root else korrektur_report_path(source),
                 lambda: run_korrektorat(
                     source,
+                    output=output_root / f"{source.stem}-korrektorat.md" if output_root else None,
                     base_url=config.get("korrektorat", {}).get("base_url", "http://127.0.0.1:8081"),
                     language=config.get("korrektorat", {}).get("language", "de-DE"),
                 ),
             ),
             (
                 "sagte",
-                sagte_report_path(source),
+                output_root / f"{source.stem}-sagte-lektorat.md" if output_root else sagte_report_path(source),
                 lambda: run_sagte_lektorat(
                     source,
+                    output=output_root / f"{source.stem}-sagte-lektorat.md" if output_root else None,
                     base_url=common.get("base_url", "http://127.0.0.1:11434"),
                     model=common.get("model", "qwen3:8b"),
                     context_lines=int(common.get("context_lines", 4)),
@@ -115,9 +121,10 @@ def run_night_checks(
             ),
             (
                 "hlx",
-                hlx_report_path(source),
+                output_root / f"{source.stem}-hlx-lektorat.md" if output_root else hlx_report_path(source),
                 lambda: run_hlx_lektorat(
                     source,
+                    output=output_root / f"{source.stem}-hlx-lektorat.md" if output_root else None,
                     base_url=_setting(config, "hlx_lektorat", "base_url", "http://127.0.0.1:11434"),
                     model=_setting(config, "hlx_lektorat", "model", "qwen3:8b"),
                     context_lines=int(_setting(config, "hlx_lektorat", "context_lines", 2)),
@@ -126,9 +133,10 @@ def run_night_checks(
             ),
             (
                 "wortarten",
-                wortarten_report_path(source),
+                output_root / f"{source.stem}-adjektive-adverbien-lektorat.md" if output_root else wortarten_report_path(source),
                 lambda: run_wortarten_lektorat(
                     source,
+                    output=output_root / f"{source.stem}-adjektive-adverbien-lektorat.md" if output_root else None,
                     base_url=_setting(config, "wortarten_lektorat", "base_url", "http://127.0.0.1:11434"),
                     model=_setting(config, "wortarten_lektorat", "model", "qwen3:8b"),
                     batch_size=int(_setting(config, "wortarten_lektorat", "batch_size", 8)),
@@ -136,10 +144,11 @@ def run_night_checks(
             ),
             (
                 "szenenlektorat",
-                scene_report_path(source),
+                output_root / f"{source.stem}_lektorat.md" if output_root else scene_report_path(source),
                 lambda: run_redaktion(
                     source,
                     level="szene",
+                    output=output_root / f"{source.stem}_lektorat.md" if output_root else None,
                     context_path=context_path,
                     base_url=scene.get("base_url", redaktion.get("base_url", common.get("base_url", "http://127.0.0.1:11434"))),
                     model=scene.get("model", redaktion.get("model", common.get("model", "qwen3:8b"))),
@@ -186,9 +195,9 @@ def render_summary(project: Path, results: list[CheckResult]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def write_summary(project: Path, results: list[CheckResult]) -> Path:
+def write_summary(project: Path, results: list[CheckResult], *, output: Path | None = None) -> Path:
     root = project.resolve().parent if project.resolve().name == "03_Content" else project.resolve()
-    output = root / "lektorat" / "logs" / "nachtlauf_letzter.md"
+    output = output or root / "lektorat" / "logs" / "nachtlauf_letzter.md"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(render_summary(root, results), encoding="utf-8")
     return output

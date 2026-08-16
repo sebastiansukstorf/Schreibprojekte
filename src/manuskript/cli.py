@@ -7,9 +7,19 @@ import sys
 from pathlib import Path
 
 from manuskript.hlx_lektorat import run_hlx_lektorat
+from manuskript.findings import collect_findings, write_findings
 from manuskript.korrektorat import run_korrektorat
 from manuskript.nachtlauf import run_night_checks, write_summary
+from manuskript.openproject import preview as openproject_preview
+from manuskript.openproject import sync as openproject_sync
 from manuskript.redaktion import run_redaktion
+from manuskript.revision import (
+    cleanup_snapshot,
+    create_revision_run,
+    finish_revision_run,
+    resolve_run,
+    snapshot_context,
+)
 from manuskript.sagte_lektorat import run_sagte_lektorat
 from manuskript.wortarten_lektorat import run_wortarten_lektorat
 
@@ -208,11 +218,27 @@ def main() -> int:
     night_parser.add_argument("path", nargs="?", help="Projekt- oder 03_Content-Ordner")
     night_parser.add_argument("--context", help="Optionale Story Bible oder Kontextordner")
     night_parser.add_argument("--force", action="store_true", help="Auch aktuelle Berichte neu erzeugen")
+    night_parser.add_argument("--revision", help="Bezeichnung des unveränderlich geprüften Stands")
+    night_parser.add_argument("--next-revision", help="Zielüberarbeitung für die spätere Aufgabenliste")
     night_parser.add_argument(
         "--config",
         default=str(DEFAULT_CONFIG),
         help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
     )
+    for command, help_text in (
+        ("openproject-preview", "Zeige die geplanten OpenProject-Aufgaben eines Lektoratslaufs"),
+        ("openproject-sync", "Übertrage einen Lektoratslauf idempotent nach OpenProject"),
+    ):
+        openproject_parser = subparsers.add_parser(command, help=help_text)
+        openproject_parser.add_argument("path", help="Projektordner")
+        openproject_parser.add_argument(
+            "--run", required=True,
+            help="Laufverzeichnis oder Überarbeitungsbezeichnung (verwendet den neuesten Lauf)",
+        )
+        openproject_parser.add_argument(
+            "--config", default=str(DEFAULT_CONFIG),
+            help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
+        )
     single_parser.add_argument(
         "--output",
         help="Optionaler Zielordner oder Zielpfad für die DOCX-Ausgabe",
@@ -392,14 +418,36 @@ def main() -> int:
         uses_default_config = config_path.resolve() == DEFAULT_CONFIG.resolve()
         config = load_config(project_config if uses_default_config and project_config.is_file() else config_path)
         context_path = Path(args.context).expanduser().resolve() if args.context else None
+        revision_run = None
+        raw_exclude = config.get("nachtlauf", {}).get("exclude", [])
+        exclude = tuple(raw_exclude) if isinstance(raw_exclude, list) else ()
         try:
+            if args.revision:
+                revision_run = create_revision_run(
+                    input_path,
+                    revision=args.revision,
+                    next_revision=args.next_revision,
+                    exclude=exclude,
+                )
             results = run_night_checks(
-                input_path,
+                revision_run.snapshot_project if revision_run else input_path,
                 config,
-                force=args.force,
-                context_path=context_path,
+                force=args.force or revision_run is not None,
+                context_path=snapshot_context(revision_run, context_path) if revision_run else context_path,
+                output_root=revision_run.scene_dir if revision_run else None,
             )
-            summary = write_summary(input_path, results)
+            summary = write_summary(
+                input_path, results,
+                output=revision_run.root / "zusammenfassung.md" if revision_run else None,
+            )
+            if revision_run:
+                findings = collect_findings(revision_run.root)
+                write_findings(revision_run.root, findings)
+                failed = sum(result.status == "failed" for result in results)
+                manifest = finish_revision_run(revision_run, exclude=exclude, failed=failed)
+                cleanup_snapshot(revision_run)
+                if not manifest["source_unchanged"]:
+                    print("⚠️ Manuskript wurde während des Laufs verändert; kein sicherer Importstand.")
         except (OSError, TypeError, ValueError, RuntimeError) as error:
             print(f"❌ Nachtlauf konnte nicht gestartet werden: {error}", file=sys.stderr)
             return 1
@@ -408,6 +456,25 @@ def main() -> int:
         if failed:
             print(f"⚠️ {failed} Prüfung(en) fehlgeschlagen; Details stehen in der Zusammenfassung.")
             return 2
+        return 0
+
+    if args.command in {"openproject-preview", "openproject-sync"}:
+        project = resolve_target(args.path, repo_root=REPO_ROOT)
+        config = load_config(config_path)
+        try:
+            run_dir = resolve_run(project, args.run)
+            if args.command == "openproject-preview":
+                rendered = openproject_preview(run_dir, config)
+                output = run_dir / "openproject-vorschau.md"
+                output.write_text(rendered, encoding="utf-8")
+                print(rendered, end="")
+                print(f"Vorschau: {output}")
+            else:
+                result = openproject_sync(run_dir, config)
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+        except (OSError, TypeError, ValueError, RuntimeError) as error:
+            print(f"❌ OpenProject-Export fehlgeschlagen: {error}", file=sys.stderr)
+            return 1
         return 0
 
     if args.command == "export":
