@@ -55,6 +55,7 @@ eine Verschachtelung wie `Homestories/Homestories`.
 `http://127.0.0.1:11434` erreichbar. Für Homestories wird `llama3.1:8b` verwendet. LanguageTool
 läuft im Container `languagetool` und ist wegen der bestehenden OnlyOffice-Belegung von Port 8081
 nur über `http://127.0.0.1:8082` erreichbar. Diese Dienste werden nicht öffentlich freigegeben.
+OpenProject 14.6.3 wird über seine API v3 und Basic-Token-Authentifizierung angesprochen.
 
 Die maschinenspezifische Homestories-Konfiguration liegt außerhalb des Vaults:
 

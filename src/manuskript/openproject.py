@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import hashlib
+import base64
 from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -63,16 +64,25 @@ def preview(run_dir: Path, config: dict) -> str:
 
 
 class OpenProjectClient:
-    def __init__(self, base_url: str, token: str, *, timeout: int = 30):
+    def __init__(self, base_url: str, token: str, *, timeout: int = 30, auth_scheme: str = "basic"):
         self.base_url = base_url.rstrip("/")
         self.token = token
         self.timeout = timeout
+        self.auth_scheme = auth_scheme
+
+    def authorization(self) -> str:
+        if self.auth_scheme == "bearer":
+            return f"Bearer {self.token}"
+        if self.auth_scheme == "basic":
+            encoded = base64.b64encode(f"apikey:{self.token}".encode("utf-8")).decode("ascii")
+            return f"Basic {encoded}"
+        raise ValueError("openproject.auth_scheme muss basic oder bearer sein.")
 
     def request(self, method: str, path: str, payload: dict | None = None) -> dict:
         body = json.dumps(payload).encode("utf-8") if payload is not None else None
         request = Request(
             f"{self.base_url}{path}", data=body, method=method,
-            headers={"Authorization": f"Bearer {self.token}", "Content-Type": "application/json"},
+            headers={"Authorization": self.authorization(), "Content-Type": "application/json"},
         )
         try:
             with urlopen(request, timeout=self.timeout) as response:
@@ -172,7 +182,9 @@ def sync(run_dir: Path, config: dict, *, token: str | None = None) -> dict:
         raise ValueError("Nur vollständig erfolgreiche, unveränderte Lektoratsläufe dürfen synchronisiert werden.")
     identifier = str(settings.get("project_identifier") or manifest["project"].lower())
     project_name = str(settings.get("project_name") or manifest["project"])
-    client = OpenProjectClient(base_url, token)
+    client = OpenProjectClient(
+        base_url, token, auth_scheme=str(settings.get("auth_scheme", "basic")).lower()
+    )
     project = client.project(identifier)
     if project is None:
         if not settings.get("create_project_if_missing", True):

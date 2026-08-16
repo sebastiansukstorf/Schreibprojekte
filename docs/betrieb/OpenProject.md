@@ -85,6 +85,7 @@ Die projektbezogenen, nicht geheimen Einstellungen gehören in die Serverkonfigu
 {
   "openproject": {
     "base_url": "https://projects.sukstorf.de",
+    "auth_scheme": "basic",
     "project_identifier": "homestories",
     "project_name": "Homestories",
     "create_project_if_missing": true,
@@ -135,4 +136,5 @@ OpenProject-Zugang.
   bleiben über ihren Fingerprint erkennbar.
 
 Technische Grundlage ist die OpenProject API v3 mit Projekten, Versionen, Arbeitspaketen und
-Elternbeziehungen. Authentifiziert wird per Bearer-Token.
+Elternbeziehungen. Die eingerichtete OpenProject-Version 14.6.3 akzeptiert den API-Token über Basic
+Auth mit dem festen Benutzernamen `apikey`; der Token bleibt dabei das Passwort der API-Anfrage.

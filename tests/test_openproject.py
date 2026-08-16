@@ -8,9 +8,14 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from manuskript.openproject import preview, selected_findings, sync
+from manuskript.openproject import OpenProjectClient
 
 
 class OpenProjectPreviewTests(unittest.TestCase):
+    def test_basic_auth_uses_fixed_apikey_username(self) -> None:
+        client = OpenProjectClient("https://example.test", "abc")
+        self.assertEqual(client.authorization(), "Basic YXBpa2V5OmFiYw==")
+
     def make_run(self, root: Path) -> Path:
         run = root / "run"
         run.mkdir()
