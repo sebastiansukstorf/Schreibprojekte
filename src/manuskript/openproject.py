@@ -82,7 +82,12 @@ class OpenProjectClient:
         body = json.dumps(payload).encode("utf-8") if payload is not None else None
         request = Request(
             f"{self.base_url}{path}", data=body, method=method,
-            headers={"Authorization": self.authorization(), "Content-Type": "application/json"},
+            headers={
+                "Authorization": self.authorization(),
+                "Content-Type": "application/json",
+                "Accept": "application/hal+json",
+                "User-Agent": "Schreibprojekte/0.1 OpenProject-API",
+            },
         )
         try:
             with urlopen(request, timeout=self.timeout) as response:

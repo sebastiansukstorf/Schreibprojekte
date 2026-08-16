@@ -138,3 +138,5 @@ OpenProject-Zugang.
 Technische Grundlage ist die OpenProject API v3 mit Projekten, Versionen, Arbeitspaketen und
 Elternbeziehungen. Die eingerichtete OpenProject-Version 14.6.3 akzeptiert den API-Token über Basic
 Auth mit dem festen Benutzernamen `apikey`; der Token bleibt dabei das Passwort der API-Anfrage.
+Der Client sendet einen eindeutigen `Schreibprojekte`-User-Agent, damit die vorgeschaltete
+Cloudflare-Regel legitime API-Aufrufe von anonymen Bot-Anfragen unterscheiden kann.
