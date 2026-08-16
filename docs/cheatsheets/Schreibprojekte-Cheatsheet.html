@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Schreibprojekte – Cheat Sheet</title>
+<style>
+  @page { size: A3 landscape; margin: 0; }
+  :root {
+    --blue: #356b9f;
+    --blue-dark: #244c73;
+    --blue-light: #eaf2f9;
+    --blue-mid: #8db7df;
+    --ink: #202a33;
+    --muted: #596773;
+    --line: #a9b5bf;
+    --green: #2d7a66;
+    --orange: #b56a25;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 420mm; height: 297mm; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    color: var(--ink); background: white; font-size: 8.8pt; line-height: 1.2;
+  }
+  .sheet { width: 420mm; height: 297mm; padding: 9mm 10mm 7mm; position: relative; }
+  .sheet::after {
+    content: ""; position: absolute; right: 0; top: 0; width: 72mm; height: 40mm;
+    background: linear-gradient(135deg, transparent 0 22%, #dbeaf7 22% 45%, #b8d4ed 45% 68%, #7ca9d2 68%);
+    clip-path: polygon(15% 0, 100% 0, 100% 100%);
+  }
+  header { display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 2mm; position: relative; z-index: 1; }
+  h1 { margin: 0; font-size: 20pt; line-height: 1; font-weight: 300; color: #4b5259; letter-spacing: .1px; white-space: nowrap; }
+  h1 strong { font-weight: 800; color: var(--blue-dark); }
+  .subtitle { text-align: right; color: var(--muted); font-size: 7.5pt; margin-right: 38mm; }
+  .brand { position: absolute; right: 1mm; top: -6mm; width: 31mm; height: 27mm; color: var(--blue-dark); }
+  .brand svg { display: block; width: 100%; height: 100%; }
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; padding: 3mm 0; }
+  .flow-step { background: var(--blue-light); border-top: 2px solid var(--blue); padding: 1.5mm 3mm; min-height: 12mm; position: relative; }
+  .flow-step:not(:last-child)::after { content: "›"; position: absolute; right: -3.2mm; top: 1mm; color: var(--blue); font-size: 22pt; font-weight: 700; z-index: 2; }
+  .flow-step b { display: block; color: var(--blue); font-size: 10.5pt; }
+  .flow-step span { color: var(--muted); font-size: 7.2pt; }
+  .columns { display: grid; grid-template-columns: 1fr 1.06fr .94fr; gap: 7mm; height: 238mm; }
+  .column { min-width: 0; }
+  section { border-top: 1px solid var(--line); padding-top: 1.8mm; margin-bottom: 2.5mm; break-inside: avoid; }
+  h2 { margin: 0 0 1mm; color: var(--blue); font-size: 14.5pt; font-weight: 500; }
+  h3 { margin: 1.3mm 0 .7mm; color: var(--blue-dark); font-size: 8.8pt; text-transform: uppercase; letter-spacing: .3px; }
+  p { margin: .7mm 0 1.1mm; }
+  ul, ol { margin: .7mm 0 1mm 4mm; padding-left: 2.5mm; }
+  li { margin: .55mm 0; }
+  code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 7.2pt; }
+  .cmd { border-radius: 2mm; overflow: hidden; margin: 1mm 0 1.4mm; background: #f1f5f8; border: 1px solid #d9e2e9; }
+  .cmd-label { background: var(--blue-mid); color: white; padding: .6mm 2mm; font-family: monospace; font-size: 7.5pt; letter-spacing: .3px; }
+  .cmd code { display: block; white-space: pre-wrap; padding: 1.1mm 2mm; line-height: 1.2; }
+  .callout { border: 2px solid var(--blue); border-radius: 3mm; padding: 1.5mm 3mm; margin: 1.3mm 0; color: var(--blue-dark); background: white; }
+  .callout strong { color: var(--blue); }
+  .box { background: var(--blue-light); padding: 1.7mm 3mm; margin: 1.2mm 0; }
+  .box.green { background: #e8f4f0; border-left: 3px solid var(--green); }
+  .box.orange { background: #fff1e2; border-left: 3px solid var(--orange); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 4mm; }
+  table { border-collapse: collapse; width: 100%; font-size: 7.3pt; margin-top: 1mm; }
+  th { background: var(--blue); color: white; text-align: left; padding: 1.2mm 1.7mm; }
+  td { padding: .8mm 1.4mm; border-bottom: 1px solid #d5dce2; vertical-align: top; }
+  tr:nth-child(even) td { background: #f4f7f9; }
+  .tag { display: inline-block; padding: .45mm 1.5mm; border-radius: 10mm; background: var(--blue); color: white; font-size: 7.5pt; font-weight: 700; margin-right: 1mm; }
+  .tiny { font-size: 7pt; color: var(--muted); }
+  footer { position: absolute; left: 10mm; right: 10mm; bottom: 3.5mm; border-top: 1px solid var(--line); padding-top: 1.5mm; display: flex; justify-content: space-between; color: var(--muted); font-size: 7.5pt; }
+</style>
+</head>
+<body>
+<main class="sheet">
+  <header>
+    <h1>Schreiben, prüfen und exportieren mit <strong>Schreibprojekte :: CHEAT SHEET</strong></h1>
+    <div class="subtitle">Sebastian Sukstorf · 16.08.2026<br>Markdown-Manuskripte · DOCX-Export · lokales KI-Lektorat</div>
+    <div class="brand" aria-label="Schreibprojekte-Logo">
+      <svg viewBox="0 0 120 105" role="img" aria-labelledby="logo-title">
+        <title id="logo-title">Schreibprojekte</title>
+        <path d="M60 8 108 28v56L60 101 12 84V28Z" fill="#356b9f"/>
+        <path d="M60 17v72M24 34l31-10v62L24 76Zm72 0L65 24v62l31-10Z" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+        <path d="m72 69 20-20 7 7-20 20-11 4Z" fill="#8db7df" stroke="#244c73" stroke-width="2"/>
+        <text x="60" y="98" fill="#fff" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle">SP</text>
+      </svg>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="flow-step"><b>1 · Einrichten</b><span><code>uv sync</code> und Projekt konfigurieren</span></div>
+    <div class="flow-step"><b>2 · Schreiben</b><span>Originale bleiben unter <code>03_Content/</code></span></div>
+    <div class="flow-step"><b>3 · Prüfen</b><span>Korrektorat und spezialisierte Checks</span></div>
+    <div class="flow-step"><b>4 · Lektorieren</b><span>Szene → Teil/Akt → Gesamtroman</span></div>
+    <div class="flow-step"><b>5 · Ausgeben</b><span>Berichte unter <code>lektorat/</code>, Roman als DOCX</span></div>
+  </div>
+
+  <div class="columns">
+    <div class="column">
+      <section>
+        <h2>Start &amp; Orientierung</h2>
+        <div class="cmd"><div class="cmd-label">TERMINAL · EINMALIG</div><code>cd /Pfad/zu/Schreibprojekte
+uv sync
+uv run manuskript config</code></div>
+        <div class="box">
+          <strong>Projektstruktur</strong>
+          <pre><code>MeinProjekt/
+├── 01_Figuren/       # Story Bible
+├── 03_Content/       # Manuskript
+├── Metadaten/
+├── lektorat/         # Berichte
+└── docx/             # Exporte</code></pre>
+        </div>
+        <p><span class="tag">REGEL</span> Manuskriptdateien werden gelesen, aber von den Prüfungen niemals automatisch umgeschrieben.</p>
+      </section>
+
+      <section>
+        <h2>DOCX exportieren</h2>
+        <h3>Gesamtes Manuskript</h3>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript docx ../MeinProjekt</code></div>
+        <h3>Eigenes Ausgabeziel</h3>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript docx ../MeinProjekt \
+  --output docx/versuche</code></div>
+        <h3>Einzelne Markdown-Datei</h3>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript single \
+  ../MeinProjekt/03_Content/101.md</code></div>
+        <p class="tiny">Direktaufruf: <code>Skripte/convert-to-docx.sh ../MeinProjekt</code></p>
+      </section>
+
+      <section>
+        <h2>Spezialprüfungen</h2>
+        <table>
+          <tr><th>Prüfung</th><th>Befehl</th></tr>
+          <tr><td>Rechtschreibung, Grammatik, Zeichensetzung</td><td><code>manuskript korrektorat DATEI</code></td></tr>
+          <tr><td>„sagte“-Sprecherführung</td><td><code>manuskript lektorat DATEI</code></td></tr>
+          <tr><td>Erklärungen H–L–X</td><td><code>manuskript lektorat-hlx DATEI</code></td></tr>
+          <tr><td>Adjektive &amp; Adverbien</td><td><code>manuskript lektorat-wortarten DATEI</code></td></tr>
+        </table>
+        <p class="tiny">Bei direktem Aufruf <code>uv run</code> vor <code>manuskript</code> setzen. Berichte landen unter <code>lektorat/szene/</code>.</p>
+      </section>
+    </div>
+
+    <div class="column">
+      <section>
+        <h2>Die drei Lektoratsebenen</h2>
+        <div class="callout"><strong>Szene</strong> · Funktioniert diese Datei sprachlich, stilistisch und dramaturgisch?</div>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript lektorat-szene \
+  ../MeinProjekt/03_Content/205.md</code></div>
+        <div class="grid2 tiny">
+          <ol>
+            <li>Korrektorat</li><li>Dialogformalia</li><li>Stillektorat</li><li>Dialoglektorat</li>
+          </ol>
+          <ol start="5">
+            <li>Szenenfunktion</li><li>Perspektive</li><li>Kontinuität</li>
+          </ol>
+        </div>
+        <p class="tiny">Der Szenenbericht enthält YAML-Metadaten zu Einstieg, Ziel, Konflikt, Dynamik, Wendung, Ausgang, Ende und Funktion.</p>
+
+        <div class="callout"><strong>Teil / Akt</strong> · Funktionieren Szenenfolge, Figurenentwicklung und Dramaturgie zusammen?</div>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript lektorat-teil ../MeinProjekt \
+  --start 200 --end 299 --label teil_2</code></div>
+
+        <div class="callout"><strong>Gesamtroman</strong> · Funktioniert das Manuskript als vollständiges Werk?</div>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript lektorat-gesamt ../MeinProjekt</code></div>
+        <p><span class="tag">OPTION</span> <code>--context PFAD</code> bindet Figurenakten oder eine Story Bible ein.</p>
+      </section>
+
+      <section>
+        <h2>So sieht ein Befund aus</h2>
+        <div class="box green">
+          <strong>Fundstelle → Diagnose → Relevanz → Begründung → Empfehlung → Querverweise</strong>
+          <p>Erst wird die Wirkung beschrieben. Ersatzprosa folgt nicht ungefragt. Literarische Ellipsen, kurze Sätze und Dialogdichte dürfen Absicht sein.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ausgabeorte</h2>
+        <pre class="box"><code>lektorat/
+├── szene/   205_lektorat.md
+├── teile/   teil_2_lektorat.md
+├── gesamt/  roman_lektorat.md
+└── logs/    nachtlauf_letzter.md</code></pre>
+      </section>
+    </div>
+
+    <div class="column">
+      <section>
+        <h2>Nachtlauf</h2>
+        <p>Manuell starten; läuft im Hintergrund über alle konfigurierten Szenen in <code>03_Content</code>.</p>
+        <div class="cmd"><div class="cmd-label">TERMINAL · HINTERGRUND</div><code>Skripte/lektorat-nacht.sh ../MeinProjekt</code></div>
+        <div class="grid2">
+          <div><h3>Neu prüfen</h3><code>--force</code></div>
+          <div><h3>Story Bible</h3><code>--context PFAD</code></div>
+        </div>
+        <h3>Fortschritt verfolgen</h3>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>tail -f ../MeinProjekt/lektorat/logs/
+nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
+        <ul>
+          <li>Aktuelle Berichte werden übersprungen.</li>
+          <li>Einzelfehler stoppen den Lauf nicht.</li>
+          <li>Teil- und Gesamtlektorat bleiben bewusste Starts.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Projekt konfigurieren</h2>
+        <div class="cmd"><div class="cmd-label">.manuskript.json</div><code>{
+  "source": "03_Content",
+  "output": "docx",
+  "lektorat": {
+    "base_url": "http://SERVER:11434",
+    "model": "qwen3:8b"
+  },
+  "korrektorat": {
+    "base_url": "http://SERVER:8081",
+    "language": "de-DE"
+  },
+  "nachtlauf": {
+    "exclude": ["050.md", "100.md"],
+    "context": "01_Figuren"
+  }
+}</code></div>
+        <p class="tiny">Ollama-Port <code>11434</code> und LanguageTool-Port <code>8081</code> nur im Heimnetz oder über VPN freigeben.</p>
+      </section>
+
+      <section>
+        <h2>Wenn etwas nicht läuft</h2>
+        <table>
+          <tr><th>Symptom</th><th>Prüfen</th></tr>
+          <tr><td>Ollama nicht erreichbar</td><td><code>base_url</code>, Modell, Firewall</td></tr>
+          <tr><td>LanguageTool offline</td><td>Port <code>8081</code>, Dienststatus</td></tr>
+          <tr><td>Falsches Projekt</td><td><code>.manuskript.json</code>, Quellpfad</td></tr>
+          <tr><td>Zu großer Kontext</td><td>Bereich oder Story Bible verkleinern</td></tr>
+          <tr><td>Bericht übersprungen</td><td><code>--force</code> verwenden</td></tr>
+        </table>
+        <div class="box orange"><strong>Datenschutz:</strong> Manuskripte bleiben lokal. Bei Homeserver-Betrieb nur geschützte Netzwerkverbindungen verwenden.</div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <span>Schreibprojekte Cheat Sheet · Sebastian Sukstorf · 16.08.2026</span>
+    <span>Markdown bleibt Original · Diagnose vor Umschreibung · Quelle: README.md und LEKTORAT.md</span>
+  </footer>
+</main>
+</body>
+</html>
