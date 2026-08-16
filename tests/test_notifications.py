@@ -43,6 +43,7 @@ class NotificationTests(unittest.TestCase):
         self.assertEqual(request.full_url, "https://ntfy.example/schreibprojekte")
         self.assertEqual(request.data, "Text".encode("utf-8"))
         self.assertEqual(request.get_header("Title"), "Titel")
+        self.assertEqual(request.get_header("User-agent"), "Schreibprojekte/0.1 ntfy")
 
 
 if __name__ == "__main__":

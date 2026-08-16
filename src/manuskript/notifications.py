@@ -46,6 +46,7 @@ class NtfyNotifier:
                 "Title": title,
                 "Priority": str(priority),
                 "Tags": tags,
+                "User-Agent": "Schreibprojekte/0.1 ntfy",
             },
             method="POST",
         )
