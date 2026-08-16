@@ -333,3 +333,26 @@ Datei-/Szenenprüfungen aus. Bereits aktuelle Einzelberichte werden übersprunge
 protokolliert und der Lauf wird mit der nächsten Prüfung fortgesetzt. Logs und die letzte
 Zusammenfassung liegen unter `lektorat/logs/`. Teil-/Akt- und Gesamtromanlektorat sind nicht Teil
 des Nachtlaufs und werden weiterhin bewusst angestoßen.
+
+## Produktiver Homeserverbetrieb
+
+Im produktiven Aufbau bleiben Schreiben und Überarbeiten auf Mac, iPad und iPhone. Die Vaults
+liegen zentral auf dem NAS und werden über Nextcloud-WebDAV mit Obsidian synchronisiert. Der
+Homeserver liest denselben Bestand über NFS und erzeugt nur separate Lektoratsberichte.
+
+Für Homestories steht auf dem Homeserver der manuelle Steuerbefehl bereit:
+
+```bash
+homestories-lektorat start
+homestories-lektorat status
+homestories-lektorat log
+```
+
+Die Serverkonfiguration liegt außerhalb des Vaults. Dadurch bleiben Zugangspunkte, Modellwahl und
+maschinenspezifische Pfade von den Manuskripten und der Obsidian-Synchronisierung getrennt.
+
+Alle Ebenen verwenden konsequent den kleingeschriebenen Ergebnisordner `lektorat/`. Vor einer
+serverseitigen Änderung der Vault-Struktur muss Remotely Save auf allen Geräten pausiert werden.
+Das ist besonders auf dem Mac wichtig, weil dort `Lektorat` und `lektorat` nicht zuverlässig als
+getrennte Ordner behandelt werden. Die vollständige Betriebs- und Wiederanlaufanleitung steht in
+[Schreibprojekte auf Mac, NAS und Homeserver](docs/betrieb/Homeserver.md).

@@ -28,11 +28,11 @@
     background: linear-gradient(135deg, transparent 0 22%, #dbeaf7 22% 45%, #b8d4ed 45% 68%, #7ca9d2 68%);
     clip-path: polygon(15% 0, 100% 0, 100% 100%);
   }
-  header { display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 2mm; position: relative; z-index: 1; }
+  header { display: flex; min-height: 22mm; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 2mm; position: relative; z-index: 1; }
   h1 { margin: 0; font-size: 20pt; line-height: 1; font-weight: 300; color: #4b5259; letter-spacing: .1px; white-space: nowrap; }
   h1 strong { font-weight: 800; color: var(--blue-dark); }
-  .subtitle { text-align: right; color: var(--muted); font-size: 7.5pt; margin-right: 38mm; }
-  .brand { position: absolute; right: 0; top: -7mm; width: 34mm; height: 30mm; color: var(--blue-dark); }
+  .subtitle { text-align: right; color: var(--muted); font-size: 7.5pt; margin-right: 34mm; }
+  .brand { position: absolute; right: 0; top: -6mm; width: 30mm; height: 27mm; color: var(--blue-dark); }
   .brand svg { display: block; width: 100%; height: 100%; }
   .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; padding: 3mm 0; }
   .flow-step { background: var(--blue-light); border-top: 2px solid var(--blue); padding: 1.5mm 3mm; min-height: 12mm; position: relative; }
@@ -50,12 +50,15 @@
   code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 7.2pt; }
   .cmd { border-radius: 2mm; overflow: hidden; margin: 1mm 0 1.4mm; background: #f1f5f8; border: 1px solid #d9e2e9; }
   .cmd-label { background: var(--blue-mid); color: white; padding: .6mm 2mm; font-family: monospace; font-size: 7.5pt; letter-spacing: .3px; }
-  .cmd code { display: block; white-space: pre-wrap; padding: 1.1mm 2mm; line-height: 1.2; }
+  .cmd code { display: block; white-space: nowrap; padding: 1.1mm 2mm; line-height: 1.2; font-size: 6.2pt; }
+  .cmd-help { margin: -.4mm 0 1.2mm; color: var(--muted); font-size: 6.6pt; line-height: 1.15; }
   .callout { border: 2px solid var(--blue); border-radius: 3mm; padding: 1.5mm 3mm; margin: 1.3mm 0; color: var(--blue-dark); background: white; }
   .callout strong { color: var(--blue); }
   .box { background: var(--blue-light); padding: 1.7mm 3mm; margin: 1.2mm 0; }
   .box.green { background: #e8f4f0; border-left: 3px solid var(--green); }
   .box.orange { background: #fff1e2; border-left: 3px solid var(--orange); }
+  .hlx-key { background: #f5f0e8; border-left: 3px solid var(--orange); padding: 1.2mm 2mm; margin: -.3mm 0 1.2mm; font-size: 6.6pt; line-height: 1.2; }
+  .hlx-key b { color: var(--blue-dark); }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 4mm; }
   table { border-collapse: collapse; width: 100%; font-size: 7.3pt; margin-top: 1mm; }
   th { background: var(--blue); color: white; text-align: left; padding: 1.2mm 1.7mm; }
@@ -63,44 +66,46 @@
   tr:nth-child(even) td { background: #f4f7f9; }
   .tag { display: inline-block; padding: .45mm 1.5mm; border-radius: 10mm; background: var(--blue); color: white; font-size: 7.5pt; font-weight: 700; margin-right: 1mm; }
   .tiny { font-size: 7pt; color: var(--muted); }
+  .legacy { display: none; }
   footer { position: absolute; left: 10mm; right: 10mm; bottom: 3.5mm; border-top: 1px solid var(--line); padding-top: 1.5mm; display: flex; justify-content: space-between; color: var(--muted); font-size: 7.5pt; }
 </style>
 </head>
 <body>
 <main class="sheet">
   <header>
-    <h1>Schreiben, prüfen und exportieren mit <strong>Schreibprojekte :: CHEAT SHEET</strong></h1>
-    <div class="subtitle">Sebastian Sukstorf · 16.08.2026<br>Markdown-Manuskripte · DOCX-Export · lokales KI-Lektorat</div>
-    <div class="brand" aria-label="Schreibprojekte-Logo">
+    <h1>Tägliches Lektorat mit <strong>Schreibprojekte :: CHEAT SHEET</strong></h1>
+    <div class="subtitle">Sebastian Sukstorf · 16.08.2026<br>Diagnose · Szenenlektorat · Romanprüfung</div>
+    <div class="brand" aria-label="Logo schreiben – Manuskriptprüfung">
       <svg viewBox="0 0 120 105" role="img" aria-labelledby="logo-title">
-        <title id="logo-title">Schreibprojekte</title>
-        <path d="M60 3 111 30v47L60 104 9 77V30Z" fill="#245b8f" stroke="#173d61" stroke-width="3"/>
-        <path d="M60 8 105 32v42L60 98 15 74V32Z" fill="none" stroke="#79a9d4" stroke-width="2"/>
-        <path d="M34 24h42a7 7 0 0 1 7 7v38H41a7 7 0 0 0-7 7Z" fill="#fff" opacity=".97"/>
-        <path d="M43 35h28M43 43h25M43 51h20" stroke="#8db7df" stroke-width="3" stroke-linecap="round"/>
-        <path d="M76 19c11 5 13 15 8 25L67 65l-9 4 3-10 16-20c4-6 4-12-1-20Z" fill="#f2b84b" stroke="#173d61" stroke-width="2" stroke-linejoin="round"/>
-        <path d="m61 59 13-8" stroke="#173d61" stroke-width="2"/>
-        <rect x="20" y="72" width="80" height="20" rx="4" fill="#173d61"/>
-        <text x="60" y="85.5" fill="#fff" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" text-anchor="middle" letter-spacing=".2">schreibprojekte</text>
+        <title id="logo-title">schreiben – Manuskriptprüfung</title>
+        <path d="M60 2.5 103.301 27.5 103.301 77.5 60 102.5 16.699 77.5 16.699 27.5Z" fill="#245b8f" stroke="#173d61" stroke-width="3"/>
+        <path d="M60 7.5 98.971 30 98.971 75 60 97.5 21.029 75 21.029 30Z" fill="none" stroke="#79a9d4" stroke-width="2"/>
+        <path d="M36 21.5h41a7 7 0 0 1 7 7V68H43a7 7 0 0 0-7 7Z" fill="#fff" stroke="#173d61" stroke-width="2"/>
+        <path d="M45.5 34.5h27M45.5 42.5H69M45.5 50.5H74M45.5 58.5H65" stroke="#8db7df" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="84.5" cy="27.5" r="11" fill="#f2b84b" stroke="#173d61" stroke-width="2"/>
+        <path d="m79.5 27.5 3.5 3.5 7-8.5" fill="none" stroke="#173d61" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="25" y="74" width="70" height="19" rx="4" fill="#173d61"/>
+        <text x="60" y="87.2" fill="#fff" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">schreiben</text>
       </svg>
     </div>
   </header>
 
-  <div class="flow">
-    <div class="flow-step"><b>1 · Einrichten</b><span><code>uv sync</code> und Projekt konfigurieren</span></div>
+  <div class="flow legacy">
+    <div class="flow-step"><b>1 · Einrichten</b><span><code>uv sync</code> und Konfiguration prüfen</span></div>
     <div class="flow-step"><b>2 · Schreiben</b><span>Originale bleiben unter <code>03_Content/</code></span></div>
     <div class="flow-step"><b>3 · Prüfen</b><span>Korrektorat und spezialisierte Checks</span></div>
     <div class="flow-step"><b>4 · Lektorieren</b><span>Szene → Teil/Akt → Gesamtroman</span></div>
     <div class="flow-step"><b>5 · Ausgeben</b><span>Berichte unter <code>lektorat/</code>, Roman als DOCX</span></div>
   </div>
 
-  <div class="columns">
+  <div class="columns legacy">
     <div class="column">
       <section>
         <h2>Start &amp; Orientierung</h2>
         <div class="cmd"><div class="cmd-label">TERMINAL · EINMALIG</div><code>cd /Pfad/zu/Schreibprojekte
 uv sync
 uv run manuskript config</code></div>
+        <p class="cmd-help"><code>uv sync</code> richtet die Python-Umgebung ein. <code>manuskript config</code> zeigt Konfigurationsdatei, Standardquelle und Ausgabeordner an; es ändert nichts.</p>
         <div class="box">
           <strong>Projektstruktur</strong>
           <pre><code>MeinProjekt/
@@ -117,12 +122,15 @@ uv run manuskript config</code></div>
         <h2>DOCX exportieren</h2>
         <h3>Gesamtes Manuskript</h3>
         <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript docx ../MeinProjekt</code></div>
+        <p class="cmd-help">Exportiert alle Markdown-Dateien des Projekts in der vorgesehenen Reihenfolge als DOCX.</p>
         <h3>Eigenes Ausgabeziel</h3>
         <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript docx ../MeinProjekt \
   --output docx/versuche</code></div>
+        <p class="cmd-help"><code>--output</code> überschreibt für diesen Aufruf den konfigurierten Ausgabeordner.</p>
         <h3>Einzelne Markdown-Datei</h3>
         <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript single \
   ../MeinProjekt/03_Content/101.md</code></div>
+        <p class="cmd-help">Wandelt nur die angegebene Markdown-Datei um; das Original bleibt unverändert.</p>
         <p class="tiny">Direktaufruf: <code>Skripte/convert-to-docx.sh ../MeinProjekt</code></p>
       </section>
 
@@ -143,8 +151,8 @@ uv run manuskript config</code></div>
       <section>
         <h2>Die drei Lektoratsebenen</h2>
         <div class="callout"><strong>Szene</strong> · Funktioniert diese Datei sprachlich, stilistisch und dramaturgisch?</div>
-        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript lektorat-szene \
-  ../MeinProjekt/03_Content/205.md</code></div>
+        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript lektorat-szene ../MeinProjekt/03_Content/205.md</code></div>
+        <p class="cmd-help">Startet alle sieben Szenenmodule für genau eine Datei und schreibt einen separaten Bericht.</p>
         <div class="grid2 tiny">
           <ol>
             <li>Korrektorat</li><li>Dialogformalia</li><li>Stillektorat</li><li>Dialoglektorat</li>
@@ -158,9 +166,11 @@ uv run manuskript config</code></div>
         <div class="callout"><strong>Teil / Akt</strong> · Funktionieren Szenenfolge, Figurenentwicklung und Dramaturgie zusammen?</div>
         <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript lektorat-teil ../MeinProjekt \
   --start 200 --end 299 --label teil_2</code></div>
+        <p class="cmd-help">Prüft den nummerierten Szenenbereich als zusammenhängenden Teil; <code>--label</code> benennt den Bericht.</p>
 
         <div class="callout"><strong>Gesamtroman</strong> · Funktioniert das Manuskript als vollständiges Werk?</div>
         <div class="cmd"><div class="cmd-label">TERMINAL</div><code>uv run manuskript lektorat-gesamt ../MeinProjekt</code></div>
+        <p class="cmd-help">Analysiert das vollständige Manuskript als Werk und muss bewusst gestartet werden.</p>
         <p><span class="tag">OPTION</span> <code>--context PFAD</code> bindet Figurenakten oder eine Story Bible ein.</p>
       </section>
 
@@ -187,6 +197,7 @@ uv run manuskript config</code></div>
         <h2>Nachtlauf</h2>
         <p>Manuell starten; läuft im Hintergrund über alle konfigurierten Szenen in <code>03_Content</code>.</p>
         <div class="cmd"><div class="cmd-label">TERMINAL · HINTERGRUND</div><code>Skripte/lektorat-nacht.sh ../MeinProjekt</code></div>
+        <p class="cmd-help">Startet alle Datei- und Szenenprüfungen für <code>03_Content</code>; Teil- und Gesamtlektorat sind nicht enthalten.</p>
         <div class="grid2">
           <div><h3>Neu prüfen</h3><code>--force</code></div>
           <div><h3>Story Bible</h3><code>--context PFAD</code></div>
@@ -194,6 +205,7 @@ uv run manuskript config</code></div>
         <h3>Fortschritt verfolgen</h3>
         <div class="cmd"><div class="cmd-label">TERMINAL</div><code>tail -f ../MeinProjekt/lektorat/logs/
 nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
+        <p class="cmd-help"><code>tail -f</code> zeigt neue Logzeilen fortlaufend an; Abbruch der Anzeige mit <code>Ctrl+C</code>.</p>
         <ul>
           <li>Aktuelle Berichte werden übersprungen.</li>
           <li>Einzelfehler stoppen den Lauf nicht.</li>
@@ -202,7 +214,7 @@ nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
       </section>
 
       <section>
-        <h2>Projekt konfigurieren</h2>
+        <h2>Konfigurationsdatei bearbeiten</h2>
         <div class="cmd"><div class="cmd-label">.manuskript.json</div><code>{
   "source": "03_Content",
   "output": "docx",
@@ -219,6 +231,7 @@ nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
     "context": "01_Figuren"
   }
 }</code></div>
+        <p class="cmd-help">Die JSON-Datei legt Quellordner, Ausgabeziel, Serveradressen, Modelle und Nachtlaufoptionen fest. <code>manuskript config</code> zeigt davon nur Pfad, Quelle und Ausgabe an.</p>
         <p class="tiny">Ollama-Port <code>11434</code> und LanguageTool-Port <code>8081</code> nur im Heimnetz oder über VPN freigeben.</p>
       </section>
 
@@ -233,6 +246,123 @@ nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
           <tr><td>Bericht übersprungen</td><td><code>--force</code> verwenden</td></tr>
         </table>
         <div class="box orange"><strong>Datenschutz:</strong> Manuskripte bleiben lokal. Bei Homeserver-Betrieb nur geschützte Netzwerkverbindungen verwenden.</div>
+      </section>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="flow-step"><b>1 · Anmelden</b><span><code>ssh schreibserver</code></span></div>
+    <div class="flow-step"><b>2 · Korrigieren</b><span>Rechtschreibung und Zeichensetzung</span></div>
+    <div class="flow-step"><b>3 · Lektorieren</b><span>Dialog, Stil und Szenenfunktion</span></div>
+    <div class="flow-step"><b>4 · Bericht prüfen</b><span>Ergebnisse unter <code>lektorat/</code></span></div>
+    <div class="flow-step"><b>5 · Überarbeiten</b><span>Änderungen bewusst im Manuskript</span></div>
+  </div>
+
+  <div class="columns">
+    <div class="column">
+      <section>
+        <h2>Täglicher Schnellstart</h2>
+        <div class="cmd"><div class="cmd-label">MAC · AUF DEM HOMESERVER ANMELDEN</div><code>ssh schreibserver</code></div>
+        <p class="cmd-help">Öffnet die Shell des Homeservers. Die Manuskripte bleiben auf dem NAS; der Server liest sie über NFS.</p>
+        <div class="cmd"><div class="cmd-label">SERVER · ARBEITSORDNER UND KURZVARIABLEN</div><code>cd /home/sebastian/schreiben/Schreibprojekte</code></div>
+        <div class="cmd"><code>PROJEKT=/mnt/nfs/schreiben/Homestories</code></div>
+        <div class="cmd"><code>CONFIG=/home/sebastian/schreiben/config/Homestories.json</code></div>
+        <div class="cmd"><div class="cmd-label">VOLLSTÄNDIGES SZENENLEKTORAT · BEISPIEL 101</div><code>uv run manuskript lektorat-szene "$PROJEKT/03_Content/101.md" --config "$CONFIG"</code></div>
+        <p class="cmd-help">Der wichtigste Einzelbefehl: führt alle sieben Szenenmodule aus. Der Bericht landet unter <code>lektorat/szene/</code>; die Markdown-Datei bleibt unverändert.</p>
+        <div class="box green"><strong>Grundregel:</strong> Erst Diagnose und Befund lesen, dann selbst überarbeiten. Die Markdown-Datei bleibt bei allen Prüfungen unverändert.</div>
+      </section>
+
+      <section>
+        <h2>Gezielte Einzelprüfungen</h2>
+        <h3>Rechtschreibung und Zeichensetzung</h3>
+        <div class="cmd"><div class="cmd-label">LANGUAGETOOL</div><code>uv run manuskript korrektorat "$PROJEKT/03_Content/101.md" --config "$CONFIG"</code></div>
+        <p class="cmd-help">Findet mögliche Fehler bei Rechtschreibung, Grammatik und Zeichensetzung.</p>
+        <h3>„sagte“ und Sprecherführung</h3>
+        <div class="cmd"><div class="cmd-label">DIALOG</div><code>uv run manuskript lektorat "$PROJEKT/03_Content/101.md" --config "$CONFIG"</code></div>
+        <p class="cmd-help">Prüft, ob Sprecherzuordnungen nötig, überflüssig oder unklar sind.</p>
+        <h3>Erklärungen nach H–L–X</h3>
+        <div class="cmd"><div class="cmd-label">EXPOSITION</div><code>uv run manuskript lektorat-hlx "$PROJEKT/03_Content/101.md" --config "$CONFIG"</code></div>
+        <div class="hlx-key"><b>H · Higgins:</b> Abstrakt berichtete Information besser durch Dialog, sichtbare Handlung oder Reaktion vermitteln.<br><b>L · Leonard:</b> Notwendiger, knapper und konkreter Satz – ebenso gelungener Dialog, Handlung und Orientierung – bleibt bestehen.<br><b>X · Erklärung:</b> Satz erklärt nur noch einmal, was Dialog, Handlung oder Reaktion bereits eindeutig gezeigt haben; konkrete Doppelung muss benannt werden.</div>
+        <h3>Adjektive und Adverbien</h3>
+        <div class="cmd"><div class="cmd-label">WORTARTEN</div><code>uv run manuskript lektorat-wortarten "$PROJEKT/03_Content/101.md" --config "$CONFIG"</code></div>
+        <p class="cmd-help">Markiert auffällige Häufungen; literarische Verwendung ist nicht automatisch ein Fehler.</p>
+      </section>
+    </div>
+
+    <div class="column">
+      <section>
+        <h2>Die drei Lektoratsebenen</h2>
+        <div class="callout"><strong>1 · Datei / Szene</strong> · Sprache, Dialog, Perspektive, Kontinuität und Szenenfunktion</div>
+        <div class="cmd"><div class="cmd-label">TÄGLICH / BEI BEDARF</div><code>uv run manuskript lektorat-szene "$PROJEKT/03_Content/101.md" --config "$CONFIG"</code></div>
+        <div class="grid2 tiny"><ol><li>Korrektorat</li><li>Dialogformalia</li><li>Stillektorat</li><li>Dialoglektorat</li></ol><ol start="5"><li>Szenenfunktion</li><li>Perspektive</li><li>Kontinuität</li></ol></div>
+
+        <div class="callout"><strong>2 · Teil / Akt</strong> · Szenenfolge, Figurenentwicklung und Dramaturgie</div>
+        <div class="cmd"><div class="cmd-label">BEWUSST STARTEN</div><code>uv run manuskript lektorat-teil "$PROJEKT" --start 200 --end 299 --label teil_2 --config "$CONFIG"</code></div>
+        <p class="cmd-help"><code>--start</code> und <code>--end</code> wählen die Dateinummern; <code>--label</code> benennt den Bericht.</p>
+
+        <div class="callout"><strong>3 · Gesamtroman</strong> · Struktur, Bögen, Themen und Gesamtwirkung</div>
+        <div class="cmd"><div class="cmd-label">BEWUSST STARTEN</div><code>uv run manuskript lektorat-gesamt "$PROJEKT" --config "$CONFIG"</code></div>
+        <p class="cmd-help">Wegen Umfang und Kosten nur gezielt nach größeren Arbeitsständen starten.</p>
+      </section>
+
+      <section>
+        <h2>Wo liegt was?</h2>
+        <table>
+          <tr><th>Ort</th><th>Aufgabe</th></tr>
+          <tr><td>Mac / iPad / iPhone</td><td>Obsidian: schreiben und bearbeiten</td></tr>
+          <tr><td>NAS</td><td>Vaults unter <code>/volume1/schreiben</code></td></tr>
+          <tr><td>Nextcloud</td><td>WebDAV-Zugang für Remotely Save</td></tr>
+          <tr><td>Homeserver</td><td>Ollama, LanguageTool und Lektorat</td></tr>
+        </table>
+        <p class="tiny">Remotely Save: Endpunkt endet auf <code>/schreiben</code>; pro Vault genau einen Basisordner wie <code>Homestories</code> setzen. Vor Ordnerumbenennungen auf allen Geräten pausieren.</p>
+      </section>
+
+      <section>
+        <h2>Konfiguration kurz prüfen</h2>
+        <div class="cmd"><div class="cmd-label">NUR ANZEIGE</div><code>uv run manuskript config --config "$CONFIG"</code></div>
+        <p class="cmd-help">Zeigt Pfad der Konfiguration, Standardquelle und DOCX-Ausgabe. Erstellt und verändert keine Dateien.</p>
+      </section>
+    </div>
+
+    <div class="column">
+      <section>
+        <h2>Alle Szenen über Nacht prüfen</h2>
+        <div class="cmd"><div class="cmd-label">HINTERGRUNDLAUF STARTEN</div><code>homestories-lektorat start</code></div>
+        <p class="cmd-help">Prüft im Hintergrund alle konfigurierten Markdown-Dateien unter <code>03_Content</code>. Ein zweiter gleichzeitiger Lauf wird verhindert.</p>
+        <div class="cmd"><div class="cmd-label">STATUS PRÜFEN</div><code>homestories-lektorat status</code></div>
+        <p class="cmd-help">Zeigt, ob der Homestories-Nachtlauf gerade aktiv ist.</p>
+        <h3>Fortschritt verfolgen</h3>
+        <div class="cmd"><div class="cmd-label">LOG LIVE ANZEIGEN</div><code>homestories-lektorat log</code></div>
+        <p class="cmd-help">Beendet nur die Anzeige mit <code>Ctrl+C</code>; der Hintergrundlauf arbeitet weiter.</p>
+        <div class="box orange"><strong>Bewusst getrennt:</strong> Der Nachtlauf automatisiert Datei-/Szenenprüfungen. Teil-/Akt- und Gesamtromanlektorat werden weiterhin gezielt gestartet.</div>
+      </section>
+
+      <section>
+        <h2>Berichte finden</h2>
+        <pre class="box"><code>lektorat/
+├── szene/   205_lektorat.md
+├── teile/   teil_2_lektorat.md
+├── gesamt/  roman_lektorat.md
+└── logs/    nachtlauf_letzter.md</code></pre>
+        <div class="box green"><strong>Befundfolge:</strong> Fundstelle → Diagnose → Relevanz → Begründung → Empfehlung → Querverweise</div>
+      </section>
+
+      <section>
+        <h2>Nach der Überarbeitung</h2>
+        <div class="cmd"><div class="cmd-label">ROMAN ALS DOCX</div><code>uv run manuskript docx "$PROJEKT" --config "$CONFIG"</code></div>
+        <p class="cmd-help">Exportiert das Manuskript; die Markdown-Originale werden nicht verändert.</p>
+        <div class="cmd"><div class="cmd-label">EINZELNE DATEI ALS DOCX</div><code>uv run manuskript single "$PROJEKT/03_Content/101.md" --config "$CONFIG"</code></div>
+      </section>
+
+      <section>
+        <h2>Wenn etwas nicht läuft</h2>
+        <table>
+          <tr><th>Symptom</th><th>Prüfen</th></tr>
+          <tr><td>Ollama nicht erreichbar</td><td><code>base_url</code>, Modell, Netzwerk</td></tr>
+          <tr><td>LanguageTool offline</td><td>lokalen Port <code>8082</code>, Containerstatus</td></tr>
+          <tr><td>Falsches Projekt</td><td>Pfad und <code>.manuskript.json</code></td></tr>
+          <tr><td>Bericht übersprungen</td><td><code>--force</code> verwenden</td></tr>
+        </table>
       </section>
     </div>
   </div>

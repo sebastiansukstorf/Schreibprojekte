@@ -275,6 +275,17 @@ Die Ausschlüsse sind Dateinamen oder Glob-Muster relativ zu `03_Content`. Ein e
 Beim Nachtlauf wird automatisch die `.manuskript.json` im angegebenen Projekt verwendet, sofern
 nicht ausdrücklich eine andere Datei mit `--config` gewählt wurde.
 
+### Betrieb mit Mac, NAS, Nextcloud und Homeserver
+
+Die produktive Aufteilung, die WebDAV- und NFS-Pfade, die separate Serverkonfiguration, der
+Homestories-Nachtlauf sowie die Regeln für konfliktfreie Ordneränderungen sind unter
+[Schreibprojekte auf Mac, NAS und Homeserver](docs/betrieb/Homeserver.md) dokumentiert.
+
+Für die eingerichtete Homestories-Umgebung wird der Nachtlauf nach der SSH-Anmeldung mit
+`homestories-lektorat start` gestartet. Status und Log zeigt `homestories-lektorat status`
+beziehungsweise `homestories-lektorat log`. Ergebnisse liegen ausschließlich unter dem
+kleingeschriebenen Projektordner `lektorat/`.
+
 ### Direkter Aufruf
 
 ```bash
