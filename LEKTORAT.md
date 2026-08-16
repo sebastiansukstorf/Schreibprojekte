@@ -343,10 +343,15 @@ Homeserver liest denselben Bestand über NFS und erzeugt nur separate Lektoratsb
 Für Homestories steht auf dem Homeserver der manuelle Steuerbefehl bereit:
 
 ```bash
-homestories-lektorat start
+homestories-lektorat start 4 5
 homestories-lektorat status
 homestories-lektorat log
+homestories-lektorat preview 4
+homestories-lektorat sync 4
 ```
+
+`start 4 5` prüft den eingefrorenen Stand 4 und kennzeichnet Überarbeitung 5 als Ziel der späteren
+OpenProject-Aufgaben. `preview` ist immer der letzte nicht schreibende Kontrollschritt vor `sync`.
 
 Die Serverkonfiguration liegt außerhalb des Vaults. Dadurch bleiben Zugangspunkte, Modellwahl und
 maschinenspezifische Pfade von den Manuskripten und der Obsidian-Synchronisierung getrennt.

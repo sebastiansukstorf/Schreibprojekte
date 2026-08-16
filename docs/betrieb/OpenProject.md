@@ -1,5 +1,19 @@
 # Lektoratsbefunde in OpenProject
 
+## Verifizierter Ist-Stand
+
+- Instanz: `https://projects.sukstorf.de`
+- OpenProject: 14.6.3, API v3
+- dauerhaftes Projekt: `Homestories`, ID 6, Kennung `homestories`, nicht öffentlich
+- Arbeitspakettyp: `Aufgabe`
+- Authentifizierung: API-Token über Basic Auth mit Benutzername `apikey`
+- Token-Datei: `/home/sebastian/.config/schreibprojekte/openproject.env`, Dateimodus `600`
+- Cloudflare: API-Aufrufe verwenden den eindeutigen User-Agent `Schreibprojekte/0.1 OpenProject-API`
+
+Die Verbindung, Projektsuche, Typabfrage und Projektanlage wurden mit dem produktiven Python-Client
+erfolgreich geprüft. Versionen und Befundaufgaben werden erst nach einem abgeschlossenen
+Revisionslauf und bestätigter Vorschau erzeugt.
+
 ## Zielbild
 
 `Homestories` bleibt ein dauerhaftes OpenProject-Projekt. Für jede neue Arbeitsrunde wird eine
@@ -97,9 +111,10 @@ Die projektbezogenen, nicht geheimen Einstellungen gehören in die Serverkonfigu
 }
 ```
 
-`project_identifier` ist die stabile, kleingeschriebene OpenProject-Kennung. Das Projekt wird nur
-angelegt, wenn es noch nicht existiert. Danach werden neue Überarbeitungen als Versionen desselben
-Projekts geführt.
+`project_identifier` ist die stabile, kleingeschriebene OpenProject-Kennung. Das Projekt existiert
+bereits und wird beim Sync wiederverwendet. Bei weiteren Romanprojekten kann derselbe Client ein
+fehlendes, nicht öffentliches Projekt anlegen. Neue Überarbeitungen werden als Versionen des
+jeweiligen dauerhaften Projekts geführt.
 
 ## API-Zugang sicher hinterlegen
 

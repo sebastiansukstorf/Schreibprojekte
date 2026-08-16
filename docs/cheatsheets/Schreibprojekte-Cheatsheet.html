@@ -313,8 +313,9 @@ nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
           <tr><td>NAS</td><td>Vaults unter <code>/volume1/schreiben</code></td></tr>
           <tr><td>Nextcloud</td><td>WebDAV-Zugang für Remotely Save</td></tr>
           <tr><td>Homeserver</td><td>Ollama, LanguageTool und Lektorat</td></tr>
+          <tr><td>OpenProject</td><td>Versionen und Aufgaben für die Überarbeitung</td></tr>
         </table>
-        <p class="tiny">Remotely Save: Endpunkt endet auf <code>/schreiben</code>; pro Vault genau einen Basisordner wie <code>Homestories</code> setzen. Vor Ordnerumbenennungen auf allen Geräten pausieren.</p>
+        <p class="tiny">Remotely Save: Endpunkt endet auf <code>/schreiben</code>; pro Vault genau einen Basisordner wie <code>Homestories</code> setzen. Vor Ordnerumbenennungen auf allen Geräten pausieren. OpenProject-Token nur auf dem Homeserver unter <code>~/.config/schreibprojekte/</code> speichern.</p>
       </section>
 
       <section>
@@ -336,7 +337,7 @@ nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
         <p class="cmd-help">Beendet nur die Anzeige mit <code>Ctrl+C</code>; der Hintergrundlauf arbeitet weiter.</p>
         <div class="cmd"><div class="cmd-label">OPENPROJECT · ERST VORSCHAU</div><code>homestories-lektorat preview 4</code></div>
         <div class="cmd"><div class="cmd-label">OPENPROJECT · DANACH ÜBERTRAGEN</div><code>homestories-lektorat sync 4</code></div>
-        <p class="cmd-help">Die Vorschau verändert nichts. Der Sync legt Projektversion, Szenenaufgaben und zeilenspezifische Unteraufgaben idempotent an.</p>
+        <p class="cmd-help">Die Vorschau verändert nichts. Der Sync nutzt das nicht öffentliche Projekt <code>Homestories</code> und legt Version, Szenenaufgaben und zeilenspezifische Unteraufgaben idempotent an.</p>
         <div class="box orange"><strong>Bewusst getrennt:</strong> Der Nachtlauf automatisiert Datei-/Szenenprüfungen. Teil-/Akt- und Gesamtromanlektorat werden weiterhin gezielt gestartet.</div>
       </section>
 

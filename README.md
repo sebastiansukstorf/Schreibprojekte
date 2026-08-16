@@ -281,8 +281,9 @@ Die produktive Aufteilung, die WebDAV- und NFS-Pfade, die separate Serverkonfigu
 Homestories-Nachtlauf sowie die Regeln für konfliktfreie Ordneränderungen sind unter
 [Schreibprojekte auf Mac, NAS und Homeserver](docs/betrieb/Homeserver.md) dokumentiert.
 
-Für die eingerichtete Homestories-Umgebung wird der Nachtlauf nach der SSH-Anmeldung mit
-`homestories-lektorat start` gestartet. Status und Log zeigt `homestories-lektorat status`
+Für die eingerichtete Homestories-Umgebung wird ein abgeschlossener Stand nach der SSH-Anmeldung
+beispielsweise mit `homestories-lektorat start 4 5` geprüft. Die erste Zahl benennt den geprüften
+Stand, die zweite die Zielüberarbeitung. Status und Log zeigt `homestories-lektorat status`
 beziehungsweise `homestories-lektorat log`. Ergebnisse liegen ausschließlich unter dem
 kleingeschriebenen Projektordner `lektorat/`.
 
