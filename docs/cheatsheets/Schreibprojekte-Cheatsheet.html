@@ -208,6 +208,7 @@ uv run manuskript config</code></div>
         <ul>
           <li>Fertige Berichte werden bei Wiederaufnahme übersprungen.</li>
           <li>Einzelfehler stoppen den Lauf nicht.</li>
+          <li>ntfy meldet Start, Aktfortschritt, Fehler und Abschluss ans iPhone.</li>
           <li>Teil- und Gesamtlektorat bleiben bewusste Starts.</li>
         </ul>
       </section>
@@ -313,6 +314,7 @@ uv run manuskript config</code></div>
           <tr><td>Nextcloud</td><td>WebDAV-Zugang für Remotely Save</td></tr>
           <tr><td>Homeserver</td><td>Ollama, LanguageTool und Lektorat</td></tr>
           <tr><td>OpenProject</td><td>Versionen und Aufgaben für die Überarbeitung</td></tr>
+          <tr><td>ntfy-App</td><td>Push-Status über Topic <code>schreibprojekte</code></td></tr>
         </table>
         <p class="tiny">Remotely Save: Endpunkt endet auf <code>/schreiben</code>; pro Vault genau einen Basisordner wie <code>Homestories</code> setzen. Vor Ordnerumbenennungen auf allen Geräten pausieren. OpenProject-Token nur auf dem Homeserver unter <code>~/.config/schreibprojekte/</code> speichern.</p>
       </section>
@@ -336,6 +338,7 @@ uv run manuskript config</code></div>
         <p class="cmd-help">Beendet nur die Anzeige mit <code>Ctrl+C</code>; der Hintergrundlauf arbeitet weiter.</p>
         <div class="cmd"><div class="cmd-label">NACH PROZESS- ODER SERVERABBRUCH</div><code>homestories-lektorat resume 4</code></div>
         <p class="cmd-help">Setzt dieselbe eingefrorene Arbeitskopie fort; fertige Prüfungen werden übersprungen.</p>
+        <p class="cmd-help"><strong>iPhone:</strong> ntfy meldet Start, Aktabschluss, Fehler und Laufende automatisch über <code>schreibprojekte</code>.</p>
         <div class="cmd"><div class="cmd-label">OPENPROJECT · ERST VORSCHAU</div><code>homestories-lektorat preview 4</code></div>
         <div class="cmd"><div class="cmd-label">OPENPROJECT · DANACH ÜBERTRAGEN</div><code>homestories-lektorat sync 4</code></div>
         <p class="cmd-help">Die Vorschau verändert nichts. Der Sync nutzt das nicht öffentliche Projekt <code>Homestories</code> und legt Version, Szenenaufgaben und zeilenspezifische Unteraufgaben idempotent an.</p>

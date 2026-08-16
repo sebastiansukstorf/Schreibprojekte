@@ -10,6 +10,7 @@ from manuskript.hlx_lektorat import run_hlx_lektorat
 from manuskript.findings import collect_findings, write_findings
 from manuskript.korrektorat import run_korrektorat
 from manuskript.nachtlauf import run_night_checks, write_summary
+from manuskript.notifications import NtfyNotifier, act_number
 from manuskript.openproject import preview as openproject_preview
 from manuskript.openproject import sync as openproject_sync
 from manuskript.redaktion import run_redaktion
@@ -422,6 +423,7 @@ def main() -> int:
         config = load_config(project_config if uses_default_config and project_config.is_file() else config_path)
         context_path = Path(args.context).expanduser().resolve() if args.context else None
         revision_run = None
+        notifier = NtfyNotifier.from_config(config)
         raw_exclude = config.get("nachtlauf", {}).get("exclude", [])
         exclude = tuple(raw_exclude) if isinstance(raw_exclude, list) else ()
         try:
@@ -436,12 +438,36 @@ def main() -> int:
                     next_revision=args.next_revision,
                     exclude=exclude,
                 )
+            action = "fortgesetzt" if args.resume else "gestartet"
+            run_label = revision_run.revision if revision_run else "ohne Revisionsbindung"
+            if notifier:
+                notifier.send(
+                    f"{project_root.name}: Nachtlauf {action}",
+                    f"Stand {run_label} · Datei- und Szenenprüfungen laufen.",
+                    tags="books,rocket" if not args.resume else "books,arrow_forward",
+                )
+
+            def notify_scene(index, total, source, scene_results, act_complete):
+                if not notifier or not act_complete:
+                    return
+                completed = sum(item.status == "completed" for item in scene_results)
+                failed_scene = sum(item.status == "failed" for item in scene_results)
+                if completed == 0 and failed_scene == 0:
+                    return
+                act = act_number(source)
+                notifier.send(
+                    f"{project_root.name}: Akt {act} abgeschlossen" if act is not None else f"{project_root.name}: Zwischenstand",
+                    f"{index} von {total} Szenen bearbeitet · {failed_scene} Fehler in der letzten Szene.",
+                    priority=4 if failed_scene else 3,
+                    tags="books,warning" if failed_scene else "books,white_check_mark",
+                )
             results = run_night_checks(
                 revision_run.snapshot_project if revision_run else input_path,
                 config,
                 force=args.force or (revision_run is not None and not args.resume),
                 context_path=snapshot_context(revision_run, context_path) if revision_run else context_path,
                 output_root=revision_run.scene_dir if revision_run else None,
+                scene_completed=notify_scene,
             )
             summary = write_summary(
                 input_path, results,
@@ -457,9 +483,21 @@ def main() -> int:
                 if not manifest["source_unchanged"]:
                     print("⚠️ Manuskript wurde während des Laufs verändert; kein sicherer Importstand.")
         except (OSError, TypeError, ValueError, RuntimeError) as error:
+            if notifier:
+                notifier.send(
+                    f"{project_root.name}: Nachtlauf abgebrochen",
+                    str(error), priority=5, tags="books,rotating_light",
+                )
             print(f"❌ Nachtlauf konnte nicht gestartet werden: {error}", file=sys.stderr)
             return 1
         failed = sum(result.status == "failed" for result in results)
+        if notifier:
+            notifier.send(
+                f"{project_root.name}: Nachtlauf beendet",
+                f"Stand {run_label} · {len(results) - failed} Prüfungen erfolgreich/übersprungen · {failed} fehlgeschlagen.",
+                priority=4 if failed else 3,
+                tags="books,warning" if failed else "books,tada",
+            )
         print(f"Nachtlauf abgeschlossen. Zusammenfassung: {summary}")
         if failed:
             print(f"⚠️ {failed} Prüfung(en) fehlgeschlagen; Details stehen in der Zusammenfassung.")

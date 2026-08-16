@@ -7,6 +7,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
+from manuskript.notifications import act_number
+
 from manuskript.hlx_lektorat import default_report_path as hlx_report_path
 from manuskript.hlx_lektorat import run_hlx_lektorat
 from manuskript.korrektorat import default_report_path as korrektur_report_path
@@ -75,6 +77,7 @@ def run_night_checks(
     context_path: Path | None = None,
     output_root: Path | None = None,
     progress: Callable[[str], None] = print,
+    scene_completed: Callable[[int, int, Path, list[CheckResult], bool], None] | None = None,
 ) -> list[CheckResult]:
     """Fuehre alle Szenenpruefungen aus und fahre nach Einzelfehlern fort."""
     night_config = config.get("nachtlauf", {})
@@ -187,6 +190,9 @@ def run_night_checks(
                 written = report
             progress(f"  ✓ {name}: {written}")
             results.append(CheckResult(source, name, "completed", report=written))
+        if scene_completed:
+            next_act = act_number(files[index]) if index < total else None
+            scene_completed(index, total, source, results[-len(checks):], act_number(source) != next_act)
     return results
 
 

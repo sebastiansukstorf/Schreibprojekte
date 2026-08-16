@@ -97,6 +97,10 @@ verändert OpenProject nicht; erst `sync` legt Aufgaben an. Details stehen
 unter [Lektoratsbefunde in OpenProject](OpenProject.md). Teil-/Akt- und Gesamtromanlektorat bleiben
 bewusste Einzelstarts.
 
+Der selbst gehostete Dienst `https://ntfy.sukstorf.de` sendet Statusmeldungen des Nachtlaufs an
+das private Topic `schreibprojekte`. Details zu Portainer-Stack, iPhone-App und Token stehen unter
+[Push-Benachrichtigungen mit ntfy](Benachrichtigungen.md).
+
 ## Ergebnisstruktur
 
 Alle neuen Berichte verwenden ausschließlich die kleingeschriebene Struktur:

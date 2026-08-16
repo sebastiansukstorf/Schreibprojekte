@@ -356,6 +356,11 @@ OpenProject-Aufgaben. Nach einem Abbruch setzt `resume 4` denselben Lauf fort un
 bereits fertige Prüfungen. `preview` ist immer der letzte nicht schreibende Kontrollschritt vor
 `sync`.
 
+Der produktive Nachtlauf kann Start, Wiederaufnahme, abgeschlossene Akte, Abbruch und Abschluss
+an das private ntfy-Topic `schreibprojekte` senden. Versandfehler werden nur protokolliert und
+unterbrechen keine Prüfung. Einrichtung und Token-Ablage stehen unter
+[Push-Benachrichtigungen mit ntfy](docs/betrieb/Benachrichtigungen.md).
+
 Die Serverkonfiguration liegt außerhalb des Vaults. Dadurch bleiben Zugangspunkte, Modellwahl und
 maschinenspezifische Pfade von den Manuskripten und der Obsidian-Synchronisierung getrennt.
 
