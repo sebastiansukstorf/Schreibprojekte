@@ -284,7 +284,8 @@ Homestories-Nachtlauf sowie die Regeln für konfliktfreie Ordneränderungen sind
 Für die eingerichtete Homestories-Umgebung wird ein abgeschlossener Stand nach der SSH-Anmeldung
 beispielsweise mit `homestories-lektorat start 4 5` geprüft. Die erste Zahl benennt den geprüften
 Stand, die zweite die Zielüberarbeitung. Status und Log zeigt `homestories-lektorat status`
-beziehungsweise `homestories-lektorat log`. Ergebnisse liegen ausschließlich unter dem
+beziehungsweise `homestories-lektorat log`. Nach einem Abbruch setzt
+`homestories-lektorat resume 4` denselben Lauf fort. Ergebnisse liegen ausschließlich unter dem
 kleingeschriebenen Projektordner `lektorat/`.
 
 ### Überarbeitungsstände nach OpenProject übertragen
@@ -296,6 +297,7 @@ bewusster Sync erzeugen daraus hierarchische OpenProject-Arbeitspakete.
 
 ```bash
 uv run manuskript lektorat-nacht ../MeinProjekt --revision 4 --next-revision 5
+uv run manuskript lektorat-nacht ../MeinProjekt --resume 4
 uv run manuskript openproject-preview ../MeinProjekt --run 4
 uv run manuskript openproject-sync ../MeinProjekt --run 4
 ```

@@ -71,6 +71,33 @@ class NachtlaufTests(unittest.TestCase):
             self.assertTrue(summary.is_file())
             self.assertIn("Fehlgeschlagen: 1", summary.read_text(encoding="utf-8"))
 
+    def test_revision_reports_become_visible_only_after_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp).resolve()
+            content = project / "03_Content"
+            output = project / "run" / "szene"
+            content.mkdir()
+            (content / "101.md").write_text("Text", encoding="utf-8")
+
+            def success(path, *args, **kwargs):
+                target = Path(kwargs["output"])
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("fertig", encoding="utf-8")
+                return target
+
+            with (
+                patch("manuskript.nachtlauf.run_korrektorat", side_effect=success),
+                patch("manuskript.nachtlauf.run_sagte_lektorat", side_effect=success),
+                patch("manuskript.nachtlauf.run_hlx_lektorat", side_effect=success),
+                patch("manuskript.nachtlauf.run_wortarten_lektorat", side_effect=success),
+                patch("manuskript.nachtlauf.run_redaktion", side_effect=success),
+            ):
+                results = run_night_checks(project, {}, output_root=output, progress=lambda _: None)
+
+            self.assertEqual(sum(item.status == "completed" for item in results), 5)
+            self.assertFalse(list(output.glob("*.partial")))
+            self.assertEqual(len(list(output.glob("*.md"))), 5)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -84,13 +84,16 @@ Den revisionsgebundenen Nachtlauf und die OpenProject-Übergabe bedienen:
 homestories-lektorat start 4 5
 homestories-lektorat status
 homestories-lektorat log
+homestories-lektorat resume 4
 homestories-lektorat preview 4
 homestories-lektorat sync 4
 ```
 
 `start 4 5` prüft den abgeschlossenen Stand 4 und bereitet Aufgaben für Überarbeitung 5 vor.
 `status` meldet, ob der Prozess läuft. `log` zeigt das aktuelle Log fortlaufend; `Ctrl+C` beendet
-nur die Anzeige. `preview` verändert OpenProject nicht; erst `sync` legt Aufgaben an. Details stehen
+nur die Anzeige. Nach einem Prozess-, Container- oder Serverabbruch setzt `resume 4` denselben
+Lauf auf seiner eingefrorenen Arbeitskopie fort und überspringt fertige Prüfungen. `preview`
+verändert OpenProject nicht; erst `sync` legt Aufgaben an. Details stehen
 unter [Lektoratsbefunde in OpenProject](OpenProject.md). Teil-/Akt- und Gesamtromanlektorat bleiben
 bewusste Einzelstarts.
 

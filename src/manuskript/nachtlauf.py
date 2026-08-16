@@ -96,23 +96,35 @@ def run_night_checks(
         common = config.get("lektorat", {})
         redaktion = config.get("redaktion", {})
         scene = config.get("szene_lektorat", {})
+        final_reports = {
+            "korrektorat": output_root / f"{source.stem}-korrektorat.md" if output_root else korrektur_report_path(source),
+            "sagte": output_root / f"{source.stem}-sagte-lektorat.md" if output_root else sagte_report_path(source),
+            "hlx": output_root / f"{source.stem}-hlx-lektorat.md" if output_root else hlx_report_path(source),
+            "wortarten": output_root / f"{source.stem}-adjektive-adverbien-lektorat.md" if output_root else wortarten_report_path(source),
+            "szenenlektorat": output_root / f"{source.stem}_lektorat.md" if output_root else scene_report_path(source),
+        }
+
+        def working_path(name: str) -> Path | None:
+            report = final_reports[name]
+            return report.with_suffix(report.suffix + ".partial") if output_root else None
+
         checks = (
             (
                 "korrektorat",
-                output_root / f"{source.stem}-korrektorat.md" if output_root else korrektur_report_path(source),
+                final_reports["korrektorat"],
                 lambda: run_korrektorat(
                     source,
-                    output=output_root / f"{source.stem}-korrektorat.md" if output_root else None,
+                    output=working_path("korrektorat"),
                     base_url=config.get("korrektorat", {}).get("base_url", "http://127.0.0.1:8081"),
                     language=config.get("korrektorat", {}).get("language", "de-DE"),
                 ),
             ),
             (
                 "sagte",
-                output_root / f"{source.stem}-sagte-lektorat.md" if output_root else sagte_report_path(source),
+                final_reports["sagte"],
                 lambda: run_sagte_lektorat(
                     source,
-                    output=output_root / f"{source.stem}-sagte-lektorat.md" if output_root else None,
+                    output=working_path("sagte"),
                     base_url=common.get("base_url", "http://127.0.0.1:11434"),
                     model=common.get("model", "qwen3:8b"),
                     context_lines=int(common.get("context_lines", 4)),
@@ -121,10 +133,10 @@ def run_night_checks(
             ),
             (
                 "hlx",
-                output_root / f"{source.stem}-hlx-lektorat.md" if output_root else hlx_report_path(source),
+                final_reports["hlx"],
                 lambda: run_hlx_lektorat(
                     source,
-                    output=output_root / f"{source.stem}-hlx-lektorat.md" if output_root else None,
+                    output=working_path("hlx"),
                     base_url=_setting(config, "hlx_lektorat", "base_url", "http://127.0.0.1:11434"),
                     model=_setting(config, "hlx_lektorat", "model", "qwen3:8b"),
                     context_lines=int(_setting(config, "hlx_lektorat", "context_lines", 2)),
@@ -133,10 +145,10 @@ def run_night_checks(
             ),
             (
                 "wortarten",
-                output_root / f"{source.stem}-adjektive-adverbien-lektorat.md" if output_root else wortarten_report_path(source),
+                final_reports["wortarten"],
                 lambda: run_wortarten_lektorat(
                     source,
-                    output=output_root / f"{source.stem}-adjektive-adverbien-lektorat.md" if output_root else None,
+                    output=working_path("wortarten"),
                     base_url=_setting(config, "wortarten_lektorat", "base_url", "http://127.0.0.1:11434"),
                     model=_setting(config, "wortarten_lektorat", "model", "qwen3:8b"),
                     batch_size=int(_setting(config, "wortarten_lektorat", "batch_size", 8)),
@@ -144,11 +156,11 @@ def run_night_checks(
             ),
             (
                 "szenenlektorat",
-                output_root / f"{source.stem}_lektorat.md" if output_root else scene_report_path(source),
+                final_reports["szenenlektorat"],
                 lambda: run_redaktion(
                     source,
                     level="szene",
-                    output=output_root / f"{source.stem}_lektorat.md" if output_root else None,
+                    output=working_path("szenenlektorat"),
                     context_path=context_path,
                     base_url=scene.get("base_url", redaktion.get("base_url", common.get("base_url", "http://127.0.0.1:11434"))),
                     model=scene.get("model", redaktion.get("model", common.get("model", "qwen3:8b"))),
@@ -169,6 +181,10 @@ def run_night_checks(
                 progress(f"  ✗ {name}: {error}")
                 results.append(CheckResult(source, name, "failed", error=str(error)))
                 continue
+            if output_root:
+                written = Path(written)
+                written.replace(report)
+                written = report
             progress(f"  ✓ {name}: {written}")
             results.append(CheckResult(source, name, "completed", report=written))
     return results

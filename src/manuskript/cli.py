@@ -17,6 +17,7 @@ from manuskript.revision import (
     cleanup_snapshot,
     create_revision_run,
     finish_revision_run,
+    load_revision_run,
     resolve_run,
     snapshot_context,
 )
@@ -218,7 +219,9 @@ def main() -> int:
     night_parser.add_argument("path", nargs="?", help="Projekt- oder 03_Content-Ordner")
     night_parser.add_argument("--context", help="Optionale Story Bible oder Kontextordner")
     night_parser.add_argument("--force", action="store_true", help="Auch aktuelle Berichte neu erzeugen")
-    night_parser.add_argument("--revision", help="Bezeichnung des unveränderlich geprüften Stands")
+    revision_group = night_parser.add_mutually_exclusive_group()
+    revision_group.add_argument("--revision", help="Bezeichnung des unveränderlich geprüften Stands")
+    revision_group.add_argument("--resume", help="Unvollständigen Lauf dieses Stands fortsetzen")
     night_parser.add_argument("--next-revision", help="Zielüberarbeitung für die spätere Aufgabenliste")
     night_parser.add_argument(
         "--config",
@@ -422,7 +425,11 @@ def main() -> int:
         raw_exclude = config.get("nachtlauf", {}).get("exclude", [])
         exclude = tuple(raw_exclude) if isinstance(raw_exclude, list) else ()
         try:
-            if args.revision:
+            if args.resume and args.next_revision:
+                raise ValueError("--next-revision kann bei --resume nicht geändert werden.")
+            if args.resume:
+                revision_run = load_revision_run(input_path, args.resume)
+            elif args.revision:
                 revision_run = create_revision_run(
                     input_path,
                     revision=args.revision,
@@ -432,7 +439,7 @@ def main() -> int:
             results = run_night_checks(
                 revision_run.snapshot_project if revision_run else input_path,
                 config,
-                force=args.force or revision_run is not None,
+                force=args.force or (revision_run is not None and not args.resume),
                 context_path=snapshot_context(revision_run, context_path) if revision_run else context_path,
                 output_root=revision_run.scene_dir if revision_run else None,
             )
@@ -445,7 +452,8 @@ def main() -> int:
                 write_findings(revision_run.root, findings)
                 failed = sum(result.status == "failed" for result in results)
                 manifest = finish_revision_run(revision_run, exclude=exclude, failed=failed)
-                cleanup_snapshot(revision_run)
+                if manifest["status"] == "complete":
+                    cleanup_snapshot(revision_run)
                 if not manifest["source_unchanged"]:
                     print("⚠️ Manuskript wurde während des Laufs verändert; kein sicherer Importstand.")
         except (OSError, TypeError, ValueError, RuntimeError) as error:

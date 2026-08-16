@@ -122,6 +122,35 @@ def finish_revision_run(run: RevisionRun, *, exclude: tuple[str, ...], failed: i
     return manifest
 
 
+def load_revision_run(project: Path, value: str) -> RevisionRun:
+    """Lade einen unvollstaendigen Lauf samt unveraenderter Arbeitskopie."""
+    project = project.resolve().parent if project.resolve().name == "03_Content" else project.resolve()
+    root = resolve_run(project, value)
+    manifest_path = root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("status") == "complete":
+        raise ValueError(f"Lektoratslauf ist bereits vollständig: {root}")
+    run_id = str(manifest["run_id"])
+    snapshot_project = project / "lektorat" / ".arbeitskopien" / run_id
+    if not (snapshot_project / "03_Content").is_dir():
+        raise ValueError(f"Arbeitskopie für die Wiederaufnahme fehlt: {snapshot_project}")
+    manifest["resumed_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
+    manifest["resume_count"] = int(manifest.get("resume_count", 0)) + 1
+    manifest["status"] = "running"
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return RevisionRun(
+        project=project,
+        revision=str(manifest["revision"]),
+        next_revision=str(manifest["next_revision"]),
+        run_id=run_id,
+        root=root,
+        scene_dir=root / "szene",
+        manifest_path=manifest_path,
+        digest=str(manifest["source_digest"]),
+        snapshot_project=snapshot_project,
+    )
+
+
 def cleanup_snapshot(run: RevisionRun) -> None:
     if run.snapshot_project.is_dir():
         shutil.rmtree(run.snapshot_project)

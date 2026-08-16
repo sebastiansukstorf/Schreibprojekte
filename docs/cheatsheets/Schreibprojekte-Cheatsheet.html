@@ -195,19 +195,18 @@ uv run manuskript config</code></div>
     <div class="column">
       <section>
         <h2>Nachtlauf</h2>
-        <p>Manuell starten; läuft im Hintergrund über alle konfigurierten Szenen in <code>03_Content</code>.</p>
-        <div class="cmd"><div class="cmd-label">TERMINAL · HINTERGRUND</div><code>Skripte/lektorat-nacht.sh ../MeinProjekt</code></div>
-        <p class="cmd-help">Startet alle Datei- und Szenenprüfungen für <code>03_Content</code>; Teil- und Gesamtlektorat sind nicht enthalten.</p>
+        <p>Homestories auf dem Homeserver revisionsgebunden prüfen.</p>
+        <div class="cmd"><div class="cmd-label">STAND 4 → ÜBERARBEITUNG 5</div><code>homestories-lektorat start 4 5</code></div>
+        <p class="cmd-help">Friert Stand 4 ein und startet alle Datei- und Szenenprüfungen im Hintergrund.</p>
+        <div class="cmd"><div class="cmd-label">NACH ABBRUCH</div><code>homestories-lektorat resume 4</code></div>
+        <p class="cmd-help">Verwendet dieselbe Arbeitskopie und führt nur fehlende Prüfungen erneut aus.</p>
         <div class="grid2">
-          <div><h3>Neu prüfen</h3><code>--force</code></div>
-          <div><h3>Story Bible</h3><code>--context PFAD</code></div>
+          <div><h3>Status</h3><code>homestories-lektorat status</code></div>
+          <div><h3>Log</h3><code>homestories-lektorat log</code></div>
         </div>
-        <h3>Fortschritt verfolgen</h3>
-        <div class="cmd"><div class="cmd-label">TERMINAL</div><code>tail -f ../MeinProjekt/lektorat/logs/
-nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
-        <p class="cmd-help"><code>tail -f</code> zeigt neue Logzeilen fortlaufend an; Abbruch der Anzeige mit <code>Ctrl+C</code>.</p>
+        <p class="cmd-help"><code>log</code> zeigt neue Zeilen fortlaufend; <code>Ctrl+C</code> beendet nur die Anzeige, nicht den Lauf.</p>
         <ul>
-          <li>Aktuelle Berichte werden übersprungen.</li>
+          <li>Fertige Berichte werden bei Wiederaufnahme übersprungen.</li>
           <li>Einzelfehler stoppen den Lauf nicht.</li>
           <li>Teil- und Gesamtlektorat bleiben bewusste Starts.</li>
         </ul>
@@ -335,6 +334,8 @@ nachtlauf-YYYYMMDD-HHMMSS.log</code></div>
         <h3>Fortschritt verfolgen</h3>
         <div class="cmd"><div class="cmd-label">LOG LIVE ANZEIGEN</div><code>homestories-lektorat log</code></div>
         <p class="cmd-help">Beendet nur die Anzeige mit <code>Ctrl+C</code>; der Hintergrundlauf arbeitet weiter.</p>
+        <div class="cmd"><div class="cmd-label">NACH PROZESS- ODER SERVERABBRUCH</div><code>homestories-lektorat resume 4</code></div>
+        <p class="cmd-help">Setzt dieselbe eingefrorene Arbeitskopie fort; fertige Prüfungen werden übersprungen.</p>
         <div class="cmd"><div class="cmd-label">OPENPROJECT · ERST VORSCHAU</div><code>homestories-lektorat preview 4</code></div>
         <div class="cmd"><div class="cmd-label">OPENPROJECT · DANACH ÜBERTRAGEN</div><code>homestories-lektorat sync 4</code></div>
         <p class="cmd-help">Die Vorschau verändert nichts. Der Sync nutzt das nicht öffentliche Projekt <code>Homestories</code> und legt Version, Szenenaufgaben und zeilenspezifische Unteraufgaben idempotent an.</p>

@@ -346,12 +346,15 @@ Für Homestories steht auf dem Homeserver der manuelle Steuerbefehl bereit:
 homestories-lektorat start 4 5
 homestories-lektorat status
 homestories-lektorat log
+homestories-lektorat resume 4
 homestories-lektorat preview 4
 homestories-lektorat sync 4
 ```
 
 `start 4 5` prüft den eingefrorenen Stand 4 und kennzeichnet Überarbeitung 5 als Ziel der späteren
-OpenProject-Aufgaben. `preview` ist immer der letzte nicht schreibende Kontrollschritt vor `sync`.
+OpenProject-Aufgaben. Nach einem Abbruch setzt `resume 4` denselben Lauf fort und überspringt
+bereits fertige Prüfungen. `preview` ist immer der letzte nicht schreibende Kontrollschritt vor
+`sync`.
 
 Die Serverkonfiguration liegt außerhalb des Vaults. Dadurch bleiben Zugangspunkte, Modellwahl und
 maschinenspezifische Pfade von den Manuskripten und der Obsidian-Synchronisierung getrennt.
@@ -371,7 +374,9 @@ nicht versehentlich als konsistente Diagnose nach OpenProject übertragen werden
 
 Für die eigentliche Prüfung wird beim Start eine temporäre Momentaufnahme unter
 `lektorat/.arbeitskopien/` erzeugt. Alle Module lesen diese Arbeitskopie und damit denselben
-eingefrorenen Textstand. Nach einem regulären Abschluss wird sie wieder entfernt.
+eingefrorenen Textstand. Berichte werden zunächst als `.md.partial` geschrieben und erst nach
+vollständigem Abschluss atomar veröffentlicht. Die Arbeitskopie wird nur nach einem vollständig
+erfolgreichen Abschluss entfernt und steht andernfalls für `resume` bereit.
 
 Die Berichte eines solchen Laufs liegen unter
 `lektorat/ueberarbeitungen/<stand>/<laufkennung>/`. Zusätzlich enthält `findings.jsonl` nur

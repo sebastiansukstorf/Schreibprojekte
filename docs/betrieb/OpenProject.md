@@ -55,9 +55,30 @@ lektorat/ueberarbeitungen/4/20260816-220000-a1b2c3d4/
 `manifest.json` enthält SHA-256-Prüfsummen aller berücksichtigten Manuskriptdateien. Beim Start wird
 außerdem unter `lektorat/.arbeitskopien/` eine temporäre, von Obsidian ausgeblendete Momentaufnahme
 angelegt. Alle Prüfungen lesen ausschließlich diese Momentaufnahme und sehen damit garantiert
-denselben Stand. Nach einem regulären Lauf wird sie entfernt. Anschließend werden die Originale
+denselben Stand. Fertige Berichte werden atomar veröffentlicht; ein abgebrochener Bericht bleibt
+als `.md.partial` erkennbar und zählt nicht als abgeschlossen. Die Arbeitskopie wird nur nach einem
+vollständig erfolgreichen Lauf entfernt. Anschließend werden die Originale
 erneut geprüft. Wurde währenddessen geschrieben oder synchronisiert, erhält der Lauf den Status
 `attention` und darf nicht nach OpenProject übertragen werden.
+
+## Abbruch und Wiederaufnahme
+
+Der Start über den Server-Wrapper läuft mit `nohup` und übersteht deshalb eine getrennte
+SSH-Verbindung. Fehler einer einzelnen Prüfung werden protokolliert; die übrigen Prüfungen laufen
+weiter. Nach einem Prozess-, Container- oder Serverabbruch zuerst den Status prüfen und dann
+denselben Stand fortsetzen:
+
+```bash
+homestories-lektorat status
+homestories-lektorat log
+homestories-lektorat resume 4
+```
+
+`resume 4` verwendet exakt die beim ursprünglichen Start erzeugte Arbeitskopie. Bereits fertige
+Berichte werden übersprungen, fehlende oder nur teilweise geschriebene Berichte erneut ausgeführt.
+Es wird dabei weder ein neuer Stand noch eine neue Laufkennung erzeugt. Ein bereits vollständiger
+Lauf kann nicht versehentlich fortgesetzt werden. Während des gesamten Laufs sollte
+`03_Content` unverändert bleiben, damit der abschließende Prüfsummenvergleich erfolgreich ist.
 
 ## Welche Befunde werden Aufgaben?
 
@@ -147,8 +168,8 @@ OpenProject-Zugang.
 - Zeilennummer und Originalzitat werden gemeinsam gespeichert, weil Zeilen bei der nächsten
   Überarbeitung wandern können.
 - OpenProject-Aufgaben sind Arbeitsaufträge, keine automatischen Textänderungen.
-- Ein erneuter Lauf für denselben Textstand erhält ein neues Laufverzeichnis; identische Befunde
-  bleiben über ihren Fingerprint erkennbar.
+- `resume` führt den vorhandenen Lauf fort. Nur ein bewusstes neues `start` für denselben Textstand
+  erzeugt ein neues Laufverzeichnis; identische Befunde bleiben über ihren Fingerprint erkennbar.
 
 Technische Grundlage ist die OpenProject API v3 mit Projekten, Versionen, Arbeitspaketen und
 Elternbeziehungen. Die eingerichtete OpenProject-Version 14.6.3 akzeptiert den API-Token über Basic
