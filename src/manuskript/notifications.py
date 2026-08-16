@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import json
 import os
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,14 +36,17 @@ class NtfyNotifier:
         return cls(base_url, topic, token, progress)
 
     def send(self, title: str, message: str, *, priority: int = 3, tags: str = "books") -> bool:
-        payload = json.dumps(
-            {"topic": self.topic, "title": title, "message": message, "priority": priority, "tags": tags.split(",")},
-            ensure_ascii=False,
-        ).encode("utf-8")
+        endpoint = f"{self.base_url}/{urllib.parse.quote(self.topic, safe='')}"
         request = urllib.request.Request(
-            self.base_url,
-            data=payload,
-            headers={"Authorization": f"Bearer {self.token}", "Content-Type": "application/json"},
+            endpoint,
+            data=message.encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {self.token}",
+                "Content-Type": "text/plain; charset=utf-8",
+                "Title": title,
+                "Priority": str(priority),
+                "Tags": tags,
+            },
             method="POST",
         )
         try:

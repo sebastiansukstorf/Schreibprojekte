@@ -40,7 +40,9 @@ class NotificationTests(unittest.TestCase):
             self.assertTrue(notifier.send("Titel", "Text"))
         request = urlopen.call_args.args[0]
         self.assertEqual(request.get_header("Authorization"), "Bearer secret")
-        self.assertIn(b'"topic": "schreibprojekte"', request.data)
+        self.assertEqual(request.full_url, "https://ntfy.example/schreibprojekte")
+        self.assertEqual(request.data, "Text".encode("utf-8"))
+        self.assertEqual(request.get_header("Title"), "Titel")
 
 
 if __name__ == "__main__":

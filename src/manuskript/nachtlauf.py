@@ -44,9 +44,9 @@ def manuscript_files(project: Path, *, exclude: tuple[str, ...] = ()) -> tuple[P
     root = content_directory(project)
     files = []
     for path in sorted(root.rglob("*.md")):
-        if "lektorat" in {part.lower() for part in path.parts}:
-            continue
         relative = path.relative_to(root)
+        if "lektorat" in {part.lower() for part in relative.parts}:
+            continue
         if any(relative.match(pattern) or path.name == pattern for pattern in exclude):
             continue
         files.append(path.resolve())

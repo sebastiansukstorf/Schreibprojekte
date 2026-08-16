@@ -31,6 +31,14 @@ class NachtlaufTests(unittest.TestCase):
             files = manuscript_files(project, exclude=("050.md", "100.md", "200.md"))
             self.assertEqual([path.name for path in files], ["101.md"])
 
+    def test_snapshot_below_lektorat_is_not_excluded(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "lektorat" / ".arbeitskopien" / "lauf"
+            content = project / "03_Content"
+            content.mkdir(parents=True)
+            (content / "101.md").write_text("Text", encoding="utf-8")
+            self.assertEqual([path.name for path in manuscript_files(project)], ["101.md"])
+
     def test_current_report_is_skipped_unless_forced(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
