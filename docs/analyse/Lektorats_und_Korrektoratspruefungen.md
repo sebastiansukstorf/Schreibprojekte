@@ -211,6 +211,10 @@ Alle Befunde folgen dem Schema Fundstelle, Diagnose, Relevanz, Begründung, Empf
 Querverweise. Über `--context` kann eine Story Bible eingebunden werden. Ohne ausreichenden Kontext
 müssen Kontinuitätsaussagen als unsicher gekennzeichnet werden.
 
+Der Szenenbericht erhält zusätzlich YAML-Frontmatter mit Einstieg, Ziel, Konflikt, Dynamik,
+Wendung, Ausgang, Ende und Funktion der Szene. Diese Metadaten werden aus dem fünften Prüfmodul
+abgeleitet und nur in den Bericht geschrieben; die Manuskriptdatei bleibt unverändert.
+
 ## Geplante Mac-/Homeserver-Architektur
 
 Die empfohlene Aufgabenverteilung lautet:

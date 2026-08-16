@@ -8,6 +8,7 @@ from pathlib import Path
 
 from manuskript.hlx_lektorat import run_hlx_lektorat
 from manuskript.korrektorat import run_korrektorat
+from manuskript.nachtlauf import run_night_checks, write_summary
 from manuskript.redaktion import run_redaktion
 from manuskript.sagte_lektorat import run_sagte_lektorat
 from manuskript.wortarten_lektorat import run_wortarten_lektorat
@@ -200,6 +201,18 @@ def main() -> int:
             help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
         )
         redaktion_parsers[command] = level_parser
+
+    night_parser = subparsers.add_parser(
+        "lektorat-nacht", help="Führe alle Datei-/Szenenprüfungen für 03_Content aus"
+    )
+    night_parser.add_argument("path", nargs="?", help="Projekt- oder 03_Content-Ordner")
+    night_parser.add_argument("--context", help="Optionale Story Bible oder Kontextordner")
+    night_parser.add_argument("--force", action="store_true", help="Auch aktuelle Berichte neu erzeugen")
+    night_parser.add_argument(
+        "--config",
+        default=str(DEFAULT_CONFIG),
+        help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
+    )
     single_parser.add_argument(
         "--output",
         help="Optionaler Zielordner oder Zielpfad für die DOCX-Ausgabe",
@@ -370,6 +383,31 @@ def main() -> int:
             print(f"❌ {args.redaktion_level.capitalize()}-Lektorat fehlgeschlagen: {error}", file=sys.stderr)
             return 1
         print(f"✅ {args.redaktion_level.capitalize()}-Lektoratsbericht: {report}")
+        return 0
+
+    if args.command == "lektorat-nacht":
+        input_path = resolve_target(args.path, repo_root=REPO_ROOT)
+        project_root = input_path.parent if input_path.name == "03_Content" else input_path
+        project_config = project_root / ".manuskript.json"
+        uses_default_config = config_path.resolve() == DEFAULT_CONFIG.resolve()
+        config = load_config(project_config if uses_default_config and project_config.is_file() else config_path)
+        context_path = Path(args.context).expanduser().resolve() if args.context else None
+        try:
+            results = run_night_checks(
+                input_path,
+                config,
+                force=args.force,
+                context_path=context_path,
+            )
+            summary = write_summary(input_path, results)
+        except (OSError, TypeError, ValueError, RuntimeError) as error:
+            print(f"❌ Nachtlauf konnte nicht gestartet werden: {error}", file=sys.stderr)
+            return 1
+        failed = sum(result.status == "failed" for result in results)
+        print(f"Nachtlauf abgeschlossen. Zusammenfassung: {summary}")
+        if failed:
+            print(f"⚠️ {failed} Prüfung(en) fehlgeschlagen; Details stehen in der Zusammenfassung.")
+            return 2
         return 0
 
     if args.command == "export":

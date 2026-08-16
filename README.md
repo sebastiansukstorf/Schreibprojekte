@@ -197,6 +197,10 @@ Mit `--context PFAD` kann eine Story Bible oder ein Ordner mit Markdown-Kontext 
 Die Ausgaben landen unter `lektorat/szene/`, `lektorat/teile/` und `lektorat/gesamt/`.
 Gleichnamige Shell-Skripte unter `Skripte/` sowie VS-Code-Aufgaben stehen ebenfalls bereit.
 
+Szenenberichte beginnen mit einem YAML-Header. Er enthält die im Szenenlektorat ermittelten Angaben
+zu Einstieg, Ziel, Konflikt, Dynamik, Wendung, Ausgang, Ende und Funktion. Das Originalmanuskript
+wird dafür nicht verändert.
+
 Die gemeinsame Konfiguration kann unter `redaktion` gesetzt und pro Ebene mit `szene_lektorat`,
 `teil_lektorat` oder `gesamt_lektorat` überschrieben werden:
 
@@ -212,6 +216,64 @@ Die gemeinsame Konfiguration kann unter `redaktion` gesetzt und pro Ebene mit `s
 
 Die Zeichenobergrenzen schützen vor einer unbemerkten Überschreitung des Modellkontexts und müssen
 zum verwendeten lokalen Modell passen.
+
+### Manuellen Nachtlauf starten
+
+Der Nachtlauf prüft alle Markdown-Dateien unter `03_Content` nacheinander. Pro Datei laufen
+Korrektorat, „sagte“-Prüfung, H–L–X, Wortartenprüfung und das vollständige Szenenlektorat. Teil- und
+Gesamtromanlektorat gehören bewusst nicht zum Nachtlauf.
+
+```bash
+Skripte/lektorat-nacht.sh ../MeinProjekt
+```
+
+Das Skript startet den Prozess mit `nohup` im Hintergrund, zeigt Prozess-ID und Logdatei an und
+läuft nach dem Schließen des Terminals weiter. Den Fortschritt zeigt beispielsweise:
+
+```bash
+tail -f ../MeinProjekt/lektorat/logs/nachtlauf-YYYYMMDD-HHMMSS.log
+```
+
+Aktuelle Berichte werden anhand ihres Änderungsdatums übersprungen. Ein abgebrochener Lauf kann
+daher mit demselben Befehl fortgesetzt werden. Mit `--force` werden alle Prüfungen wiederholt; mit
+`--context PFAD` wird eine Story Bible eingebunden. Die letzte strukturierte Zusammenfassung steht
+unter `lektorat/logs/nachtlauf_letzter.md`. Einzelfehler werden protokolliert und stoppen die
+restlichen Prüfungen nicht.
+
+Für einen Homeserver müssen Ollama und optional LanguageTool in `.manuskript.json` auf dessen
+Adressen zeigen:
+
+```json
+{
+  "lektorat": {
+    "base_url": "http://HOMESERVER-IP:11434",
+    "model": "qwen3:8b"
+  },
+  "korrektorat": {
+    "base_url": "http://HOMESERVER-IP:8081",
+    "language": "de-DE"
+  }
+}
+```
+
+Die Ports dürfen nicht ungeschützt aus dem Internet erreichbar sein. Im Heimnetz sollte der
+Zugriff auf den Manuskriptrechner begrenzt werden; von außen ist ein VPN vorzuziehen.
+
+Projektabhängige Strukturdateien und ein Standardkontext können ebenfalls konfiguriert werden:
+
+```json
+{
+  "nachtlauf": {
+    "exclude": ["050.md", "100.md", "200.md", "300.md", "400.md"],
+    "context": "01_Figuren"
+  }
+}
+```
+
+Die Ausschlüsse sind Dateinamen oder Glob-Muster relativ zu `03_Content`. Ein explizites
+`--context` beim Start überschreibt den konfigurierten Kontext.
+Beim Nachtlauf wird automatisch die `.manuskript.json` im angegebenen Projekt verwendet, sofern
+nicht ausdrücklich eine andere Datei mit `--config` gewählt wurde.
 
 ### Direkter Aufruf
 

@@ -122,6 +122,10 @@ Die Datei wird als dramatische Einheit betrachtet:
 - **Ende:** Verlässt der Text die Szene an einer wirkungsvollen Stelle?
 - **Funktion:** Welchen Beitrag leistet die Szene zu Plot, Figur, Beziehung, Thema oder Atmosphäre?
 
+Die wichtigsten Ergebnisse dieses Prüfschritts werden zusätzlich als YAML-Header des erzeugten
+Szenenlektoratsberichts gespeichert: Einstieg, Ziel, Konflikt, Dynamik, Wendung, Ausgang, Ende und
+Funktion. Die Manuskriptdatei selbst bleibt unverändert.
+
 ## 6. Perspektivlektorat
 
 Prüfung der erzählerischen Vermittlung:
@@ -317,3 +321,15 @@ uv run manuskript lektorat-gesamt ../MeinProjekt
 
 Optional bindet `--context PFAD` eine Story Bible oder einen Kontextordner ein. Gleichnamige
 Shell-Skripte unter `Skripte/` und Aufgaben in `.vscode/tasks.json` stellen dieselben Aufrufe bereit.
+
+## Manueller Nachtlauf
+
+```bash
+Skripte/lektorat-nacht.sh ../MeinProjekt
+```
+
+Der manuell gestartete Hintergrundprozess führt für alle Markdown-Dateien unter `03_Content` die
+Datei-/Szenenprüfungen aus. Bereits aktuelle Einzelberichte werden übersprungen, Fehler werden
+protokolliert und der Lauf wird mit der nächsten Prüfung fortgesetzt. Logs und die letzte
+Zusammenfassung liegen unter `lektorat/logs/`. Teil-/Akt- und Gesamtromanlektorat sind nicht Teil
+des Nachtlaufs und werden weiterhin bewusst angestoßen.

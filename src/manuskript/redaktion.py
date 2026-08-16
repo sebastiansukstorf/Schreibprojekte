@@ -43,6 +43,17 @@ LEVEL_QUESTIONS = {
     "gesamt": "Funktioniert das Manuskript als Roman – strukturell, erzählerisch, stilistisch und inhaltlich?",
 }
 
+SCENE_METADATA_FIELDS = (
+    "einstieg",
+    "ziel",
+    "konflikt",
+    "dynamik",
+    "wendung",
+    "ausgang",
+    "ende",
+    "funktion",
+)
+
 
 @dataclass(frozen=True)
 class Manuscript:
@@ -144,6 +155,20 @@ def load_context(path: Path | None, *, max_chars: int) -> str:
 def build_prompt(level: str, manuscript: Manuscript, context: str, *, style_profile: str) -> str:
     modules = LEVEL_MODULES[level]
     module_instructions = "\n".join(f"## {name}" for name in modules)
+    metadata_instruction = ""
+    if level == "szene":
+        fields = ", ".join(f'"{field}"' for field in SCENE_METADATA_FIELDS)
+        metadata_instruction = f"""
+Schließe nach dem Modul `## Szenenlektorat` zusätzlich genau einen maschinenlesbaren Block an:
+
+```scene_metadata
+{{{fields}}}
+```
+
+Der Inhalt ist valides JSON. Alle acht Werte sind knappe Strings, die den tatsächlichen Zustand
+der Szene beschreiben. Wenn etwas fehlt, schreibe beispielsweise `kein klares Ziel erkennbar` statt
+es zu erfinden. Dieser Block dient dem YAML-Header des Lektoratsberichts.
+"""
     return f"""Du bist ein sorgfältiges deutschsprachiges Romanlektorat.
 
 Prüfebene: {LEVEL_TITLES[level]}
@@ -175,6 +200,7 @@ Unter jeder Modulüberschrift entweder `Keine relevanten Befunde.` oder Befunde 
 - Begründung: Wirkung auf Text oder Leser
 - Empfehlung: Handlungsrichtung ohne ausformulierte Ersatzprosa
 - Querverweise: passende andere Stellen oder `keine`
+{metadata_instruction}
 
 --- BEGINN PROJEKTKONTEXT ---
 {context}
@@ -228,6 +254,42 @@ def validate_answer(level: str, answer: str) -> None:
         raise RuntimeError("Modellantwort enthält die Prüfmodule in falscher Reihenfolge.")
     if "## Kurzdiagnose" not in answer:
         raise RuntimeError("Modellantwort enthält keine Kurzdiagnose.")
+    if level == "szene":
+        parse_scene_metadata(answer)
+
+
+def parse_scene_metadata(answer: str) -> dict[str, str]:
+    """Lese und validiere die maschinenlesbare Szenenzusammenfassung."""
+    matches = re.findall(r"```scene_metadata\s*\n(.*?)\n```", answer, flags=re.DOTALL)
+    if len(matches) != 1:
+        raise RuntimeError("Modellantwort enthält nicht genau einen scene_metadata-Block.")
+    try:
+        payload = json.loads(matches[0])
+    except json.JSONDecodeError as error:
+        raise RuntimeError(f"scene_metadata ist kein valides JSON: {error}") from error
+    if not isinstance(payload, dict) or set(payload) != set(SCENE_METADATA_FIELDS):
+        raise RuntimeError(
+            "scene_metadata muss exakt diese Felder enthalten: "
+            + ", ".join(SCENE_METADATA_FIELDS)
+        )
+    result = {}
+    for field in SCENE_METADATA_FIELDS:
+        value = payload[field]
+        if not isinstance(value, str) or not value.strip():
+            raise RuntimeError(f"scene_metadata.{field} muss ein nicht leerer String sein.")
+        result[field] = value.strip()
+    return result
+
+
+def render_scene_yaml(metadata: dict[str, str]) -> str:
+    """Erzeuge YAML-Frontmatter; JSON-Strings sind zugleich gueltiges YAML."""
+    lines = ["---", 'lektoratsebene: "szene"', "szenenlektorat:"]
+    lines.extend(
+        f"  {field}: {json.dumps(metadata[field], ensure_ascii=False)}"
+        for field in SCENE_METADATA_FIELDS
+    )
+    lines.append("---")
+    return "\n".join(lines)
 
 
 def default_report_path(
@@ -243,7 +305,10 @@ def default_report_path(
 
 def render_report(level: str, manuscript: Manuscript, answer: str, *, model: str) -> str:
     files = "\n".join(f"- `{path.name}`" for path in manuscript.files)
-    return (
+    frontmatter = ""
+    if level == "szene":
+        frontmatter = render_scene_yaml(parse_scene_metadata(answer)) + "\n\n"
+    return frontmatter + (
         f"# {LEVEL_TITLES[level]}\n\n"
         f"Erstellt: {datetime.now().astimezone().isoformat(timespec='seconds')}  \n"
         f"Modell: `{model}`  \n"

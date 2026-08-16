@@ -11,6 +11,8 @@ from manuskript.redaktion import (
     build_prompt,
     default_report_path,
     load_manuscript,
+    parse_scene_metadata,
+    render_scene_yaml,
     run_redaktion,
     select_markdown_files,
     validate_answer,
@@ -20,6 +22,13 @@ from manuskript.redaktion import (
 def valid_answer(level: str) -> str:
     sections = ["## Kurzdiagnose\n\nKnappe Diagnose."]
     sections.extend(f"## {module}\n\nKeine relevanten Befunde." for module in LEVEL_MODULES[level])
+    if level == "szene":
+        sections.append(
+            '```scene_metadata\n'
+            '{"einstieg":"spät", "ziel":"Flucht", "konflikt":"Tür blockiert", '
+            '"dynamik":"eskaliert", "wendung":"Hilfe erscheint", "ausgang":"Flucht gelingt", '
+            '"ende":"offene Gefahr", "funktion":"Konflikt zuspitzen"}\n```'
+        )
     return "\n\n".join(sections)
 
 
@@ -73,7 +82,17 @@ class RedaktionTests(unittest.TestCase):
                 report = run_redaktion(source, level="szene", model="testmodell")
             self.assertEqual(source.read_text(encoding="utf-8"), original)
             self.assertEqual(report, project / "lektorat" / "szene" / "101_lektorat.md")
-            self.assertIn("Das Manuskript wurde nicht verändert", report.read_text(encoding="utf-8"))
+            report_text = report.read_text(encoding="utf-8")
+            self.assertTrue(report_text.startswith("---\nlektoratsebene: \"szene\""))
+            self.assertIn('ziel: "Flucht"', report_text)
+            self.assertIn("Das Manuskript wurde nicht verändert", report_text)
+
+    def test_scene_metadata_becomes_yaml_frontmatter(self) -> None:
+        metadata = parse_scene_metadata(valid_answer("szene"))
+        yaml = render_scene_yaml(metadata)
+        self.assertTrue(yaml.startswith("---\n"))
+        self.assertTrue(yaml.endswith("\n---"))
+        self.assertIn('konflikt: "Tür blockiert"', yaml)
 
     def test_default_paths_for_all_levels(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
