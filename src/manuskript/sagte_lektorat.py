@@ -57,7 +57,7 @@ def default_report_path(source: Path) -> Path:
     """Lege Berichte außerhalb von 03_Content im Projektordner ab."""
     source = source.resolve()
     project_dir = source.parent.parent if source.parent.name == "03_Content" else source.parent
-    return project_dir / "Lektorat" / f"{source.stem}-sagte-lektorat.md"
+    return project_dir / "lektorat" / "szene" / f"{source.stem}-sagte-lektorat.md"
 
 
 def extract_sagte_context(content: str, radius: int = 4) -> tuple[str, list[int]]:

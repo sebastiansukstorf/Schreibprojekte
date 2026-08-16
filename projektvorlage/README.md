@@ -9,6 +9,9 @@ Diese Vorlage beschreibt die empfohlene Ordnerstruktur für neue Schreibprojekte
 - 03_Content/
 - Metadaten/
 - docx/
+- lektorat/szene/
+- lektorat/teile/
+- lektorat/gesamt/
 
 Optionale projektspezifische Bereiche:
 

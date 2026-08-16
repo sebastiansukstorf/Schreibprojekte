@@ -57,7 +57,9 @@ class WortartenLektoratTests(unittest.TestCase):
 
     def test_default_report_path(self) -> None:
         source = Path("/tmp/Roman/03_Content/101.md")
-        expected = Path("/tmp/Roman/Lektorat/101-adjektive-adverbien-lektorat.md").resolve()
+        expected = Path(
+            "/tmp/Roman/lektorat/szene/101-adjektive-adverbien-lektorat.md"
+        ).resolve()
         self.assertEqual(default_report_path(source), expected)
 
 

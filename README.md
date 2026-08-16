@@ -73,7 +73,7 @@ uv run manuskript config
 
 Die ausgewählte Markdown-Datei wird ausschließlich darauf geprüft, ob Sprecherzuordnungen mit
 „sagte“ nötig sind. Das Manuskript bleibt unverändert; das Ergebnis wird standardmäßig als
-`Lektorat/<dateiname>-sagte-lektorat.md` im Projekt abgelegt.
+`lektorat/szene/<dateiname>-sagte-lektorat.md` im Projekt abgelegt.
 
 ```bash
 uv run manuskript lektorat ../MeinProjekt/03_Content/100.md
@@ -107,7 +107,7 @@ Die Ollama-Adresse, das Modell und die Zahl der Kontextzeilen stehen in `.manusk
 Das H–L–X-Lektorat beurteilt alle inhaltlichen Zeilen danach, ob eine Information besser szenisch
 vermittelt werden sollte (H), als knapper notwendiger Satz bestehen bleibt (L) oder Dialog,
 Handlung beziehungsweise Reaktion nur noch einmal erklärt (X). Das Manuskript bleibt unverändert;
-der Bericht landet als `Lektorat/<dateiname>-hlx-lektorat.md` im Projekt.
+der Bericht landet als `lektorat/szene/<dateiname>-hlx-lektorat.md` im Projekt.
 
 ```bash
 uv run manuskript lektorat-hlx ../MeinProjekt/03_Content/101.md
@@ -136,7 +136,7 @@ uv run manuskript korrektorat ../MeinProjekt/03_Content/101.md
 }
 ```
 
-Der Bericht wird unter `Korrektorat/<dateiname>-rechtschreibung-zeichensetzung.md` abgelegt und
+Der Bericht wird unter `lektorat/szene/<dateiname>-korrektorat.md` abgelegt und
 enthält Zeile, Spalte, Originalzeile, Vorschläge und die LanguageTool-Regel-ID. Grundlage ist das
 [Amtliche Regelwerk der deutschen Rechtschreibung 2024](https://www.rechtschreibrat.com/DOX/RfdR_Amtliches-Regelwerk_2024.pdf);
 die technische Prüfung übernimmt das offene [LanguageTool](https://github.com/languagetool-org/languagetool).
@@ -151,7 +151,7 @@ Vorschlag. Figurenstimme und präzise, notwendige Details werden nicht mechanisc
 uv run manuskript lektorat-wortarten ../MeinProjekt/03_Content/101.md
 ```
 
-Der Bericht wird als `Lektorat/<dateiname>-adjektive-adverbien-lektorat.md` gespeichert und enthält
+Der Bericht wird als `lektorat/szene/<dateiname>-adjektive-adverbien-lektorat.md` gespeichert und enthält
 außerdem Vorschläge für weitere Lektoratsprüfungen. Eine eigene Modell- und Paketkonfiguration kann
 unter `wortarten_lektorat` in `.manuskript.json` hinterlegt werden.
 
@@ -176,6 +176,42 @@ Alternativ kann eine andere Konfigurationsdatei verwendet werden:
 ```bash
 uv run manuskript docx --config /pfad/zur/konfiguration.json
 ```
+
+### Vollständige Lektoratsarchitektur ausführen
+
+Die drei redaktionellen Ebenen werden mit eigenen Befehlen gestartet. Sie erzeugen strukturierte
+Diagnosen und verändern die Manuskriptdateien nicht.
+
+```bash
+# einzelne Szene: sieben Prüfmodule
+uv run manuskript lektorat-szene ../MeinProjekt/03_Content/205.md
+
+# Teil/Akt anhand numerischer Dateinamen
+uv run manuskript lektorat-teil ../MeinProjekt --start 200 --end 299 --label teil_2
+
+# vollständiger Roman
+uv run manuskript lektorat-gesamt ../MeinProjekt
+```
+
+Mit `--context PFAD` kann eine Story Bible oder ein Ordner mit Markdown-Kontext mitgegeben werden.
+Die Ausgaben landen unter `lektorat/szene/`, `lektorat/teile/` und `lektorat/gesamt/`.
+Gleichnamige Shell-Skripte unter `Skripte/` sowie VS-Code-Aufgaben stehen ebenfalls bereit.
+
+Die gemeinsame Konfiguration kann unter `redaktion` gesetzt und pro Ebene mit `szene_lektorat`,
+`teil_lektorat` oder `gesamt_lektorat` überschrieben werden:
+
+```json
+{
+  "redaktion": {
+    "style_profile": "Kurze Sätze und Ellipsen sind erlaubt.",
+    "max_manuscript_chars": 300000,
+    "max_context_chars": 80000
+  }
+}
+```
+
+Die Zeichenobergrenzen schützen vor einer unbemerkten Überschreitung des Modellkontexts und müssen
+zum verwendeten lokalen Modell passen.
 
 ### Direkter Aufruf
 

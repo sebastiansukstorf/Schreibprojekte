@@ -7,5 +7,10 @@
     "model": "qwen3:8b",
     "context_lines": 4,
     "batch_size": 4
+  },
+  "redaktion": {
+    "style_profile": "Kurze Sätze, Ellipsen und hohe Dialogdichte sind erlaubt. Exposition und Innensicht bleiben sparsam. Keine automatische Literarisierung oder Ausschmückung.",
+    "max_manuscript_chars": 300000,
+    "max_context_chars": 80000
   }
 }

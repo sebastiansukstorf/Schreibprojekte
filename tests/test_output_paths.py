@@ -34,7 +34,9 @@ class ResolveOutputTargetTests(unittest.TestCase):
 
         output = default_report_path(source)
 
-        self.assertEqual(output, Path("/tmp/MeinProjekt/Lektorat/100-sagte-lektorat.md").resolve())
+        self.assertEqual(
+            output, Path("/tmp/MeinProjekt/lektorat/szene/100-sagte-lektorat.md").resolve()
+        )
 
     def test_sagte_context_is_prefiltered_and_numbered(self) -> None:
         text = "Erste Zeile\n»Hallo«, sagte er.\nDritte Zeile\nVierte Zeile\nFünfte Zeile\nSechste Zeile"

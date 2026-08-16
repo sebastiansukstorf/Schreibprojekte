@@ -30,7 +30,7 @@ class Finding:
 def default_report_path(source: Path) -> Path:
     source = source.resolve()
     project_dir = source.parent.parent if source.parent.name == "03_Content" else source.parent
-    return project_dir / "Korrektorat" / f"{source.stem}-rechtschreibung-zeichensetzung.md"
+    return project_dir / "lektorat" / "szene" / f"{source.stem}-korrektorat.md"
 
 
 def mask_markdown(content: str) -> str:
@@ -91,6 +91,8 @@ def finding_kind(match: dict) -> str | None:
         marker in rule_id for marker in punctuation_markers
     ):
         return "Zeichensetzung"
+    if issue_type == "grammar" or category_id == "GRAMMAR":
+        return "Grammatik"
     return None
 
 
@@ -137,11 +139,13 @@ def parse_findings(
 def render_report(source: Path, findings: list[Finding], language: str, base_url: str) -> str:
     spelling = sum(item.kind == "Rechtschreibung" for item in findings)
     punctuation = sum(item.kind == "Zeichensetzung" for item in findings)
+    grammar = sum(item.kind == "Grammatik" for item in findings)
     output = [
         f"# Korrektorat: {source.name}",
         "",
         f"Prüfsprache: `{language}` · Engine: LanguageTool über `{base_url}`.",
-        f"Fundstellen: {len(findings)} ({spelling} Rechtschreibung, {punctuation} Zeichensetzung).",
+        f"Fundstellen: {len(findings)} ({spelling} Rechtschreibung, {grammar} Grammatik, "
+        f"{punctuation} Zeichensetzung).",
         "",
         "Grundlagen:",
         f"- [Amtliches Regelwerk der deutschen Rechtschreibung 2024]({OFFICIAL_RULES_URL})",

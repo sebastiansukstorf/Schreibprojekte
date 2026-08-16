@@ -116,8 +116,19 @@ class KorrektoratTests(unittest.TestCase):
 
     def test_default_report_path_is_outside_content(self) -> None:
         source = Path("/tmp/Roman/03_Content/101.md")
-        expected = Path("/tmp/Roman/Korrektorat/101-rechtschreibung-zeichensetzung.md").resolve()
+        expected = Path("/tmp/Roman/lektorat/szene/101-korrektorat.md").resolve()
         self.assertEqual(default_report_path(source), expected)
+
+    def test_grammar_is_reported_but_style_is_not(self) -> None:
+        response = {"matches": [{
+            "offset": 3,
+            "length": 3,
+            "message": "Kasus prüfen",
+            "replacements": [],
+            "rule": {"id": "GERMAN_CASE", "issueType": "grammar", "category": {"id": "GRAMMAR"}},
+        }]}
+        findings = parse_findings("Er dem Mann.", response)
+        self.assertEqual([finding.kind for finding in findings], ["Grammatik"])
 
 
 if __name__ == "__main__":

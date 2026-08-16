@@ -64,7 +64,7 @@ FOLLOW_UP_CHECKS = """## Vorschläge für weitere Prüfungen
 def default_report_path(source: Path) -> Path:
     source = source.resolve()
     project_dir = source.parent.parent if source.parent.name == "03_Content" else source.parent
-    return project_dir / "Lektorat" / f"{source.stem}-adjektive-adverbien-lektorat.md"
+    return project_dir / "lektorat" / "szene" / f"{source.stem}-adjektive-adverbien-lektorat.md"
 
 
 def extract_batches(content: str, batch_size: int = 8) -> list[str]:

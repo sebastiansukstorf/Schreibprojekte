@@ -34,7 +34,8 @@ class HlxLektoratTests(unittest.TestCase):
     def test_report_is_written_beside_content_folder(self) -> None:
         source = Path("/tmp/Roman/03_Content/101.md")
         self.assertEqual(
-            default_report_path(source), Path("/tmp/Roman/Lektorat/101-hlx-lektorat.md").resolve()
+            default_report_path(source),
+            Path("/tmp/Roman/lektorat/szene/101-hlx-lektorat.md").resolve(),
         )
 
 

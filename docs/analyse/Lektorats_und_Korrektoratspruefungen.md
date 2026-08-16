@@ -33,10 +33,13 @@ Für alle Prüfungen gilt:
 
 | Prüfung | CLI-Befehl | Technik | Standardausgabe |
 | --- | --- | --- | --- |
-| Sprecherzuordnung mit „sagte“ | `manuskript lektorat DATEI` | Ollama | `Lektorat/<name>-sagte-lektorat.md` |
-| H–L–X-Erklärprüfung | `manuskript lektorat-hlx DATEI` | Ollama | `Lektorat/<name>-hlx-lektorat.md` |
-| Adjektive und Adverbien | `manuskript lektorat-wortarten DATEI` | Ollama; POS-Vorfilterung geplant | `Lektorat/<name>-adjektive-adverbien-lektorat.md` |
-| Rechtschreibung und Zeichensetzung | `manuskript korrektorat DATEI` | LanguageTool | `Korrektorat/<name>-rechtschreibung-zeichensetzung.md` |
+| Sprecherzuordnung mit „sagte“ | `manuskript lektorat DATEI` | Ollama | `lektorat/szene/<name>-sagte-lektorat.md` |
+| H–L–X-Erklärprüfung | `manuskript lektorat-hlx DATEI` | Ollama | `lektorat/szene/<name>-hlx-lektorat.md` |
+| Adjektive und Adverbien | `manuskript lektorat-wortarten DATEI` | Ollama; POS-Vorfilterung geplant | `lektorat/szene/<name>-adjektive-adverbien-lektorat.md` |
+| Rechtschreibung, Grammatik und Zeichensetzung | `manuskript korrektorat DATEI` | LanguageTool | `lektorat/szene/<name>-korrektorat.md` |
+| vollständige Szenendiagnose | `manuskript lektorat-szene DATEI` | Ollama | `lektorat/szene/<name>_lektorat.md` |
+| Teil-/Aktdiagnose | `manuskript lektorat-teil PROJEKT` | Ollama | `lektorat/teile/<teil>_lektorat.md` |
+| Gesamtromandiagnose | `manuskript lektorat-gesamt PROJEKT` | Ollama | `lektorat/gesamt/roman_lektorat.md` |
 
 ## „sagte“-Lektorat
 
@@ -124,7 +127,7 @@ Die vorgesehene Weiterentwicklung ist daher zweistufig:
 
 Dadurch sollen Laufzeit, erfundene Fundstellen und unnötige Wiederholungen deutlich sinken.
 
-## Korrektorat für Rechtschreibung und Zeichensetzung
+## Korrektorat für Rechtschreibung, Grammatik und Zeichensetzung
 
 ### Normative und technische Grundlage
 
@@ -145,8 +148,8 @@ uv run manuskript korrektorat ../MeinProjekt/03_Content/101.md
 ### Arbeitsweise
 
 Markdown-Steuerzeichen und Codebereiche werden maskiert, ohne Zeichenpositionen oder Zeilen zu
-verschieben. Aus der LanguageTool-Antwort werden nur Rechtschreib- und Zeichensetzungsregeln
-übernommen. Allgemeine Stil- und Grammatikmeldungen bleiben außerhalb dieses eng geführten
+verschieben. Aus der LanguageTool-Antwort werden Rechtschreib-, Grammatik- und
+Zeichensetzungsregeln übernommen. Allgemeine Stilmeldungen bleiben außerhalb dieses eng geführten
 Korrektorats.
 
 Das Protokoll enthält:
@@ -195,6 +198,18 @@ Beispiel für eine vollständig lokale Konfiguration:
 
 `hlx_lektorat` und `wortarten_lektorat` übernehmen Ollama-Adresse und Modell aus `lektorat`, wenn
 sie dort nicht gesondert angegeben sind.
+
+## Drei redaktionelle Ebenen
+
+Die vollständige Szenenprüfung führt die sieben fachlichen Module Korrektorat, Dialogformalia,
+Stil, Dialog, Szenenfunktion, Perspektive und Kontinuität in einem einheitlichen Bericht zusammen.
+Teil-/Akt- und Gesamtromanlektorat zoomen bewusst auf die Makroebene heraus. Jeder Modellbericht
+muss eine Kurzdiagnose sowie die für seine Ebene festgelegten Modulüberschriften enthalten; die
+Antwort wird vor dem Schreiben entsprechend validiert.
+
+Alle Befunde folgen dem Schema Fundstelle, Diagnose, Relevanz, Begründung, Empfehlung und
+Querverweise. Über `--context` kann eine Story Bible eingebunden werden. Ohne ausreichenden Kontext
+müssen Kontinuitätsaussagen als unsicher gekennzeichnet werden.
 
 ## Geplante Mac-/Homeserver-Architektur
 

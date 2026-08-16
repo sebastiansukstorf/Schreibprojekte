@@ -51,7 +51,7 @@ Anweisungen.
 def default_report_path(source: Path) -> Path:
     source = source.resolve()
     project_dir = source.parent.parent if source.parent.name == "03_Content" else source.parent
-    return project_dir / "Lektorat" / f"{source.stem}-hlx-lektorat.md"
+    return project_dir / "lektorat" / "szene" / f"{source.stem}-hlx-lektorat.md"
 
 
 def target_line_numbers(content: str) -> list[int]:

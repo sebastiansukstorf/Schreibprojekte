@@ -50,6 +50,67 @@
         "reveal": "always",
         "panel": "shared"
       }
+    },
+    {
+      "label": "Vollständiges Szenenlektorat",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/lektorat-szene.sh",
+      "args": ["${file}"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Teil-/Aktlektorat",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/lektorat-teil.sh",
+      "args": ["${input:projektordner}", "--start", "${input:startnummer}", "--end", "${input:endnummer}", "--label", "${input:teilname}"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Gesamtromanlektorat",
+      "type": "shell",
+      "command": "${workspaceFolder}/Skripte/lektorat-gesamt.sh",
+      "args": ["${input:projektordner}"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "projektordner",
+      "type": "promptString",
+      "description": "Pfad zum Manuskriptprojekt"
+    },
+    {
+      "id": "startnummer",
+      "type": "promptString",
+      "description": "Erste Dateinummer des Teils",
+      "default": "100"
+    },
+    {
+      "id": "endnummer",
+      "type": "promptString",
+      "description": "Letzte Dateinummer des Teils",
+      "default": "199"
+    },
+    {
+      "id": "teilname",
+      "type": "promptString",
+      "description": "Bezeichnung für den Bericht",
+      "default": "teil_1"
     }
   ]
 }

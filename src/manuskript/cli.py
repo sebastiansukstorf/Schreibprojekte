@@ -8,6 +8,7 @@ from pathlib import Path
 
 from manuskript.hlx_lektorat import run_hlx_lektorat
 from manuskript.korrektorat import run_korrektorat
+from manuskript.redaktion import run_redaktion
 from manuskript.sagte_lektorat import run_sagte_lektorat
 from manuskript.wortarten_lektorat import run_wortarten_lektorat
 
@@ -178,6 +179,27 @@ def main() -> int:
         default=str(DEFAULT_CONFIG),
         help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
     )
+
+    redaktion_parsers = {}
+    for command, level, help_text in (
+        ("lektorat-szene", "szene", "Prüfe eine Datei mit allen sieben Szenenmodulen"),
+        ("lektorat-teil", "teil", "Prüfe einen Teil oder Akt als dramatische Einheit"),
+        ("lektorat-gesamt", "gesamt", "Prüfe den vollständigen Roman"),
+    ):
+        level_parser = subparsers.add_parser(command, help=help_text)
+        level_parser.set_defaults(redaktion_level=level)
+        level_parser.add_argument("path", help="Markdown-Datei, 03_Content- oder Projektordner")
+        level_parser.add_argument("--output", help="Optionaler Pfad für den Markdown-Bericht")
+        level_parser.add_argument("--context", help="Optionale Story Bible oder Kontextordner")
+        level_parser.add_argument("--label", help="Bezeichnung des Teils für den Ausgabedateinamen")
+        level_parser.add_argument("--start", type=int, help="Erste numerische Dateinummer")
+        level_parser.add_argument("--end", type=int, help="Letzte numerische Dateinummer")
+        level_parser.add_argument(
+            "--config",
+            default=str(DEFAULT_CONFIG),
+            help="Pfad zur Konfigurationsdatei (Standard: .manuskript.json)",
+        )
+        redaktion_parsers[command] = level_parser
     single_parser.add_argument(
         "--output",
         help="Optionaler Zielordner oder Zielpfad für die DOCX-Ausgabe",
@@ -315,6 +337,39 @@ def main() -> int:
             print(f"❌ Wortarten-Lektorat fehlgeschlagen: {error}", file=sys.stderr)
             return 1
         print(f"✅ Wortarten-Lektoratsbericht: {report}")
+        return 0
+
+    if args.command in redaktion_parsers:
+        input_path = Path(args.path).expanduser().resolve()
+        output_path = Path(args.output).expanduser().resolve() if args.output else None
+        context_path = Path(args.context).expanduser().resolve() if args.context else None
+        config = load_config(config_path)
+        common_config = config.get("lektorat", {})
+        redaktion_config = config.get("redaktion", {})
+        level_config = config.get(f"{args.redaktion_level}_lektorat", {})
+
+        def setting(name, default):
+            return level_config.get(name, redaktion_config.get(name, common_config.get(name, default)))
+
+        try:
+            report = run_redaktion(
+                input_path,
+                level=args.redaktion_level,
+                output=output_path,
+                label=args.label,
+                start=args.start,
+                end=args.end,
+                context_path=context_path,
+                base_url=setting("base_url", "http://127.0.0.1:11434"),
+                model=setting("model", "qwen3:8b"),
+                style_profile=setting("style_profile", ""),
+                max_manuscript_chars=int(setting("max_manuscript_chars", 300_000)),
+                max_context_chars=int(setting("max_context_chars", 80_000)),
+            )
+        except (TypeError, ValueError, RuntimeError) as error:
+            print(f"❌ {args.redaktion_level.capitalize()}-Lektorat fehlgeschlagen: {error}", file=sys.stderr)
+            return 1
+        print(f"✅ {args.redaktion_level.capitalize()}-Lektoratsbericht: {report}")
         return 0
 
     if args.command == "export":
