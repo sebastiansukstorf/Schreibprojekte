@@ -393,3 +393,16 @@ dauerhaftes Projekt; jede folgende Überarbeitungsrunde wird als Version geführ
 eine Sammelaufgabe mit zeilenspezifischen Unteraufgaben. Feste Befundkennungen verhindern Dubletten
 bei wiederholter Synchronisierung. Einzelheiten stehen in
 [Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).
+
+### Projektübergreifende OpenProject-Hierarchie
+
+Die nächste Ausbaustufe wird mit der kürzeren Erzählung `eheversprechen` und Überarbeitungsstand 2
+erprobt. Der OpenProject-Projekttitel stammt aus `Metadaten/titlepage.yml`; darunter folgen die
+Version des Überarbeitungsstands sowie hierarchische Arbeitspakete für Kapitel, Datei, Prüfschritt
+und einzelne Befunde. Kontextmerkmale werden als `Lektorats-Tags` gespeichert, sofern das
+OpenProject-Schema dieses benutzerdefinierte Feld bereitstellt, andernfalls in der Beschreibung.
+
+Für den Pilotlauf zählen nur `03_Content/101.md` bis `108.md` als aktuelle Manuskripte. Die
+vorhandenen Sicherungsfassungen `_*.md` bleiben unverändert, sind jedoch vom Lauf auszuschließen.
+Vor einem schreibenden OpenProject-Sync stehen immer lokaler Abschluss, unveränderte Prüfsummen und
+eine kontrollierte Vorschau. Wiederholte Synchronisierung muss alle Ebenen idempotent aktualisieren.

@@ -311,6 +311,12 @@ Start, Aktfortschritt, Fehler und Abschluss können als Push-Mitteilungen an die
 werden. Server, Topic und sichere Token-Ablage beschreibt
 [Push-Benachrichtigungen mit ntfy](docs/betrieb/Benachrichtigungen.md).
 
+Als projektübergreifender Pilot dient die kürzere Erzählung `eheversprechen` mit Stand 2. Dabei
+werden der OpenProject-Projekttitel aus `Metadaten/titlepage.yml`, der Ausschluss von `_*.md` und
+die erweiterte Hierarchie `Überarbeitungsstand → Kapitel → Datei → Prüfschritt → Befund` erprobt.
+Der Pilotstatus und die Abgrenzung zum produktiven Homestories-Modell stehen unter
+[Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).
+
 ### Direkter Aufruf
 
 ```bash

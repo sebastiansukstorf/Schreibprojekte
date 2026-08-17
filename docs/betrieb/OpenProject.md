@@ -34,6 +34,61 @@ OpenProject-Projekt Homestories
 Die Aufgaben enthalten Originalpfad, Zeile, unverändertes Zitat, Diagnose, Empfehlung,
 Dateiprüfsumme und Laufkennung. Sie verändern das Manuskript nicht.
 
+## Projektübergreifendes Zielmodell
+
+Die OpenProject-Struktur wird nicht auf Homestories fest verdrahtet. Für jedes Schreibprojekt gilt:
+
+```text
+OpenProject-Projekt <title aus Metadaten/titlepage.yml>
+└── Version Überarbeitung <Stand>
+    └── Kapitel <Kapitelnummer oder Kapitelbezeichnung>
+        └── Datei <Dateinummer>
+            ├── Prüfschritt: Korrektorat
+            │   └── einzelne zeilenbezogene Befunde
+            ├── Prüfschritt: sagte
+            │   └── einzelne zeilenbezogene Befunde
+            ├── Prüfschritt: H–L–X
+            │   └── einzelne zeilenbezogene Befunde
+            ├── Prüfschritt: Wortarten
+            │   └── einzelne zeilenbezogene Befunde
+            └── Prüfschritt: Szenenlektorat
+                └── einzelne modulbezogene Befunde
+```
+
+Die Version bildet den Überarbeitungsstand ab. Kapitel, Datei und Prüfschritt sind hierarchische
+Arbeitspakete; konkrete Befunde bleiben die kleinsten bearbeitbaren Aufgaben. Hat ein kurzer Text
+nur ein Kapitel, wird trotzdem eine eindeutige Kapitelebene angelegt, damit alle Projekte dieselbe
+Struktur verwenden.
+
+Projektname und Autor stammen aus den Projektmetadaten. Ordnername, Dateiname und YAML-Titel werden
+vor dem Sync validiert; fehlende oder widersprüchliche Angaben stoppen nur die OpenProject-Übergabe,
+nicht die lokalen Lektoratsberichte.
+
+Kontextmerkmale aus der inhaltlichen Prüfung werden bevorzugt in einem benutzerdefinierten
+OpenProject-Feld `Lektorats-Tags` gespeichert. Das Skript muss das Feld über das API-Schema des
+Arbeitspakettyps ermitteln. Existiert es nicht, werden die Tags nachvollziehbar in die Beschreibung
+geschrieben. Geeignete Angaben sind unter anderem Figur, Ort, Perspektive, Prüfmodul, Relevanz und
+Art des Eingriffs.
+
+Jede Ebene erhält eine stabile Herkunftskennung. Ein erneuter Sync aktualisiert vorhandene
+Kapitel-, Datei-, Prüfschritt- und Befundaufgaben und legt keine Dubletten an. OpenProject-Ausfälle
+dürfen weder Manuskript noch lokale Lektoratsergebnisse beeinflussen.
+
+## Pilot: Ein unmögliches Eheversprechen
+
+Der erste projektübergreifende Test verwendet das lokale/NAS-Projekt `eheversprechen`:
+
+- Projekttitel aus `Metadaten/titlepage.yml`: `Ein unmögliches Eheversprechen`
+- geprüfter Überarbeitungsstand: `2`
+- aktuelle Dateien: `101.md` bis `108.md`
+- ausgeschlossene Sicherungsfassungen: `_*.md`
+- OpenProject-Projekt wird nur angelegt, wenn die Vorschau vollständig und der Lauf konsistent ist
+- OpenProject-Benachrichtigungen sollen beim ersten Sync nach Möglichkeit unterdrückt werden
+
+Die im Ist-Stand vorhandene Homestories-Struktur `Version → Szene → Befund` bleibt produktiv. Die
+zusätzlichen Ebenen `Kapitel → Datei → Prüfschritt` sind die mit Eheversprechen zu erprobende
+konzeptionelle Erweiterung und dürfen erst nach erfolgreichem Preview-Test synchronisiert werden.
+
 ## Revisionsgebundener Nachtlauf
 
 ```bash
@@ -168,6 +223,8 @@ OpenProject-Zugang.
 - Zeilennummer und Originalzitat werden gemeinsam gespeichert, weil Zeilen bei der nächsten
   Überarbeitung wandern können.
 - OpenProject-Aufgaben sind Arbeitsaufträge, keine automatischen Textänderungen.
+- Metadaten bestimmen den Projekttitel; Geheimnisse und lokale `.env`-Dateien werden nie übertragen.
+- Sicherungsfassungen wie `_*.md` müssen explizit von Snapshot und Prüfung ausgeschlossen sein.
 - `resume` führt den vorhandenen Lauf fort. Nur ein bewusstes neues `start` für denselben Textstand
   erzeugt ein neues Laufverzeichnis; identische Befunde bleiben über ihren Fingerprint erkennbar.
 

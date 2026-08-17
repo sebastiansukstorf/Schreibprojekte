@@ -8,11 +8,13 @@
 | NAS | Zentrale, dauerhafte Ablage der Vaults unter `/volume1/schreiben` |
 | Nextcloud | Geschützter WebDAV-Zugang von außerhalb des Heimnetzes |
 | Homeserver | Lektoratsläufe mit Schreibprojekte, Ollama und LanguageTool |
-| GitHub | Versionsverwaltung des Werkzeugs und der einzelnen Schreibprojekte |
+| GitHub | Versionsverwaltung des Werkzeugs und der lokalen Schreibprojekt-Repositories |
 
-Die Markdown-Manuskripte liegen nur einmal zentral auf dem NAS. Der Homeserver bindet denselben
-Bestand über NFS unter `/mnt/nfs/schreiben` ein. Er schreibt ausschließlich separate Berichte in
-den jeweiligen Projektordner `lektorat/`; Dateien unter `03_Content/` werden nicht verändert.
+Auf Mac, iPad und iPhone existieren lokale Obsidian-Arbeitskopien. Remotely Save gleicht sie mit
+dem zentralen NAS-Vault ab. Git wird auf dem Mac im lokalen Projekt-Repository verwendet; die
+Git-Verwaltungsdaten `.git` werden nicht in den NAS-Vault kopiert. Der Homeserver bindet den
+NAS-Bestand über NFS unter `/mnt/nfs/schreiben` ein. Er schreibt ausschließlich separate Berichte
+in den jeweiligen Projektordner `lektorat/`; Dateien unter `03_Content/` werden nicht verändert.
 
 ## Speicher- und Synchronisationswege
 
@@ -49,6 +51,7 @@ eine Verschachtelung wie `Homestories/Homestories`.
 /home/sebastian/schreiben/config            Server-Konfigurationen
 /home/sebastian/schreiben/backups           Migrationssicherungen
 /mnt/nfs/schreiben/Homestories              Homestories auf dem NAS
+/mnt/nfs/schreiben/eheversprechen           Pilotprojekt Eheversprechen auf dem NAS
 ```
 
 `uv` liegt unter `/home/sebastian/.local/bin/uv`. Ollama ist nur lokal über
@@ -62,6 +65,22 @@ Die maschinenspezifische Homestories-Konfiguration liegt außerhalb des Vaults:
 ```text
 /home/sebastian/schreiben/config/Homestories.json
 ```
+
+Für den Pilotlauf liegt `eheversprechen` als Inhaltskopie ohne `.git` auf dem NAS. Versteckte
+`.env`-Dateien gehören weder in den NAS-Vault noch in Obsidian; maschinenspezifische Geheimnisse
+liegen ausschließlich mit Modus `600` unter `/home/sebastian/.config/schreibprojekte/`.
+
+## Pilotprojekt Eheversprechen
+
+`eheversprechen` erprobt den vollständigen Ablauf zunächst mit einer kürzeren Erzählung. Die acht
+aktuellen Manuskriptdateien heißen `101.md` bis `108.md`. Parallel vorhandene Sicherungsfassungen
+`_101.md` bis `_108.md` bleiben unverändert erhalten, werden aber durch das Muster `_*.md` vom
+Nachtlauf ausgeschlossen. Der geprüfte Überarbeitungsstand ist `2`.
+
+Der Projekttitel wird nicht aus dem Ordnernamen geraten, sondern aus
+`Metadaten/titlepage.yml` gelesen: `Ein unmögliches Eheversprechen`. Vor dem ersten Lauf werden
+Dateiauswahl, Metadaten, Snapshot und OpenProject-Vorschau kontrolliert. Ein automatischer Timer
+wird für diesen Pilotversuch nicht aktiviert.
 
 ## Tägliche Befehle für Homestories
 
