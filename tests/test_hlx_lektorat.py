@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from manuskript.hlx_lektorat import (
     default_report_path,
     extract_hlx_batches,
+    extract_hlx_excerpt,
     parse_hlx_answer,
     target_line_numbers,
 )
@@ -30,6 +31,14 @@ class HlxLektoratTests(unittest.TestCase):
         rendered = parse_hlx_answer(answer, {1, 2}, source)
         self.assertIn("Zeile 2 — X", rendered)
         self.assertIn("Textstelle: `Sie war wuetend.`", rendered)
+
+    def test_single_line_fallback_marks_only_requested_target(self) -> None:
+        text = "Er trat ein.\nSie sah auf.\n»Hallo.«"
+        excerpt = extract_hlx_excerpt(text, 2, context_lines=1)
+        self.assertIn("Kontext 1: Er trat ein.", excerpt)
+        self.assertIn(">>> ZIELZEILE 2: Sie sah auf.", excerpt)
+        self.assertIn("Kontext 3: »Hallo.«", excerpt)
+        self.assertEqual(excerpt.count(">>> ZIELZEILE"), 1)
 
     def test_report_is_written_beside_content_folder(self) -> None:
         source = Path("/tmp/Roman/03_Content/101.md")

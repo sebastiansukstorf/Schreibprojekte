@@ -271,6 +271,28 @@ def normalize_answer_headings(level: str, answer: str) -> str:
     return normalized
 
 
+def merge_duplicate_sections(level: str, answer: str) -> str:
+    """Fuehre mehrfach ausgegebene Pflichtmodule ohne Verlust ihrer Inhalte zusammen."""
+    headings = ("Kurzdiagnose", *LEVEL_MODULES[level])
+    alternatives = "|".join(re.escape(heading) for heading in headings)
+    pattern = re.compile(rf"^## ({alternatives})\s*$", re.MULTILINE)
+    matches = list(pattern.finditer(answer))
+    if not matches:
+        return answer
+    sections: dict[str, list[str]] = {heading: [] for heading in headings}
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(answer)
+        content = answer[match.end():end].strip()
+        if content:
+            sections[match.group(1)].append(content)
+    if any(not sections[heading] for heading in headings):
+        return answer
+    return "\n\n".join(
+        f"## {heading}\n\n" + "\n\n".join(sections[heading])
+        for heading in headings
+    )
+
+
 def build_repair_prompt(level: str, answer: str, error: str) -> str:
     modules = "\n".join(f"## {module}\n\nKeine relevanten Befunde." for module in LEVEL_MODULES[level])
     metadata = ""
@@ -400,6 +422,7 @@ def run_redaktion(
             else:
                 answer = ollama_generate(base_url, model, prompt, timeout=timeout)
             answer = normalize_answer_headings(level, answer)
+            answer = merge_duplicate_sections(level, answer)
             validate_answer(level, answer)
             break
         except RuntimeError as error:

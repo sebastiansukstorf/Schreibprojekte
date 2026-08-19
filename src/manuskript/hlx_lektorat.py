@@ -84,6 +84,18 @@ def extract_hlx_batches(
     return batches, targets
 
 
+def extract_hlx_excerpt(content: str, target: int, context_lines: int) -> str:
+    """Erzeuge einen Einzelzeilenauszug als robuste Rueckfallpruefung."""
+    lines = content.splitlines()
+    start = max(0, target - 1 - context_lines)
+    end = min(len(lines), target + context_lines)
+    return "\n".join(
+        (">>> ZIELZEILE " if index == target - 1 else "    Kontext ")
+        + f"{index + 1}: {lines[index]}"
+        for index in range(start, end)
+    )
+
+
 def parse_hlx_answer(answer: str, expected: set[int], source_lines: list[str]) -> str:
     """Validiere die Modellantwort und ergaenze unveraenderte Originalzeilen."""
     pattern = re.compile(
@@ -159,7 +171,34 @@ def run_hlx_lektorat(
             except RuntimeError as error:
                 last_error = error
         else:
-            raise RuntimeError(f"Paket {number}: {last_error}")
+            rescued = []
+            for target in sorted(expected):
+                single_excerpt = extract_hlx_excerpt(source_text, target, context_lines)
+                single_prompt = PROMPT.format(
+                    filename=f"{source.name}, Paket {number}/{len(batches)}, Zeile {target}",
+                    content=single_excerpt,
+                )
+                single_error: RuntimeError | None = None
+                for attempt in range(1, 4):
+                    retry = (
+                        ""
+                        if attempt == 1
+                        else f"\nGib exakt ein Urteil fuer Zeile {target} aus.\n"
+                    )
+                    answer = ollama_generate(
+                        base_url, model, single_prompt + retry, num_predict=300
+                    )
+                    try:
+                        rescued.append(parse_hlx_answer(answer, {target}, source_lines))
+                        break
+                    except RuntimeError as error:
+                        single_error = error
+                else:
+                    raise RuntimeError(
+                        f"Paket {number}, Einzelpruefung Zeile {target}: {single_error}; "
+                        f"urspruenglicher Paketfehler: {last_error}"
+                    )
+            rendered = "\n".join(rescued)
         with report.open("a", encoding="utf-8") as handle:
             handle.write(f"\n## Paket {number}\n\n{rendered}\n")
     return report

@@ -236,7 +236,8 @@ def run_sagte_lektorat(
 
     header = (
         f"# „sagte“-Lektorat: {source.name}\n\n"
-        f"Lokale Vorfilterung: {len(hits)} Fundstellen. Analysemodell: `{model}` über `{base_url}`.\n"
+        f"Lokale Vorfilterung: {len(hits)} Fundstellen. Analysemodell: `{model}` über `{base_url}`. "
+        f"Kontextzeilen: {context_lines}. Paketgröße: {batch_size}.\n"
     )
     completed = 0
     if report.exists():

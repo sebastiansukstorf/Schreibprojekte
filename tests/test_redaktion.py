@@ -12,6 +12,7 @@ from manuskript.redaktion import (
     default_report_path,
     load_manuscript,
     parse_scene_metadata,
+    merge_duplicate_sections,
     normalize_answer_headings,
     render_scene_yaml,
     run_redaktion,
@@ -76,6 +77,16 @@ class RedaktionTests(unittest.TestCase):
         normalized = normalize_answer_headings("szene", answer)
         validate_answer("szene", normalized)
         self.assertIn("## Korrektorat", normalized)
+
+    def test_duplicate_module_sections_are_merged(self) -> None:
+        answer = valid_answer("szene")
+        answer = answer.replace(
+            "## Dialogformalia", "## Korrektorat\n\nZusätzlicher konkreter Befund.\n\n## Dialogformalia"
+        )
+        merged = merge_duplicate_sections("szene", answer)
+        validate_answer("szene", merged)
+        self.assertEqual(merged.count("## Korrektorat"), 1)
+        self.assertIn("Zusätzlicher konkreter Befund.", merged)
 
     def test_run_writes_report_without_changing_source(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
