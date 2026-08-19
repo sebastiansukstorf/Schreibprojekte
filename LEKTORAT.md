@@ -361,6 +361,12 @@ an das private ntfy-Topic `schreibprojekte` senden. Versandfehler werden nur pro
 unterbrechen keine Prüfung. Einrichtung und Token-Ablage stehen unter
 [Push-Benachrichtigungen mit ntfy](docs/betrieb/Benachrichtigungen.md).
 
+Auf dem Homeserver übernimmt ein persistenter `systemd`-Benutzerdienst den produktiven Lauf.
+`loginctl enable-linger` hält den Benutzerdienst auch ohne offene SSH-Sitzung aktiv. Bei einem
+technischen Fehler oder Serverneustart liest der Dienst den gespeicherten Überarbeitungsstand und
+setzt denselben Lauf nach 60 Sekunden fort. Ein bewusstes `stop` bleibt dagegen eine Pause und
+löst keinen automatischen Neustart aus.
+
 Die Serverkonfiguration liegt außerhalb des Vaults. Dadurch bleiben Zugangspunkte, Modellwahl und
 maschinenspezifische Pfade von den Manuskripten und der Obsidian-Synchronisierung getrennt.
 
@@ -382,6 +388,14 @@ Für die eigentliche Prüfung wird beim Start eine temporäre Momentaufnahme unt
 eingefrorenen Textstand. Berichte werden zunächst als `.md.partial` geschrieben und erst nach
 vollständigem Abschluss atomar veröffentlicht. Die Arbeitskopie wird nur nach einem vollständig
 erfolgreichen Abschluss entfernt und steht andernfalls für `resume` bereit.
+
+Eine `.partial`-Datei ist kein freigegebener Bericht. Fertige `.md`-Berichte werden bei einer
+Wiederaufnahme übersprungen. Die unvollständige Prüfung wird erneut ausgeführt. Die
+„sagte“-Prüfung bindet fortsetzbare Pakete an Modell, Kontextzeilen und Paketgröße; passt diese
+Signatur nach einer Konfigurationsänderung nicht mehr, beginnt nur dieser Teilbericht neu.
+H–L–X-Pakete mit ausgelassenen Zielzeilen werden zeilenweise nachgeprüft. Doppelt ausgegebene
+Pflichtmodule eines Szenenlektorats werden vor der formalen Validierung zusammengeführt, ohne
+vorhandene Befunde zu verwerfen.
 
 Die Berichte eines solchen Laufs liegen unter
 `lektorat/ueberarbeitungen/<stand>/<laufkennung>/`. Zusätzlich enthält `findings.jsonl` nur

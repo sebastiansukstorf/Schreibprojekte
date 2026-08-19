@@ -311,6 +311,13 @@ Start, Aktfortschritt, Fehler und Abschluss können als Push-Mitteilungen an die
 werden. Server, Topic und sichere Token-Ablage beschreibt
 [Push-Benachrichtigungen mit ntfy](docs/betrieb/Benachrichtigungen.md).
 
+Auf dem Homeserver kann `systemd/schreibprojekte-lektorat@.service` einen aktiven Stand auch nach
+Prozess- oder Serverabbrüchen automatisch fortsetzen. Der Benutzer benötigt dafür einmalig
+`loginctl enable-linger`. Die Zustandsdatei bleibt bis zu einem vollständig erfolgreichen Manifest
+erhalten; fertige Berichte werden übersprungen und nur fehlgeschlagene beziehungsweise
+unvollständige Prüfungen erneut ausgeführt. Bedienung und Installation beschreibt
+[Schreibprojekte auf Mac, NAS und Homeserver](docs/betrieb/Homeserver.md).
+
 Als projektübergreifender Pilot dient die kürzere Erzählung `eheversprechen` mit Stand 2. Dabei
 werden der OpenProject-Projekttitel aus `Metadaten/titlepage.yml`, der Ausschluss von `_*.md` und
 die erweiterte Hierarchie `Überarbeitungsstand → Kapitel → Datei → Prüfschritt → Befund` erprobt.

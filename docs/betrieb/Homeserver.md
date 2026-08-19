@@ -127,6 +127,11 @@ einmalig `sudo loginctl enable-linger sebastian` gesetzt sein. Eine Zustandsdate
 `~/.config/schreibprojekte/<projekt>-run.env` hält Projekt, Konfiguration, geprüften Stand und
 Zielüberarbeitung fest. Sie enthält keine API-Token.
 
+Die produktive Installation wurde mit `Linger=yes` geprüft. Damit bleibt der Benutzer-Dienst nach
+dem Schließen der SSH-Verbindung aktiv und wird bereits beim Serverstart verfügbar. Ohne Linger
+würde jede neue SSH-Anmeldung einen neuen Benutzer-Manager starten und der Lauf könnte beim Ende
+der letzten Sitzung wieder beendet werden.
+
 Der Dienst startet nach einem Prozessfehler nach 60 Sekunden denselben Stand mit `resume` neu. Er
 versucht höchstens fünf Dienststarts innerhalb von sechs Stunden. Ein Serverneustart startet einen
 noch aktiven Stand erneut; ein vollständig abgeschlossener Lauf entfernt seine Zustandsdatei und
@@ -143,6 +148,19 @@ Die Wiederaufnahme erfolgt an sicheren Berichtsgrenzen: fertige `.md`-Berichte w
 übersprungen, die zuletzt unvollständige `.partial`-Prüfung wird erneut ausgeführt. Nach wiederholt
 fehlgeschlagenen Versuchen bleibt der Zustand erhalten und kann nach Fehlerbehebung erneut
 gestartet werden.
+
+Technische Modellfehler werden soweit möglich lokal abgefangen:
+
+- Fehlende H–L–X-Urteile eines Pakets werden als Einzelzeilen erneut angefordert.
+- Fortsetzbare „sagte“-Pakete enthalten Modell, Kontextzeilen und Paketgröße in ihrem Kopf. Eine
+  veraltete `.partial`-Datei wird bei abweichender Konfiguration neu aufgebaut.
+- Mehrfach gelieferte Pflichtüberschriften eines Szenenlektorats werden zusammengeführt und danach
+  erneut vollständig validiert.
+
+Erst ein Manifest mit `status: complete` entfernt die aktive Zustandsdatei. `status: attention`
+behält sie bei und führt – innerhalb der systemd-Startbegrenzung – zu einer automatischen
+Wiederaufnahme. OpenProject darf weiterhin erst nach einem vollständigen Lauf synchronisiert
+werden.
 
 Die allgemeine Bedienung erfolgt mit `lektorat-dienst PROJEKT BEFEHL`. Ein projektspezifischer
 Kurzname darf denselben Aufruf kapseln. Für `eheversprechen-lektorat` sind damit beispielsweise
