@@ -448,16 +448,24 @@ def main() -> int:
                 )
 
             def notify_scene(index, total, source, scene_results, act_complete):
-                if not notifier or not act_complete:
+                notification_mode = config.get("notifications", {}).get("ntfy", {}).get("progress", "act")
+                if not notifier or (notification_mode != "scene" and not act_complete):
                     return
                 completed = sum(item.status == "completed" for item in scene_results)
+                skipped = sum(item.status == "skipped" for item in scene_results)
                 failed_scene = sum(item.status == "failed" for item in scene_results)
                 if completed == 0 and failed_scene == 0:
                     return
                 act = act_number(source)
+                percent = round(index / total * 100)
+                if notification_mode == "scene":
+                    title = f"{project_root.name}: {source.name} abgeschlossen"
+                else:
+                    title = f"{project_root.name}: Akt {act} abgeschlossen" if act is not None else f"{project_root.name}: Zwischenstand"
                 notifier.send(
-                    f"{project_root.name}: Akt {act} abgeschlossen" if act is not None else f"{project_root.name}: Zwischenstand",
-                    f"{index} von {total} Szenen bearbeitet · {failed_scene} Fehler in der letzten Szene.",
+                    title,
+                    f"{index} von {total} Dateien · {percent} % · "
+                    f"{completed} neu · {skipped} bereits fertig · {failed_scene} fehlgeschlagen.",
                     priority=4 if failed_scene else 3,
                     tags="books,warning" if failed_scene else "books,white_check_mark",
                 )

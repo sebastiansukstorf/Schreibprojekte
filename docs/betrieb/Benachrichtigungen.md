@@ -94,13 +94,16 @@ Die nicht geheime Serverkonfiguration enthält:
     "enabled": true,
     "base_url": "https://ntfy.sukstorf.de",
     "topic": "schreibprojekte",
-    "token_env": "NTFY_TOKEN"
+    "token_env": "NTFY_TOKEN",
+    "progress": "act"
   }
 }
 ```
 
-Der Nachtlauf meldet Start, Wiederaufnahme, jeden abgeschlossenen numerischen Akt, Abbruch und
-Abschluss. Nummern `101` bis `199` bilden Akt 1, `201` bis `299` Akt 2 und so weiter. Ein Fehler
+Der Nachtlauf meldet Start, Wiederaufnahme, Fortschritt, Abbruch und Abschluss. Mit `progress: act`
+kommt eine Meldung nach jedem numerischen Akt; Nummern `101` bis `199` bilden Akt 1, `201` bis `299`
+Akt 2 und so weiter. Mit `progress: scene` meldet er jede abgeschlossene Datei einschließlich
+Prozentwert sowie neuer, übersprungener und fehlgeschlagener Prüfungen. Ein Fehler
 beim Versand wird ausschließlich protokolliert und stoppt keine Lektoratsprüfung.
 
 ## Test
