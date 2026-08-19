@@ -120,6 +120,51 @@ Der selbst gehostete Dienst `https://ntfy.sukstorf.de` sendet Statusmeldungen de
 das private Topic `schreibprojekte`. Details zu Portainer-Stack, iPhone-App und Token stehen unter
 [Push-Benachrichtigungen mit ntfy](Benachrichtigungen.md).
 
+## Automatische Wiederaufnahme mit systemd
+
+Produktive Nachtläufe werden als persistente `systemd`-Benutzerdienste ausgeführt. Dafür muss
+einmalig `sudo loginctl enable-linger sebastian` gesetzt sein. Eine Zustandsdatei unter
+`~/.config/schreibprojekte/<projekt>-run.env` hält Projekt, Konfiguration, geprüften Stand und
+Zielüberarbeitung fest. Sie enthält keine API-Token.
+
+Der Dienst startet nach einem Prozessfehler nach 60 Sekunden denselben Stand mit `resume` neu. Er
+versucht höchstens fünf Dienststarts innerhalb von sechs Stunden. Ein Serverneustart startet einen
+noch aktiven Stand erneut; ein vollständig abgeschlossener Lauf entfernt seine Zustandsdatei und
+läuft beim nächsten Boot nicht nochmals. `systemctl --user stop` ist ein bewusster Stopp und löst
+keinen automatischen Neustart aus.
+
+```bash
+systemctl --user status schreibprojekte-lektorat@eheversprechen.service
+journalctl --user -u schreibprojekte-lektorat@eheversprechen.service -f
+systemctl --user stop schreibprojekte-lektorat@eheversprechen.service
+```
+
+Die Wiederaufnahme erfolgt an sicheren Berichtsgrenzen: fertige `.md`-Berichte werden
+übersprungen, die zuletzt unvollständige `.partial`-Prüfung wird erneut ausgeführt. Nach wiederholt
+fehlgeschlagenen Versuchen bleibt der Zustand erhalten und kann nach Fehlerbehebung erneut
+gestartet werden.
+
+Die allgemeine Bedienung erfolgt mit `lektorat-dienst PROJEKT BEFEHL`. Ein projektspezifischer
+Kurzname darf denselben Aufruf kapseln. Für `eheversprechen-lektorat` sind damit beispielsweise
+folgende Befehle vorgesehen:
+
+```bash
+eheversprechen-lektorat start 2 3
+eheversprechen-lektorat status
+eheversprechen-lektorat log
+eheversprechen-lektorat stop
+eheversprechen-lektorat resume 2
+```
+
+`stop` ist eine bewusste Pause und behält die Zustandsdatei. Ein unerwarteter Fehler führt dagegen
+automatisch nach 60 Sekunden zu einem neuen Versuch. Die Projektkonfiguration liegt in
+`~/.config/schreibprojekte/eheversprechen.conf` und enthält mindestens:
+
+```bash
+PROJECT=/mnt/nfs/schreiben/eheversprechen
+CONFIG=/home/sebastian/schreiben/config/Eheversprechen.json
+```
+
 ## Ergebnisstruktur
 
 Alle neuen Berichte verwenden ausschließlich die kleingeschriebene Struktur:

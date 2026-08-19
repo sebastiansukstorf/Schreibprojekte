@@ -1,0 +1,18 @@
+[Unit]
+Description=Automatischer Schreibprojekte-Lektoratslauf (%i)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=21600
+StartLimitBurst=5
+
+[Service]
+Type=simple
+EnvironmentFile=-%h/.config/schreibprojekte/ntfy.env
+ExecStart=%h/schreiben/Schreibprojekte/Skripte/lektorat-systemd-run.sh %h/.config/schreibprojekte/%i-run.env
+Restart=on-failure
+RestartSec=60
+TimeoutStopSec=30
+KillMode=control-group
+
+[Install]
+WantedBy=default.target
