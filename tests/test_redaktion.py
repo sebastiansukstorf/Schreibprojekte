@@ -12,6 +12,7 @@ from manuskript.redaktion import (
     default_report_path,
     load_manuscript,
     parse_scene_metadata,
+    normalize_answer_headings,
     render_scene_yaml,
     run_redaktion,
     select_markdown_files,
@@ -69,6 +70,12 @@ class RedaktionTests(unittest.TestCase):
         answer = valid_answer("szene").replace("## Dialogformalia", "## Dialog")
         with self.assertRaises(RuntimeError):
             validate_answer("szene", answer)
+
+    def test_harmless_heading_variants_are_normalized(self) -> None:
+        answer = valid_answer("szene").replace("## Korrektorat", "### **1. Korrektorat**")
+        normalized = normalize_answer_headings("szene", answer)
+        validate_answer("szene", normalized)
+        self.assertIn("## Korrektorat", normalized)
 
     def test_run_writes_report_without_changing_source(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

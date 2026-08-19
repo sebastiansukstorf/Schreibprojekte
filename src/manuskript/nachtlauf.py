@@ -170,6 +170,7 @@ def run_night_checks(
                     style_profile=scene.get("style_profile", redaktion.get("style_profile", "")),
                     max_manuscript_chars=int(scene.get("max_manuscript_chars", redaktion.get("max_manuscript_chars", 300_000))),
                     max_context_chars=int(scene.get("max_context_chars", redaktion.get("max_context_chars", 80_000))),
+                    timeout=int(scene.get("timeout", redaktion.get("timeout", 1200))),
                 ),
             ),
         )

@@ -258,6 +258,46 @@ def validate_answer(level: str, answer: str) -> None:
         parse_scene_metadata(answer)
 
 
+def normalize_answer_headings(level: str, answer: str) -> str:
+    """Normalisiere harmlose Markdown-Varianten der zwingenden Abschnittsueberschriften."""
+    headings = ("Kurzdiagnose", *LEVEL_MODULES[level])
+    normalized = answer
+    for heading in headings:
+        pattern = re.compile(
+            rf"^\s*#{{2,4}}\s*(?:\*\*)?(?:\d+[.)]\s*)?{re.escape(heading)}(?:\*\*)?\s*$",
+            re.IGNORECASE | re.MULTILINE,
+        )
+        normalized = pattern.sub(f"## {heading}", normalized)
+    return normalized
+
+
+def build_repair_prompt(level: str, answer: str, error: str) -> str:
+    modules = "\n".join(f"## {module}\n\nKeine relevanten Befunde." for module in LEVEL_MODULES[level])
+    metadata = ""
+    if level == "szene":
+        fields = ", ".join(f'"{field}": "knappe Angabe"' for field in SCENE_METADATA_FIELDS)
+        metadata = f"\n```scene_metadata\n{{{fields}}}\n```"
+    return f"""Formatiere den folgenden Lektoratsentwurf, ohne neue Textbefunde zu erfinden.
+Fehler der bisherigen Fassung: {error}
+
+Die Ausgabe muss ausschließlich Markdown sein und exakt diese Grundstruktur besitzen:
+## Kurzdiagnose
+
+Knappe Diagnose.
+
+{modules}{metadata}
+
+Übernimm vorhandene Befunde unter das passende Modul. Fehlt ein Modul, schreibe dort
+`Keine relevanten Befunde.`. Gib keine Einleitung und keinen Codeblock um die Gesamtantwort aus.
+
+--- BEGINN ENTWURF ---
+{answer}
+--- ENDE ENTWURF ---
+
+/no_think
+"""
+
+
 def parse_scene_metadata(answer: str) -> dict[str, str]:
     """Lese und validiere die maschinenlesbare Szenenzusammenfassung."""
     matches = re.findall(r"```scene_metadata\s*\n(.*?)\n```", answer, flags=re.DOTALL)
@@ -334,6 +374,7 @@ def run_redaktion(
     style_profile: str = "",
     max_manuscript_chars: int = 300_000,
     max_context_chars: int = 80_000,
+    timeout: int = 1200,
 ) -> Path:
     if start is not None and end is not None and start > end:
         raise ValueError("start darf nicht größer als end sein.")
@@ -346,10 +387,19 @@ def run_redaktion(
     context = load_context(context_path, max_chars=max_context_chars)
     prompt = build_prompt(level, manuscript, context, style_profile=style_profile)
     last_error: RuntimeError | None = None
-    for attempt in range(2):
-        retry = "" if attempt == 0 else "\nWICHTIG: Halte die geforderten Überschriften exakt ein.\n"
-        answer = ollama_generate(base_url, model, prompt + retry)
+    answer = ""
+    for attempt in range(4):
         try:
+            if attempt == 0:
+                answer = ollama_generate(base_url, model, prompt, timeout=timeout)
+            elif answer:
+                answer = ollama_generate(
+                    base_url, model, build_repair_prompt(level, answer, str(last_error)),
+                    timeout=timeout,
+                )
+            else:
+                answer = ollama_generate(base_url, model, prompt, timeout=timeout)
+            answer = normalize_answer_headings(level, answer)
             validate_answer(level, answer)
             break
         except RuntimeError as error:
