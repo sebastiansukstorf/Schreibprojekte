@@ -334,6 +334,11 @@ protokolliert und der Lauf wird mit der nächsten Prüfung fortgesetzt. Logs und
 Zusammenfassung liegen unter `lektorat/logs/`. Teil-/Akt- und Gesamtromanlektorat sind nicht Teil
 des Nachtlaufs und werden weiterhin bewusst angestoßen.
 
+Der Standardnachtlauf umfasst `korrektorat`, `sagte`, `wortarten` und `szenenlektorat`. H‑L‑X ist
+eine optionale Stilprüfung für ausgewählte Szenen oder späte Überarbeitungsstände. Sie wird nicht
+mehr automatisch auf jede Manuskriptzeile angewandt, weil der hohe Anteil reiner L-Bestätigungen
+Laufzeit erzeugt, ohne daraus Überarbeitungsaufgaben abzuleiten.
+
 ## Produktiver Homeserverbetrieb
 
 Im produktiven Aufbau bleiben Schreiben und Überarbeiten auf Mac, iPad und iPhone. Die Vaults

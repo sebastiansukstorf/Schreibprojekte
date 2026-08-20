@@ -70,7 +70,14 @@ class NachtlaufTests(unittest.TestCase):
                 patch("manuskript.nachtlauf.run_wortarten_lektorat", side_effect=success),
                 patch("manuskript.nachtlauf.run_redaktion", side_effect=success),
             ):
-                results = run_night_checks(project, {}, force=True, progress=lambda message: None)
+                results = run_night_checks(
+                    project,
+                    {"nachtlauf": {"checks": [
+                        "korrektorat", "sagte", "hlx", "wortarten", "szenenlektorat"
+                    ]}},
+                    force=True,
+                    progress=lambda message: None,
+                )
 
             self.assertEqual(len(results), 5)
             self.assertEqual(results[0].status, "failed")
@@ -100,11 +107,67 @@ class NachtlaufTests(unittest.TestCase):
                 patch("manuskript.nachtlauf.run_wortarten_lektorat", side_effect=success),
                 patch("manuskript.nachtlauf.run_redaktion", side_effect=success),
             ):
-                results = run_night_checks(project, {}, output_root=output, progress=lambda _: None)
+                results = run_night_checks(
+                    project,
+                    {"nachtlauf": {"checks": [
+                        "korrektorat", "sagte", "hlx", "wortarten", "szenenlektorat"
+                    ]}},
+                    output_root=output,
+                    progress=lambda _: None,
+                )
 
             self.assertEqual(sum(item.status == "completed" for item in results), 5)
             self.assertFalse(list(output.glob("*.partial")))
             self.assertEqual(len(list(output.glob("*.md"))), 5)
+
+    def test_default_night_run_excludes_hlx(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp).resolve()
+            content = project / "03_Content"
+            content.mkdir()
+            (content / "101.md").write_text("Text", encoding="utf-8")
+
+            def success(path, *args, **kwargs):
+                output = project / "report.md"
+                output.write_text("ok", encoding="utf-8")
+                return output
+
+            with (
+                patch("manuskript.nachtlauf.run_korrektorat", side_effect=success),
+                patch("manuskript.nachtlauf.run_sagte_lektorat", side_effect=success),
+                patch("manuskript.nachtlauf.run_hlx_lektorat") as hlx,
+                patch("manuskript.nachtlauf.run_wortarten_lektorat", side_effect=success),
+                patch("manuskript.nachtlauf.run_redaktion", side_effect=success),
+            ):
+                results = run_night_checks(project, {}, force=True, progress=lambda _: None)
+
+            self.assertEqual(
+                [item.check for item in results],
+                ["korrektorat", "sagte", "wortarten", "szenenlektorat"],
+            )
+            hlx.assert_not_called()
+
+    def test_hlx_can_be_enabled_explicitly(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp).resolve()
+            content = project / "03_Content"
+            content.mkdir()
+            (content / "101.md").write_text("Text", encoding="utf-8")
+
+            def success(path, *args, **kwargs):
+                output = project / "report.md"
+                output.write_text("ok", encoding="utf-8")
+                return output
+
+            with patch("manuskript.nachtlauf.run_hlx_lektorat", side_effect=success):
+                results = run_night_checks(
+                    project,
+                    {"nachtlauf": {"checks": ["hlx"]}},
+                    force=True,
+                    progress=lambda _: None,
+                )
+
+            self.assertEqual([item.check for item in results], ["hlx"])
 
 
 if __name__ == "__main__":

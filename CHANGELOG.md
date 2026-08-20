@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## Unveröffentlicht
 
+- Der Standardnachtlauf ist über `nachtlauf.checks` konfigurierbar; H‑L‑X bleibt als bewusst
+  aktivierte Zusatzprüfung verfügbar und ist standardmäßig ausgeschlossen.
 - Nachtläufe können als persistente systemd-Benutzerdienste nach Prozess- und Serverabbrüchen
   automatisch am gespeicherten Überarbeitungsstand fortgesetzt werden.
 - H–L–X-Prüfungen fordern ausgelassene Zielzeilen einzeln nach.

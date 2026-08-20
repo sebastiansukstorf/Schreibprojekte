@@ -21,6 +21,10 @@ from manuskript.wortarten_lektorat import default_report_path as wortarten_repor
 from manuskript.wortarten_lektorat import run_wortarten_lektorat
 
 
+AVAILABLE_CHECKS = ("korrektorat", "sagte", "hlx", "wortarten", "szenenlektorat")
+DEFAULT_CHECKS = ("korrektorat", "sagte", "wortarten", "szenenlektorat")
+
+
 @dataclass(frozen=True)
 class CheckResult:
     source: Path
@@ -84,6 +88,17 @@ def run_night_checks(
     raw_exclude = night_config.get("exclude", [])
     if not isinstance(raw_exclude, list) or not all(isinstance(item, str) for item in raw_exclude):
         raise ValueError("nachtlauf.exclude muss eine Liste von Dateinamen oder Glob-Mustern sein.")
+    raw_checks = night_config.get("checks", list(DEFAULT_CHECKS))
+    if not isinstance(raw_checks, list) or not raw_checks or not all(
+        isinstance(item, str) for item in raw_checks
+    ):
+        raise ValueError("nachtlauf.checks muss eine nicht leere Liste von Prüfungsnamen sein.")
+    unknown = sorted(set(raw_checks) - set(AVAILABLE_CHECKS))
+    if unknown:
+        raise ValueError("Unbekannte Nachtlauf-Prüfungen: " + ", ".join(unknown))
+    if len(set(raw_checks)) != len(raw_checks):
+        raise ValueError("nachtlauf.checks darf keine Prüfung mehrfach enthalten.")
+    enabled_checks = set(raw_checks)
     files = manuscript_files(project, exclude=tuple(raw_exclude))
     if output_root is not None:
         output_root = output_root.expanduser().resolve()
@@ -111,7 +126,7 @@ def run_night_checks(
             report = final_reports[name]
             return report.with_suffix(report.suffix + ".partial") if output_root else None
 
-        checks = (
+        checks = tuple(item for item in (
             (
                 "korrektorat",
                 final_reports["korrektorat"],
@@ -179,7 +194,7 @@ def run_night_checks(
                     timeout=int(scene.get("timeout", redaktion.get("timeout", 1200))),
                 ),
             ),
-        )
+        ) if item[0] in enabled_checks)
         for name, report, runner in checks:
             if not force and report_is_current(source, report):
                 progress(f"  ↷ {name}: aktuell, übersprungen")

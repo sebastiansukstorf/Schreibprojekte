@@ -162,6 +162,18 @@ behält sie bei und führt – innerhalb der systemd-Startbegrenzung – zu eine
 Wiederaufnahme. OpenProject darf weiterhin erst nach einem vollständigen Lauf synchronisiert
 werden.
 
+Der produktive Standardnachtlauf verwendet folgende Auswahl:
+
+```json
+"nachtlauf": {
+  "checks": ["korrektorat", "sagte", "wortarten", "szenenlektorat"]
+}
+```
+
+`hlx` bleibt als optionale Zusatzprüfung verfügbar, gehört aber wegen der zeilenweisen
+Modellaufrufe nicht zum regelmäßigen Nachtlauf. Es wird nur für ausgewählte Szenen oder einen
+bewusst festgelegten späten Überarbeitungsstand ergänzt.
+
 Die allgemeine Bedienung erfolgt mit `lektorat-dienst PROJEKT BEFEHL`. Ein projektspezifischer
 Kurzname darf denselben Aufruf kapseln. Für `eheversprechen-lektorat` sind damit beispielsweise
 folgende Befehle vorgesehen:

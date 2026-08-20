@@ -265,6 +265,7 @@ Projektabhängige Strukturdateien und ein Standardkontext können ebenfalls konf
 {
   "nachtlauf": {
     "exclude": ["050.md", "100.md", "200.md", "300.md", "400.md"],
+    "checks": ["korrektorat", "sagte", "wortarten", "szenenlektorat"],
     "context": "01_Figuren"
   }
 }
@@ -272,6 +273,10 @@ Projektabhängige Strukturdateien und ein Standardkontext können ebenfalls konf
 
 Die Ausschlüsse sind Dateinamen oder Glob-Muster relativ zu `03_Content`. Ein explizites
 `--context` beim Start überschreibt den konfigurierten Kontext.
+Der Standardnachtlauf führt Korrektorat, „sagte“, Wortarten- und Szenenlektorat aus. H‑L‑X ist
+wegen Laufzeit und hoher Zahl reiner L-Bestätigungen eine bewusst aktivierte Zusatzprüfung. Für
+einen ausgewählten Lauf kann `hlx` in `nachtlauf.checks` ergänzt oder mit `lektorat-hlx` direkt für
+eine einzelne Szene gestartet werden.
 Beim Nachtlauf wird automatisch die `.manuskript.json` im angegebenen Projekt verwendet, sofern
 nicht ausdrücklich eine andere Datei mit `--config` gewählt wurde.
 
