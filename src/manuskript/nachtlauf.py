@@ -142,6 +142,12 @@ def run_night_checks(
                     output=working_path("hlx"),
                     base_url=_setting(config, "hlx_lektorat", "base_url", "http://127.0.0.1:11434"),
                     model=_setting(config, "hlx_lektorat", "model", "qwen3:8b"),
+                    fallback_model=_setting(
+                        config,
+                        "hlx_lektorat",
+                        "fallback_model",
+                        _setting(config, "hlx_lektorat", "model", "qwen3:8b"),
+                    ),
                     context_lines=int(_setting(config, "hlx_lektorat", "context_lines", 2)),
                     batch_size=int(_setting(config, "hlx_lektorat", "batch_size", 8)),
                 ),

@@ -332,6 +332,9 @@ def main() -> int:
                     "base_url", common_config.get("base_url", "http://127.0.0.1:11434")
                 ),
                 model=hlx_config.get("model", common_config.get("model", "llama3.1:8b")),
+                fallback_model=hlx_config.get(
+                    "fallback_model", hlx_config.get("model", common_config.get("model", "llama3.1:8b"))
+                ),
                 context_lines=int(hlx_config.get("context_lines", 2)),
                 batch_size=int(hlx_config.get("batch_size", 8)),
             )

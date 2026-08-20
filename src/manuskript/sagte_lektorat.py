@@ -169,6 +169,29 @@ def add_quotes_to_answer(answer: str, quotes: dict[int, str]) -> str:
     return "\n".join(result)
 
 
+def decision_line_numbers(answer: str) -> list[int]:
+    """Lies nur echte Entscheidungszeilen, nicht erwaehnte Zeilen aus Begruendungen."""
+    return [
+        int(value)
+        for value in re.findall(
+            r"^\s*(?:[-*]\s*)?(?:\*{1,2})?Zeile\s+(\d+).*?"
+            r"\b(?:STREICHEN|BEHALTEN)\b",
+            answer,
+            re.IGNORECASE | re.MULTILINE,
+        )
+    ]
+
+
+def keep_expected_decisions(answer: str, expected: set[int]) -> str:
+    """Verwirf zusaetzliche Modellurteile; Manuskriptzitate werden spaeter lokal ergaenzt."""
+    kept: list[str] = []
+    for line in answer.splitlines():
+        values = decision_line_numbers(line)
+        if values and values[0] in expected:
+            kept.append(line)
+    return "\n".join(kept)
+
+
 def add_missing_quotes_to_report(report_text: str, source_text: str) -> str:
     """Ergänze Textstellen in älteren Berichten, ohne das Modell erneut aufzurufen."""
     source_lines = source_text.splitlines()
@@ -270,22 +293,18 @@ def run_sagte_lektorat(
                 else f"\nWICHTIG: Gib ausschließlich Urteile für diese Zeilen aus: {allowed}.\n"
             )
             answer = ollama_generate(base_url, model, base_prompt + retry_note)
-            decision_values = [
-                int(value)
-                for value in re.findall(
-                    r"Zeile\s+(\d+).*?\b(?:STREICHEN|BEHALTEN)\b",
-                    answer,
-                    re.IGNORECASE,
-                )
-            ]
+            decision_values = decision_line_numbers(answer)
             decisions = set(decision_values)
-            if decisions == expected and all(count == 1 for count in Counter(decision_values).values()):
+            expected_values = [value for value in decision_values if value in expected]
+            if expected.issubset(decisions) and all(
+                count == 1 for count in Counter(expected_values).values()
+            ):
+                answer = keep_expected_decisions(answer, expected)
                 break
         else:
             missing = sorted(expected - decisions)
-            extra = sorted(decisions - expected)
             raise RuntimeError(
-                f"Ungültige Modellantwort in Paket {number}; fehlend: {missing}, zusätzlich: {extra}."
+                f"Ungültige Modellantwort in Paket {number}; fehlend: {missing}."
             )
         with report.open("a", encoding="utf-8") as handle:
             handle.write(f"\n## Paket {number}\n\n{add_quotes_to_answer(answer, quotes)}\n")

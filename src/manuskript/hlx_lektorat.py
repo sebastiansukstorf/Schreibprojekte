@@ -132,6 +132,7 @@ def run_hlx_lektorat(
     *,
     base_url: str = "http://127.0.0.1:11434",
     model: str = "llama3.1:8b",
+    fallback_model: str | None = None,
     context_lines: int = 2,
     batch_size: int = 8,
 ) -> Path:
@@ -185,8 +186,9 @@ def run_hlx_lektorat(
                         if attempt == 1
                         else f"\nGib exakt ein Urteil fuer Zeile {target} aus.\n"
                     )
+                    rescue_model = fallback_model or model
                     answer = ollama_generate(
-                        base_url, model, single_prompt + retry, num_predict=300
+                        base_url, rescue_model, single_prompt + retry, num_predict=300
                     )
                     try:
                         rescued.append(parse_hlx_answer(answer, {target}, source_lines))

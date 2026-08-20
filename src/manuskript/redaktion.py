@@ -246,13 +246,14 @@ def validate_answer(level: str, answer: str) -> None:
     positions = []
     for module in LEVEL_MODULES[level]:
         heading = f"## {module}"
-        count = answer.count(heading)
+        matches = list(re.finditer(rf"^{re.escape(heading)}\s*$", answer, re.MULTILINE))
+        count = len(matches)
         if count != 1:
             raise RuntimeError(f"Modellantwort enthält `{heading}` {count}-mal statt genau einmal.")
-        positions.append(answer.index(heading))
+        positions.append(matches[0].start())
     if positions != sorted(positions):
         raise RuntimeError("Modellantwort enthält die Prüfmodule in falscher Reihenfolge.")
-    if "## Kurzdiagnose" not in answer:
+    if not re.search(r"^## Kurzdiagnose\s*$", answer, re.MULTILINE):
         raise RuntimeError("Modellantwort enthält keine Kurzdiagnose.")
     if level == "szene":
         parse_scene_metadata(answer)

@@ -88,6 +88,14 @@ class RedaktionTests(unittest.TestCase):
         self.assertEqual(merged.count("## Korrektorat"), 1)
         self.assertIn("Zusätzlicher konkreter Befund.", merged)
 
+    def test_heading_reference_inside_finding_is_not_counted_as_module(self) -> None:
+        answer = valid_answer("szene").replace(
+            "Keine relevanten Befunde.",
+            "Der Ausdruck `## Korrektorat` wird hier nur erwähnt.",
+            1,
+        )
+        validate_answer("szene", answer)
+
     def test_run_writes_report_without_changing_source(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp).resolve()

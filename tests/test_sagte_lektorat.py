@@ -7,6 +7,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from manuskript.sagte_lektorat import (
     add_missing_quotes_to_report,
     add_quotes_to_answer,
+    decision_line_numbers,
+    keep_expected_decisions,
     remove_duplicate_decisions,
     target_quotes,
 )
@@ -52,6 +54,16 @@ class SagteReportTests(unittest.TestCase):
         self.assertEqual(cleaned.count("Zeile 7"), 1)
         self.assertIn("`erste`", cleaned)
         self.assertNotIn("`zweite`", cleaned)
+
+    def test_extra_decision_is_discarded_without_losing_expected_one(self) -> None:
+        answer = (
+            "Zeile 31 — BEHALTEN — erwartetes Urteil\n"
+            "Zeile 24 — STREICHEN — wiederholtes fremdes Urteil"
+        )
+        self.assertEqual(decision_line_numbers(answer), [31, 24])
+        cleaned = keep_expected_decisions(answer, {31})
+        self.assertIn("Zeile 31", cleaned)
+        self.assertNotIn("Zeile 24", cleaned)
 
 
 if __name__ == "__main__":
