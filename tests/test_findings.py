@@ -62,6 +62,23 @@ class FindingsTests(unittest.TestCase):
             self.assertEqual({item.line for item in findings}, {3, 7})
             self.assertEqual({item.relevance for item in findings}, {"mittel", "hoch"})
 
+    def test_disabled_check_is_not_exported_from_older_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            run = self.make_run(Path(temp))
+            scene = run / "szene"
+            (scene / "101-hlx-lektorat.md").write_text(
+                "- Zeile 4 — X — bereits gezeigt\n  - Textstelle: `Er war traurig.`\n",
+                encoding="utf-8",
+            )
+            (scene / "101-sagte-lektorat.md").write_text(
+                "- Zeile 9 — STREICHEN — Sprecher klar\n  - Textstelle: `sagte sie`\n",
+                encoding="utf-8",
+            )
+
+            findings = collect_findings(run, enabled_checks={"sagte"})
+
+            self.assertEqual([(item.check, item.line) for item in findings], [("sagte", 9)])
+
 
 if __name__ == "__main__":
     unittest.main()

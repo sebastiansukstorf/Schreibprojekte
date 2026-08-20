@@ -187,7 +187,7 @@ def _parse_scene(report: Path, source: dict) -> list[Finding]:
     return result
 
 
-def collect_findings(run_dir: Path) -> list[Finding]:
+def collect_findings(run_dir: Path, *, enabled_checks: set[str] | None = None) -> list[Finding]:
     run_dir = run_dir.resolve()
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
     sources = _source_index(manifest)
@@ -199,14 +199,24 @@ def collect_findings(run_dir: Path) -> list[Finding]:
         if not source:
             continue
         if name.endswith("-korrektorat.md"):
+            if enabled_checks is not None and "korrektorat" not in enabled_checks:
+                continue
             findings.extend(_parse_korrektorat(report, source))
         elif name.endswith("-sagte-lektorat.md"):
+            if enabled_checks is not None and "sagte" not in enabled_checks:
+                continue
             findings.extend(_parse_sagte(report, source))
         elif name.endswith("-hlx-lektorat.md"):
+            if enabled_checks is not None and "hlx" not in enabled_checks:
+                continue
             findings.extend(_parse_hlx(report, source))
         elif name.endswith("-adjektive-adverbien-lektorat.md"):
+            if enabled_checks is not None and "wortarten" not in enabled_checks:
+                continue
             findings.extend(_parse_wortarten(report, source))
         elif name.endswith("_lektorat.md"):
+            if enabled_checks is not None and "szenenlektorat" not in enabled_checks:
+                continue
             findings.extend(_parse_scene(report, source))
     unique = {item.id: item for item in findings}
     return sorted(unique.values(), key=lambda item: (item.file, item.line, item.check, item.id))

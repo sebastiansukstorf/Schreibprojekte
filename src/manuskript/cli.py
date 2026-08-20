@@ -485,7 +485,10 @@ def main() -> int:
                 output=revision_run.root / "zusammenfassung.md" if revision_run else None,
             )
             if revision_run:
-                findings = collect_findings(revision_run.root)
+                findings = collect_findings(
+                    revision_run.root,
+                    enabled_checks={result.check for result in results},
+                )
                 write_findings(revision_run.root, findings)
                 failed = sum(result.status == "failed" for result in results)
                 manifest = finish_revision_run(revision_run, exclude=exclude, failed=failed)
