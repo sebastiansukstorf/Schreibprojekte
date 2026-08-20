@@ -20,19 +20,23 @@ set +a
 : "${CONFIG:?CONFIG fehlt in der Zustandsdatei}"
 : "${REVISION:?REVISION fehlt in der Zustandsdatei}"
 NEXT_REVISION="${NEXT_REVISION:-$REVISION}"
+ACTION="${ACTION:-auto}"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 MANUSKRIPT="$SCRIPT_DIR/../.venv/bin/manuskript"
 REVISION_DIR="$PROJECT/lektorat/ueberarbeitungen/$REVISION"
 LATEST_MANIFEST="$(find "$REVISION_DIR" -mindepth 2 -maxdepth 2 -type f -name manifest.json -print 2>/dev/null | sort | tail -n 1)"
 
-if [[ -n "$LATEST_MANIFEST" ]] && grep -q '"status": "complete"' "$LATEST_MANIFEST"; then
+if [[ "$ACTION" != "start" && -n "$LATEST_MANIFEST" ]] && grep -q '"status": "complete"' "$LATEST_MANIFEST"; then
   echo "Lektoratsstand $REVISION ist bereits vollständig."
   rm -f -- "$STATE_FILE"
   exit 0
 fi
 
-if [[ -n "$LATEST_MANIFEST" ]]; then
+if [[ "$ACTION" == "start" ]]; then
+  MODE="start"
+  ARGS=(--revision "$REVISION" --next-revision "$NEXT_REVISION")
+elif [[ -n "$LATEST_MANIFEST" ]]; then
   MODE="resume"
   ARGS=(--resume "$REVISION")
 else

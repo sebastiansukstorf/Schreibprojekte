@@ -53,12 +53,12 @@ ensure_idle() {
 }
 
 write_state() {
-  local revision="$1" next_revision="$2" temporary
+  local revision="$1" next_revision="$2" action="$3" temporary
   mkdir -p -- "$CONFIG_DIR"
   temporary="$(mktemp "$CONFIG_DIR/$PROJECT_KEY-run.env.XXXXXX")"
   chmod 600 "$temporary"
-  printf 'PROJECT=%q\nCONFIG=%q\nREVISION=%q\nNEXT_REVISION=%q\n' \
-    "$PROJECT" "$CONFIG" "$revision" "$next_revision" >"$temporary"
+  printf 'PROJECT=%q\nCONFIG=%q\nREVISION=%q\nNEXT_REVISION=%q\nACTION=%q\n' \
+    "$PROJECT" "$CONFIG" "$revision" "$next_revision" "$action" >"$temporary"
   mv -f -- "$temporary" "$STATE_FILE"
 }
 
@@ -80,7 +80,7 @@ case "$COMMAND" in
     target="${2:-$1}"
     validate_revision "$target"
     ensure_idle
-    write_state "$1" "$target"
+    write_state "$1" "$target" start
     start_service
     ;;
   resume)
@@ -90,7 +90,7 @@ case "$COMMAND" in
     fi
     validate_revision "$1"
     ensure_idle
-    write_state "$1" "$1"
+    write_state "$1" "$1" resume
     start_service
     ;;
   status)
