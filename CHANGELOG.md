@@ -4,6 +4,7 @@ All notable changes to this project are documented in this file.
 
 ## Unveröffentlicht
 
+- Bestätigte Wörterbuch-Ersetzungen dürfen auch aus mehreren Wörtern bestehen.
 - Ein vom Nachtlauf unabhängiger Prüfungsdialog wählt Projekt, Gesamtroman/Teil/Datei und Prüfung.
   Seine lernenden persönlichen und projektspezifischen Wörterbücher filtern bestätigte Begriffe
   auch in späteren Korrektoratsläufen; bestätigte Ersetzungen werden gesichert und protokolliert.

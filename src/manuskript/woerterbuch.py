@@ -172,12 +172,13 @@ def review_unknown_words(
         replacement = input_fn("Korrekte Schreibweise oder Nummer des Vorschlags: ").strip()
         if replacement.isdigit() and 1 <= int(replacement) <= len(suggestions):
             replacement = suggestions[int(replacement) - 1]
-        if not replacement or not WORD.fullmatch(replacement):
+        if not replacement or "\n" in replacement or "\r" in replacement or len(replacement) > 120:
             output_fn("Ungültige Ersetzung; Begriff bleibt offen.")
             continue
         confirm = input_fn(f"{len(items)} Fundstellen `{shown}` → `{replacement}` wirklich ändern? [j/N]: ").strip().casefold()
         if confirm != "j":
             continue
         count, log = replace_word(project, items, shown, replacement, digests)
-        add_word(project_path, replacement)
+        if WORD.fullmatch(replacement):
+            add_word(project_path, replacement)
         output_fn(f"✓ {count} Vorkommen geändert. Protokoll: {log}")

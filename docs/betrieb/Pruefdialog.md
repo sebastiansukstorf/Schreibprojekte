@@ -40,6 +40,7 @@ werden mit sämtlichen Fundstellen gebündelt. Für jeden Begriff stehen zur Aus
 - `p`: als korrektes Projektwort bestätigen;
 - `g`: als projektübergreifendes persönliches Wort bestätigen;
 - `e`: nach Vorschau und zweiter Bestätigung an allen vollständigen Wortfundstellen ersetzen;
+  die Ersetzung darf auch eine kurze Wortgruppe wie `zu viele` sein;
 - `o`: offen lassen;
 - `q`: Dialog beenden.
 
