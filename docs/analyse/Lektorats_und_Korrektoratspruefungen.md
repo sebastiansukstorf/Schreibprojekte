@@ -178,8 +178,8 @@ Beispiel für eine vollständig lokale Konfiguration:
     "provider": "ollama",
     "base_url": "http://127.0.0.1:11434",
     "model": "qwen3:8b",
-    "context_lines": 4,
-    "batch_size": 4
+    "context_lines": 3,
+    "batch_size": 8
   },
   "hlx_lektorat": {
     "context_lines": 2,

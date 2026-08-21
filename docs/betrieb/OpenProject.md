@@ -144,6 +144,10 @@ Lauf kann nicht versehentlich fortgesetzt werden. Während des gesamten Laufs so
 - Wortarten: nur `STREICHEN` und `ERSETZEN`
 - Szenenlektorat: die ausdrücklich ausgegebenen Befunde der sieben Module
 
+Rein typografische Hinweise zur Form der Anführungszeichen werden nicht nach OpenProject
+übertragen. Sie werden beim DOCX-Export normalisiert; echte Zeichensetzungsbefunde in Dialogen
+bleiben Aufgaben.
+
 Standardmäßig werden nur Befunde ab Relevanz `mittel` übernommen. Konkrete Grammatik-,
 Zeichensetzungs- und Rechtschreibbefunde bleiben Einzelaufgaben. Unspezifische Hinweise wie
 „Möglicher Tippfehler gefunden“ werden pro Szene als Checkliste gebündelt. Ein Wert von `0` für

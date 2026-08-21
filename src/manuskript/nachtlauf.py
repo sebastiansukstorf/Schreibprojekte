@@ -145,8 +145,8 @@ def run_night_checks(
                     output=working_path("sagte"),
                     base_url=common.get("base_url", "http://127.0.0.1:11434"),
                     model=common.get("model", "qwen3:8b"),
-                    context_lines=int(common.get("context_lines", 4)),
-                    batch_size=int(common.get("batch_size", 4)),
+                    context_lines=int(common.get("context_lines", 3)),
+                    batch_size=int(common.get("batch_size", 8)),
                 ),
             ),
             (
@@ -175,7 +175,7 @@ def run_night_checks(
                     output=working_path("wortarten"),
                     base_url=_setting(config, "wortarten_lektorat", "base_url", "http://127.0.0.1:11434"),
                     model=_setting(config, "wortarten_lektorat", "model", "qwen3:8b"),
-                    batch_size=int(_setting(config, "wortarten_lektorat", "batch_size", 8)),
+                    batch_size=int(_setting(config, "wortarten_lektorat", "batch_size", 16)),
                 ),
             ),
             (

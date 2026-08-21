@@ -67,7 +67,7 @@ def default_report_path(source: Path) -> Path:
     return project_dir / "lektorat" / "szene" / f"{source.stem}-adjektive-adverbien-lektorat.md"
 
 
-def extract_batches(content: str, batch_size: int = 8) -> list[str]:
+def extract_batches(content: str, batch_size: int = 16) -> list[str]:
     lines = content.splitlines()
     targets = [
         index for index, line in enumerate(lines) if line.strip() and not re.match(r"^\s*#+\s", line)
@@ -160,7 +160,7 @@ def run_wortarten_lektorat(
     *,
     base_url: str = "http://127.0.0.1:11434",
     model: str = "llama3.1:8b",
-    batch_size: int = 8,
+    batch_size: int = 16,
 ) -> Path:
     source = source.resolve()
     if not source.is_file() or source.suffix.lower() != ".md":

@@ -63,13 +63,19 @@ def bundle_findings(findings: list[dict], config: dict) -> list[dict]:
     typos: dict[str, list[dict]] = defaultdict(list)
     for finding in findings:
         file = str(finding["file"])
+        diagnosis = str(finding.get("diagnosis", "")).casefold()
+        quote_typography = (
+            "anführungszeichen" in diagnosis
+            or "zeichen ohne sein gegenstück" in diagnosis
+        )
+        if finding.get("check") == "korrektorat" and quote_typography:
+            continue
         if finding.get("check") == "sagte":
             if not any(mark in str(finding.get("quote", "")) for mark in direct_quote_marks):
                 continue
             if bundle_sagte:
                 sagte[file].append(finding)
                 continue
-        diagnosis = str(finding.get("diagnosis", "")).casefold()
         generic_typo = "möglicher tippfehler" in diagnosis or "möglicherweise ein tippfehler" in diagnosis
         if finding.get("check") == "korrektorat" and generic_typo and bundle_typos:
             typos[file].append(finding)

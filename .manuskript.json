@@ -5,8 +5,11 @@
     "provider": "ollama",
     "base_url": "http://127.0.0.1:11434",
     "model": "qwen3:8b",
-    "context_lines": 4,
-    "batch_size": 4
+    "context_lines": 3,
+    "batch_size": 8
+  },
+  "wortarten_lektorat": {
+    "batch_size": 16
   },
   "redaktion": {
     "style_profile": "Kurze Sätze, Ellipsen und hohe Dialogdichte sind erlaubt. Exposition und Innensicht bleiben sparsam. Keine automatische Literarisierung oder Ausschmückung.",

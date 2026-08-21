@@ -30,7 +30,8 @@ TMPFILE=$(mktemp)
 cat > "$TMPFILE"
 
 uv run --python 3.13 pandoc "$TMPFILE" \
-  --from=markdown+hard_line_breaks \
+  --from=markdown+hard_line_breaks+smart \
+  --lua-filter=ressourcen/filter/german-quotes.lua \
   --lua-filter=ressourcen/filter/insert-visible-dummy-parabreak.lua \
   --filter=ressourcen/filter/insert-pagebreaks.py \
   --metadata-file=Metadaten/titlepage.yml \

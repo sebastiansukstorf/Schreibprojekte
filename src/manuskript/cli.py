@@ -309,8 +309,8 @@ def main() -> int:
                 output_path,
                 base_url=lektorat_config.get("base_url", "http://127.0.0.1:11434"),
                 model=lektorat_config.get("model", "llama3.1:8b"),
-                context_lines=int(lektorat_config.get("context_lines", 4)),
-                batch_size=int(lektorat_config.get("batch_size", 4)),
+                context_lines=int(lektorat_config.get("context_lines", 3)),
+                batch_size=int(lektorat_config.get("batch_size", 8)),
             )
         except (TypeError, ValueError, RuntimeError) as error:
             print(f"❌ Lektorat fehlgeschlagen: {error}", file=sys.stderr)
@@ -377,7 +377,7 @@ def main() -> int:
                 model=wortarten_config.get(
                     "model", common_config.get("model", "llama3.1:8b")
                 ),
-                batch_size=int(wortarten_config.get("batch_size", 8)),
+                batch_size=int(wortarten_config.get("batch_size", 16)),
             )
         except (TypeError, ValueError, RuntimeError) as error:
             print(f"❌ Wortarten-Lektorat fehlgeschlagen: {error}", file=sys.stderr)

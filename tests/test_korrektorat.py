@@ -100,7 +100,7 @@ class KorrektoratTests(unittest.TestCase):
         self.assertIn("Zeile 1, Spalte 4 — Zeichensetzung", report)
         self.assertIn("`Ja das stimmt.`", report)
 
-    def test_languagetool_punctuation_category_is_included(self) -> None:
+    def test_quote_typography_is_excluded_by_default(self) -> None:
         response = {
             "matches": [{
                 "offset": 0,
@@ -110,9 +110,30 @@ class KorrektoratTests(unittest.TestCase):
                 "rule": {"id": "DE_UNPAIRED_QUOTES", "issueType": "typographical", "category": {"id": "PUNCTUATION"}},
             }]
         }
-        findings = parse_findings('"Text"', response)
+        self.assertEqual(parse_findings('"Text"', response), [])
+        findings = parse_findings('"Text"', response, include_quote_typography=True)
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0].kind, "Zeichensetzung")
+
+    def test_unpaired_quote_message_is_excluded_but_other_punctuation_remains(self) -> None:
+        response = {"matches": [
+            {
+                "offset": 0,
+                "length": 1,
+                "message": "Zeichen ohne sein Gegenstück: ‚“‘ scheint zu fehlen",
+                "replacements": [],
+                "rule": {"id": "DE_UNPAIRED_QUOTES", "issueType": "typographical", "category": {"id": "PUNCTUATION"}},
+            },
+            {
+                "offset": 5,
+                "length": 1,
+                "message": "Komma fehlt",
+                "replacements": [{"value": ","}],
+                "rule": {"id": "COMMA_RULE", "issueType": "grammar", "category": {"id": "GRAMMAR"}},
+            },
+        ]}
+        findings = parse_findings('"Text hier', response)
+        self.assertEqual([(item.message, item.column) for item in findings], [("Komma fehlt", 6)])
 
     def test_default_report_path_is_outside_content(self) -> None:
         source = Path("/tmp/Roman/03_Content/101.md")

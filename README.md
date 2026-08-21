@@ -96,8 +96,8 @@ Die Ollama-Adresse, das Modell und die Zahl der Kontextzeilen stehen in `.manusk
     "provider": "ollama",
     "base_url": "http://127.0.0.1:11434",
     "model": "qwen3:4b",
-    "context_lines": 4,
-    "batch_size": 4
+    "context_lines": 3,
+    "batch_size": 8
   }
 }
 ```
@@ -140,6 +140,8 @@ Der Bericht wird unter `lektorat/szene/<dateiname>-korrektorat.md` abgelegt und
 enthält Zeile, Spalte, Originalzeile, Vorschläge und die LanguageTool-Regel-ID. Grundlage ist das
 [Amtliche Regelwerk der deutschen Rechtschreibung 2024](https://www.rechtschreibrat.com/DOX/RfdR_Amtliches-Regelwerk_2024.pdf);
 die technische Prüfung übernimmt das offene [LanguageTool](https://github.com/languagetool-org/languagetool).
+Rein typografische Anführungszeichen-Hinweise werden im Nachtlauf ausgefiltert. Der DOCX-Export
+setzt über Pandoc deutsche Anführungszeichen (`„…“` und `‚…‘`), ohne das Markdown zu verändern.
 
 ### Adjektive und Adverbien lektorieren
 

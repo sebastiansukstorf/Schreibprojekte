@@ -84,7 +84,7 @@ def extract_sagte_context(content: str, radius: int = 4) -> tuple[str, list[int]
 
 
 def extract_sagte_batches(
-    content: str, radius: int = 4, batch_size: int = 4
+    content: str, radius: int = 3, batch_size: int = 8
 ) -> tuple[list[str], list[int]]:
     """Bilde zusammenhängende Dialogblöcke mit mehreren markierten Fundstellen."""
     lines = content.splitlines()
@@ -239,8 +239,8 @@ def run_sagte_lektorat(
     *,
     base_url: str = "http://127.0.0.1:11434",
     model: str = "llama3.1:8b",
-    context_lines: int = 4,
-    batch_size: int = 4,
+    context_lines: int = 3,
+    batch_size: int = 8,
 ) -> Path:
     source = source.resolve()
     if not source.is_file() or source.suffix.lower() != ".md":

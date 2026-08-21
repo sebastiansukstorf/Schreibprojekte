@@ -63,15 +63,18 @@ Prüfung auf handwerkliche Fehler:
 - Zeichensetzung, insbesondere Kommas, Punkte, Gedankenstriche und Auslassungspunkte
 - mögliche Diktat- und Transkriptionsfehler
 
+Die reine Form typografischer Anführungszeichen ist keine Prüfung des Nachtlaufs. Gerade oder
+uneinheitliche Anführungszeichen dürfen im Markdown stehen; beim DOCX-Export normalisiert Pandoc
+sie zu deutschen Paaren (`„…“` beziehungsweise `‚…‘`). Inhaltlich notwendige Zeichensetzung rund
+um die wörtliche Rede, etwa Kommas und Satzschlusszeichen, bleibt Teil des Korrektorats.
+
 Literarische Ellipsen und bewusst unvollständige Sätze sind nicht automatisch Grammatikfehler. Unsichere Befunde werden als Verdacht gekennzeichnet und nicht stillschweigend korrigiert.
 
 ## 2. Dialogformalia
 
 Separate formale Prüfung der wörtlichen Rede:
 
-- korrekte und einheitliche Anführungszeichen
 - Zeichensetzung bei vorangestellten, eingeschobenen und nachgestellten Redebegleitsätzen
-- fehlende oder doppelte Anführungszeichen
 - Sprecher- und Absatzwechsel
 - eindeutige Sprecherzuordnung
 - Häufung, Wiederholung oder unnötige Verwendung von „sagte“-Konstruktionen und anderen Sprechverben

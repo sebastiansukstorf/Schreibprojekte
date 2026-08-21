@@ -174,6 +174,11 @@ Der produktive Standardnachtlauf verwendet folgende Auswahl:
 Modellaufrufe nicht zum regelmäßigen Nachtlauf. Es wird nur für ausgewählte Szenen oder einen
 bewusst festgelegten späten Überarbeitungsstand ergänzt.
 
+Für einen guten Kompromiss aus Laufzeit und Prüftiefe verwendet die „sagte“-Prüfung standardmäßig
+drei Kontextzeilen und acht Fundstellen pro Modellaufruf. Die Wortartenprüfung verarbeitet
+sechzehn Fundstellen pro Aufruf. Größere Pakete sparen Modellstarts; noch größere Werte sollten
+wegen möglicher unvollständiger Antworten nur anhand eines Testlaufs gewählt werden.
+
 Die allgemeine Bedienung erfolgt mit `lektorat-dienst PROJEKT BEFEHL`. Ein projektspezifischer
 Kurzname darf denselben Aufruf kapseln. Für `eheversprechen-lektorat` sind damit beispielsweise
 folgende Befehle vorgesehen:

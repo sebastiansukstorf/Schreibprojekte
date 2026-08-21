@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 ## Unveröffentlicht
 
+- Weniger Ollama-Aufrufe im Nachtlauf: Die „sagte“-Prüfung bündelt standardmäßig acht Fundstellen
+  bei drei Kontextzeilen, die Wortartenprüfung sechzehn Fundstellen pro Paket.
+- Der Nachtlauf ignoriert rein typografische Anführungszeichen-Hinweise; der DOCX-Export setzt
+  deutsche Anführungszeichen, ohne die Markdown-Manuskripte zu verändern.
 - OpenProject bündelt „sagte“-Kandidaten und generische Tippfehler szenenweise, verwirft
   erzählerische „sagte“-Verwendungen und schneidet bei deaktivierter Obergrenze keine Befunde ab.
 - Der Standardnachtlauf ist über `nachtlauf.checks` konfigurierbar; H‑L‑X bleibt als bewusst

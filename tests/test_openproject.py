@@ -58,6 +58,10 @@ class OpenProjectPreviewTests(unittest.TestCase):
             {"id": "k1", "file": "03_Content/101.md", "line": 10, "column": 3,
              "check": "korrektorat", "category": "Zeichensetzung", "relevance": "mittel",
              "quote": "Text", "diagnosis": "Komma fehlt.", "recommendation": "Komma prüfen."},
+            {"id": "q1", "file": "03_Content/101.md", "line": 11, "column": 4,
+             "check": "korrektorat", "category": "Zeichensetzung", "relevance": "mittel",
+             "quote": "„Text\"", "diagnosis": "Schließendes typografisches Anführungszeichen verwenden.",
+             "recommendation": "Vorschlag prüfen."},
         ]
 
         bundled = bundle_findings(findings, {})

@@ -103,7 +103,11 @@ def offset_to_line_column(content: str, offset: int) -> tuple[int, int]:
 
 
 def parse_findings(
-    content: str, response: dict, *, checked_content: str | None = None
+    content: str,
+    response: dict,
+    *,
+    checked_content: str | None = None,
+    include_quote_typography: bool = False,
 ) -> list[Finding]:
     findings: list[Finding] = []
     lines = content.splitlines()
@@ -117,6 +121,20 @@ def parse_findings(
             continue
         line, column = offset_to_line_column(content, offset)
         rule = match.get("rule") or {}
+        message = str(match.get("message", "Prüfhinweis"))
+        quote_typography = (
+            "anführungszeichen" in message.casefold()
+            or str(rule.get("id", "")).upper() in {
+                "DE_UNPAIRED_QUOTES",
+                "FALSCHES_ANFUEHRUNGSZEICHEN",
+            }
+            or (
+                "zeichen ohne sein gegenstück" in message.casefold()
+                and any(mark in message for mark in ('„', '“', '»', '«', '"'))
+            )
+        )
+        if quote_typography and not include_quote_typography:
+            continue
         replacements = tuple(
             str(item["value"])
             for item in match.get("replacements", [])[:5]
@@ -127,7 +145,7 @@ def parse_findings(
                 line=line,
                 column=column,
                 kind=kind,
-                message=str(match.get("message", "Prüfhinweis")),
+                message=message,
                 context=lines[line - 1].strip() if 0 < line <= len(lines) else "",
                 replacements=replacements,
                 rule_id=str(rule.get("id", "unbekannt")),
