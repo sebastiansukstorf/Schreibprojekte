@@ -312,6 +312,12 @@ vollständig erfolgreicher Lauf, dessen Manuskript-Prüfsummen sich während der
 verändert haben, darf übertragen werden. Konfiguration, Aufgabenmodell und sichere Token-Ablage
 beschreibt [Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).
 
+Für eine arbeitsfähige Aufgabenmenge bleiben konkrete Grammatik-, Zeichensetzungs- und
+Rechtschreibbefunde einzeln. Generische Tippfehlerhinweise und „sagte“-Kandidaten werden pro Szene
+als Checkliste gebündelt; erzählerische Verwendungen von `sagte` werden verworfen. Mit
+`max_tasks_per_scene: 0` bleibt die Auswahl vollständig, statt spätere Befunde einer Szene durch
+eine starre Obergrenze abzuschneiden.
+
 Start, Aktfortschritt, Fehler und Abschluss können als Push-Mitteilungen an die ntfy-App gesendet
 werden. Server, Topic und sichere Token-Ablage beschreibt
 [Push-Benachrichtigungen mit ntfy](docs/betrieb/Benachrichtigungen.md).

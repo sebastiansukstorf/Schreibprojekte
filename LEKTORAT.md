@@ -409,8 +409,12 @@ reine Bestätigungen werden nicht zu Aufgaben.
 
 OpenProject wird erst nach einer lokalen Vorschau verändert. `Homestories` bleibt dort ein
 dauerhaftes Projekt; jede folgende Überarbeitungsrunde wird als Version geführt. Pro Szene entsteht
-eine Sammelaufgabe mit zeilenspezifischen Unteraufgaben. Feste Befundkennungen verhindern Dubletten
-bei wiederholter Synchronisierung. Einzelheiten stehen in
+eine Sammelaufgabe. Konkrete Grammatik-, Zeichensetzungs- und Rechtschreibbefunde bleiben
+zeilenspezifische Unteraufgaben. Unspezifische Tippfehlerhinweise sowie echte
+„sagte“-Redebegleitsätze werden jeweils pro Szene in einer Aufgabe mit zeilenspezifischer
+Checkliste gebündelt. Rein erzählerische Verwendungen wie `sagte nichts` erzeugen keine Aufgabe.
+Eine deaktivierte Szenenobergrenze verhindert, dass Befunde willkürlich abgeschnitten werden.
+Feste Befundkennungen verhindern Dubletten bei wiederholter Synchronisierung. Einzelheiten stehen in
 [Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).
 
 ### Projektübergreifende OpenProject-Hierarchie
