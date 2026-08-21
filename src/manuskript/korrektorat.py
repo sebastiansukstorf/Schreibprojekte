@@ -108,6 +108,7 @@ def parse_findings(
     *,
     checked_content: str | None = None,
     include_quote_typography: bool = False,
+    known_words: set[str] | None = None,
 ) -> list[Finding]:
     findings: list[Finding] = []
     lines = content.splitlines()
@@ -121,6 +122,8 @@ def parse_findings(
             continue
         line, column = offset_to_line_column(content, offset)
         rule = match.get("rule") or {}
+        if kind == "Rechtschreibung" and content[offset : offset + length].strip().casefold() in (known_words or set()):
+            continue
         message = str(match.get("message", "Prüfhinweis"))
         quote_typography = (
             "anführungszeichen" in message.casefold()
@@ -195,6 +198,7 @@ def run_korrektorat(
     *,
     base_url: str = DEFAULT_BASE_URL,
     language: str = "de-DE",
+    dictionary_paths: tuple[Path, ...] | None = None,
 ) -> Path:
     source = source.resolve()
     if not source.is_file() or source.suffix.lower() != ".md":
@@ -204,7 +208,25 @@ def run_korrektorat(
     content = source.read_text(encoding="utf-8")
     checked_content = mask_markdown(content)
     response = language_tool_check(checked_content, base_url=base_url, language=language)
-    findings = parse_findings(content, response, checked_content=checked_content)
+    if dictionary_paths is None:
+        project = source.parent
+        for parent in source.parents:
+            if parent.name == "03_Content":
+                project = parent.parent
+                break
+        dictionary_paths = (
+            Path.home() / ".config" / "schreibprojekte" / "woerterbuch.txt",
+            project / "woerterbuch" / "projekt.txt",
+        )
+    known_words = {
+        line.strip().casefold()
+        for path in dictionary_paths if path.is_file()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+    findings = parse_findings(
+        content, response, checked_content=checked_content, known_words=known_words,
+    )
     report = (output or default_report_path(source)).resolve()
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(render_report(source, findings, language, base_url), encoding="utf-8")

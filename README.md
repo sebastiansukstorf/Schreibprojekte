@@ -143,6 +143,20 @@ die technische Prüfung übernimmt das offene [LanguageTool](https://github.com/
 Rein typografische Anführungszeichen-Hinweise werden im Nachtlauf ausgefiltert. Der DOCX-Export
 setzt über Pandoc deutsche Anführungszeichen (`„…“` und `‚…‘`), ohne das Markdown zu verändern.
 
+### Interaktiven Prüfungsdialog starten
+
+Der vom Nachtlauf unabhängige Dialog wählt Projekt, Gesamtroman/Teil/Datei und anschließend die
+gewünschte Prüfung aus. Seine Wörterbuchfunktion bündelt unbekannte Begriffe, übernimmt bestätigte
+Wörter dauerhaft und führt Ersetzungen erst nach Vorschau und ausdrücklicher Bestätigung aus:
+
+```bash
+schreibprojekte-dialog
+```
+
+Persönliche Wörter stehen in `~/.config/schreibprojekte/woerterbuch.txt`, projektspezifische in
+`PROJEKT/woerterbuch/projekt.txt`. Beide werden vom normalen Korrektorat und Nachtlauf gelesen.
+Details enthält [Interaktiver Prüfungsdialog](docs/betrieb/Pruefdialog.md).
+
 ### Adjektive und Adverbien lektorieren
 
 Die Wortartenprüfung meldet nur stilistisch erwähnenswerte Adjektive und Adverbien. Sie unterscheidet

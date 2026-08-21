@@ -179,6 +179,11 @@ drei Kontextzeilen und acht Fundstellen pro Modellaufruf. Die Wortartenprüfung 
 sechzehn Fundstellen pro Aufruf. Größere Pakete sparen Modellstarts; noch größere Werte sollten
 wegen möglicher unvollständiger Antworten nur anhand eines Testlaufs gewählt werden.
 
+Unabhängige Einzelprüfungen und die lernende Wörterbuchpflege werden über
+`schreibprojekte-dialog` gestartet. Dort werden Projekt, Gesamtroman/Teil/Datei und Prüfung
+interaktiv gewählt. Der Dialog gehört nicht zum unbeaufsichtigten Nachtlauf; siehe
+[Interaktiver Prüfungsdialog](Pruefdialog.md).
+
 Die allgemeine Bedienung erfolgt mit `lektorat-dienst PROJEKT BEFEHL`. Ein projektspezifischer
 Kurzname darf denselben Aufruf kapseln. Für `eheversprechen-lektorat` sind damit beispielsweise
 folgende Befehle vorgesehen:

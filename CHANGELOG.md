@@ -4,6 +4,9 @@ All notable changes to this project are documented in this file.
 
 ## Unveröffentlicht
 
+- Ein vom Nachtlauf unabhängiger Prüfungsdialog wählt Projekt, Gesamtroman/Teil/Datei und Prüfung.
+  Seine lernenden persönlichen und projektspezifischen Wörterbücher filtern bestätigte Begriffe
+  auch in späteren Korrektoratsläufen; bestätigte Ersetzungen werden gesichert und protokolliert.
 - Weniger Ollama-Aufrufe im Nachtlauf: Die „sagte“-Prüfung bündelt standardmäßig acht Fundstellen
   bei drei Kontextzeilen, die Wortartenprüfung sechzehn Fundstellen pro Paket.
 - Der Nachtlauf ignoriert rein typografische Anführungszeichen-Hinweise; der DOCX-Export setzt

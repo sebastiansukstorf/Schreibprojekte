@@ -70,6 +70,11 @@ um die wörtliche Rede, etwa Kommas und Satzschlusszeichen, bleibt Teil des Korr
 
 Literarische Ellipsen und bewusst unvollständige Sätze sind nicht automatisch Grammatikfehler. Unsichere Befunde werden als Verdacht gekennzeichnet und nicht stillschweigend korrigiert.
 
+Unbekannte Wörter können unabhängig vom Nachtlauf im interaktiven Prüfungsdialog gebündelt
+bearbeitet werden. Bestätigte persönliche und projektspezifische Wörter werden getrennt gespeichert
+und von späteren Korrektoratsläufen ausgefiltert. Eine projektweite Ersetzung erfolgt nur nach
+Vorschau und ausdrücklicher Bestätigung; sie wird gesichert und protokolliert.
+
 ## 2. Dialogformalia
 
 Separate formale Prüfung der wörtlichen Rede:

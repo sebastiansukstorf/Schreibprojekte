@@ -13,6 +13,7 @@ from manuskript.nachtlauf import run_night_checks, write_summary
 from manuskript.notifications import NtfyNotifier, act_number
 from manuskript.openproject import preview as openproject_preview
 from manuskript.openproject import sync as openproject_sync
+from manuskript.pruefdialog import run_dialog
 from manuskript.redaktion import run_redaktion
 from manuskript.revision import (
     cleanup_snapshot,
@@ -94,6 +95,12 @@ def main() -> int:
         description="Werkzeuge für die Markdown-basierte Schreibumgebung",
     )
     subparsers = parser.add_subparsers(dest="command")
+
+    dialog_parser = subparsers.add_parser(
+        "dialog", help="Wähle Projekt, Umfang und Prüfung in einem interaktiven Dialog"
+    )
+    dialog_parser.add_argument("--projects-root", help="Ordner mit den Schreibprojekten")
+    dialog_parser.add_argument("--config-dir", help="Ordner mit den Projekt-Konfigurationen")
 
     export_parser = subparsers.add_parser("export", help="Exportiere Markdown-Dateien als DOCX")
     export_subparsers = export_parser.add_subparsers(dest="export_command")
@@ -257,6 +264,11 @@ def main() -> int:
     config_path = Path(getattr(args, "config", DEFAULT_CONFIG)).expanduser()
     if not config_path.is_absolute():
         config_path = (REPO_ROOT / config_path).resolve()
+
+    if args.command == "dialog":
+        projects_root = Path(args.projects_root).expanduser() if args.projects_root else None
+        config_dir = Path(args.config_dir).expanduser() if args.config_dir else None
+        return run_dialog(projects_root=projects_root, config_dir=config_dir)
 
     if args.command == "docx":
         source_dir = resolve_target(args.source, repo_root=REPO_ROOT)

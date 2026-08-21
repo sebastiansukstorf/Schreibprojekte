@@ -72,6 +72,16 @@ class KorrektoratTests(unittest.TestCase):
         self.assertEqual(findings[0].line, 1)
         self.assertEqual(findings[0].column, 5)
 
+    def test_known_word_is_not_reported_as_misspelling(self) -> None:
+        response = {"matches": [{
+            "offset": 0,
+            "length": 9,
+            "message": "Möglicher Tippfehler",
+            "replacements": [],
+            "rule": {"id": "GERMAN_SPELLER_RULE", "issueType": "misspelling", "category": {"id": "TYPOS"}},
+        }]}
+        self.assertEqual(parse_findings("Noostream", response, known_words={"noostream"}), [])
+
     def test_findings_created_only_by_markdown_mask_are_ignored(self) -> None:
         content = "# 1\n"
         checked = "  1\n"

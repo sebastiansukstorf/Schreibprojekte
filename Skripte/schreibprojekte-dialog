@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TOOLS="${SCHREIBPROJEKTE_TOOLS:-$HOME/schreiben/Schreibprojekte}"
+if [[ ! -x "$TOOLS/.venv/bin/manuskript" ]]; then
+  echo "manuskript fehlt unter $TOOLS/.venv/bin. Bitte Schreibprojekte installieren." >&2
+  exit 66
+fi
+exec "$TOOLS/.venv/bin/manuskript" dialog "$@"
