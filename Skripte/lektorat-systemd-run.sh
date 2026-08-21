@@ -25,7 +25,7 @@ ACTION="${ACTION:-auto}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 MANUSKRIPT="$SCRIPT_DIR/../.venv/bin/manuskript"
 REVISION_DIR="$PROJECT/lektorat/ueberarbeitungen/$REVISION"
-LATEST_MANIFEST="$(find "$REVISION_DIR" -mindepth 2 -maxdepth 2 -type f -name manifest.json -print 2>/dev/null | sort | tail -n 1)"
+LATEST_MANIFEST="$(find "$REVISION_DIR" -mindepth 2 -maxdepth 2 -type f -name manifest.json -print 2>/dev/null | sort | tail -n 1 || true)"
 
 if [[ "$ACTION" != "start" && -n "$LATEST_MANIFEST" ]] && grep -q '"status": "complete"' "$LATEST_MANIFEST"; then
   echo "Lektoratsstand $REVISION ist bereits vollständig."
