@@ -18,17 +18,81 @@ from manuskript.findings import read_findings
 RELEVANCE = {"niedrig": 1, "mittel": 2, "hoch": 3}
 
 
+def _bundle_id(kind: str, file: str, findings: list[dict]) -> str:
+    payload = "\0".join([kind, file, *(item["id"] for item in findings)])
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _checklist(findings: list[dict]) -> str:
+    lines = []
+    for item in sorted(findings, key=lambda value: (int(value.get("line", 0)), value["id"])):
+        quote_text = str(item.get("quote", "")).replace("\n", " ").strip()
+        quote_part = f" — `{quote_text}`" if quote_text else ""
+        lines.append(f"- [ ] Zeile {item.get('line', 0)}{quote_part}: {item['diagnosis']}")
+    return "\n".join(lines)
+
+
+def _bundled_finding(kind: str, file: str, findings: list[dict]) -> dict:
+    first = findings[0]
+    if kind == "sagte":
+        category = "Sprecherzuordnungen gesammelt prüfen"
+        recommendation = "Alle markierten Sprecherzuordnungen im Szenenkontext einzeln prüfen."
+    else:
+        category = "Unklare Schreibweisen gesammelt prüfen"
+        recommendation = "Unbekannte Namen, Anglizismen und mögliche Tippfehler gesammelt prüfen."
+    return {
+        **first,
+        "id": _bundle_id(kind, file, findings),
+        "line": 0,
+        "column": None,
+        "category": category,
+        "quote": "",
+        "diagnosis": _checklist(findings),
+        "recommendation": recommendation,
+    }
+
+
+def bundle_findings(findings: list[dict], config: dict) -> list[dict]:
+    """Bündele prüfpflichtige Kandidaten, ohne ihre Zeilenbezüge zu verlieren."""
+    settings = config.get("openproject", {})
+    bundle_sagte = bool(settings.get("bundle_sagte_per_scene", True))
+    bundle_typos = bool(settings.get("bundle_generic_typos_per_scene", True))
+    direct_quote_marks = ('„', '“', '»', '«', '"')
+    kept: list[dict] = []
+    sagte: dict[str, list[dict]] = defaultdict(list)
+    typos: dict[str, list[dict]] = defaultdict(list)
+    for finding in findings:
+        file = str(finding["file"])
+        if finding.get("check") == "sagte":
+            if not any(mark in str(finding.get("quote", "")) for mark in direct_quote_marks):
+                continue
+            if bundle_sagte:
+                sagte[file].append(finding)
+                continue
+        diagnosis = str(finding.get("diagnosis", "")).casefold()
+        generic_typo = "möglicher tippfehler" in diagnosis or "möglicherweise ein tippfehler" in diagnosis
+        if finding.get("check") == "korrektorat" and generic_typo and bundle_typos:
+            typos[file].append(finding)
+            continue
+        kept.append(finding)
+    for file, items in sagte.items():
+        kept.append(_bundled_finding("sagte", file, items))
+    for file, items in typos.items():
+        kept.append(_bundled_finding("korrektorat", file, items))
+    return kept
+
+
 def selected_findings(run_dir: Path, config: dict) -> list[dict]:
     settings = config.get("openproject", {})
     minimum = str(settings.get("minimum_relevance", "mittel")).lower()
     threshold = RELEVANCE.get(minimum)
     if threshold is None:
         raise ValueError("openproject.minimum_relevance muss niedrig, mittel oder hoch sein.")
-    cap = int(settings.get("max_tasks_per_scene", 25))
-    if cap < 1:
-        raise ValueError("openproject.max_tasks_per_scene muss mindestens 1 sein.")
+    cap = int(settings.get("max_tasks_per_scene", 0))
+    if cap < 0:
+        raise ValueError("openproject.max_tasks_per_scene darf nicht negativ sein.")
     grouped: dict[str, list[dict]] = defaultdict(list)
-    for finding in read_findings(run_dir):
+    for finding in bundle_findings(read_findings(run_dir), config):
         if RELEVANCE.get(str(finding.get("relevance", "mittel")).lower(), 2) >= threshold:
             grouped[str(finding["file"])].append(finding)
     selected = []
@@ -37,7 +101,7 @@ def selected_findings(run_dir: Path, config: dict) -> list[dict]:
             grouped[file],
             key=lambda item: (-RELEVANCE.get(str(item.get("relevance", "mittel")).lower(), 2), int(item.get("line", 0)), item["id"]),
         )
-        selected.extend(ordered[:cap])
+        selected.extend(ordered[:cap] if cap else ordered)
     return selected
 
 

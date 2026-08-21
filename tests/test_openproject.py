@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from manuskript.openproject import preview, selected_findings, sync
+from manuskript.openproject import bundle_findings, preview, selected_findings, sync
 from manuskript.openproject import OpenProjectClient
 
 
@@ -24,7 +24,7 @@ class OpenProjectPreviewTests(unittest.TestCase):
         }), encoding="utf-8")
         findings = [
             {"id": "a", "file": "03_Content/101.md", "line": 1, "column": None, "check": "hlx", "category": "X", "relevance": "hoch", "quote": "Text", "diagnosis": "Doppelt", "recommendation": "Prüfen", "source_sha256": "abc"},
-            {"id": "b", "file": "03_Content/101.md", "line": 2, "column": None, "check": "sagte", "category": "Sprecherführung", "relevance": "mittel", "quote": "Text", "diagnosis": "Klar", "recommendation": "Streichen prüfen", "source_sha256": "abc"},
+            {"id": "b", "file": "03_Content/101.md", "line": 2, "column": None, "check": "sagte", "category": "Sprecherführung", "relevance": "mittel", "quote": "„Text“, sagte er.", "diagnosis": "Klar", "recommendation": "Streichen prüfen", "source_sha256": "abc"},
             {"id": "c", "file": "03_Content/101.md", "line": 3, "column": None, "check": "wortarten", "category": "Adverb", "relevance": "niedrig", "quote": "Text", "diagnosis": "Schwach", "recommendation": "Prüfen", "source_sha256": "abc"},
         ]
         (run / "findings.jsonl").write_text(
@@ -42,6 +42,41 @@ class OpenProjectPreviewTests(unittest.TestCase):
             self.assertIn("Zielversion: `5`", rendered)
             self.assertIn("Aufgaben: 1", rendered)
             self.assertIn("noch keine OpenProject-Daten verändert", rendered)
+
+    def test_sagte_and_generic_typos_are_bundled_per_scene(self) -> None:
+        findings = [
+            {"id": "s1", "file": "03_Content/101.md", "line": 4, "column": None,
+             "check": "sagte", "category": "Sprecherführung", "relevance": "mittel",
+             "quote": "„Hallo“, sagte er.", "diagnosis": "Sprecher klar", "recommendation": "Prüfen"},
+            {"id": "s2", "file": "03_Content/101.md", "line": 8, "column": None,
+             "check": "sagte", "category": "Sprecherführung", "relevance": "mittel",
+             "quote": "Er sagte nichts.", "diagnosis": "Kein Redebegleitsatz", "recommendation": "Prüfen"},
+            {"id": "t1", "file": "03_Content/101.md", "line": 9, "column": 2,
+             "check": "korrektorat", "category": "Rechtschreibung", "relevance": "mittel",
+             "quote": "Noostream", "diagnosis": "Möglicher Tippfehler gefunden.",
+             "recommendation": "Fundstelle prüfen."},
+            {"id": "k1", "file": "03_Content/101.md", "line": 10, "column": 3,
+             "check": "korrektorat", "category": "Zeichensetzung", "relevance": "mittel",
+             "quote": "Text", "diagnosis": "Komma fehlt.", "recommendation": "Komma prüfen."},
+        ]
+
+        bundled = bundle_findings(findings, {})
+
+        self.assertEqual(len(bundled), 3)
+        self.assertEqual(sum(item["check"] == "sagte" for item in bundled), 1)
+        self.assertEqual(sum("Unklare Schreibweisen" in item["category"] for item in bundled), 1)
+        sagte = next(item for item in bundled if item["check"] == "sagte")
+        self.assertIn("Zeile 4", sagte["diagnosis"])
+        self.assertNotIn("Zeile 8", sagte["diagnosis"])
+
+    def test_zero_scene_cap_keeps_all_grouped_tasks(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            run = self.make_run(Path(temp))
+            selected = selected_findings(
+                run,
+                {"openproject": {"minimum_relevance": "mittel", "max_tasks_per_scene": 0}},
+            )
+            self.assertEqual(len(selected), 2)
 
     def test_sync_creates_version_parent_and_idempotent_child_marker(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

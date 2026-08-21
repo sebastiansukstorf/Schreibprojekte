@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## Unveröffentlicht
 
+- OpenProject bündelt „sagte“-Kandidaten und generische Tippfehler szenenweise, verwirft
+  erzählerische „sagte“-Verwendungen und schneidet bei deaktivierter Obergrenze keine Befunde ab.
 - Der Standardnachtlauf ist über `nachtlauf.checks` konfigurierbar; H‑L‑X bleibt als bewusst
   aktivierte Zusatzprüfung verfügbar und ist standardmäßig ausgeschlossen.
 - Nachtläufe können als persistente systemd-Benutzerdienste nach Prozess- und Serverabbrüchen

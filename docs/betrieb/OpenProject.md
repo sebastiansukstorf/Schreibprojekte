@@ -138,13 +138,17 @@ Lauf kann nicht versehentlich fortgesetzt werden. Während des gesamten Laufs so
 ## Welche Befunde werden Aufgaben?
 
 - Korrektorat: Rechtschreibung, Grammatik und Zeichensetzung
-- „sagte“-Prüfung: nur `STREICHEN`
+- „sagte“-Prüfung: nur `STREICHEN` bei tatsächlicher wörtlicher Rede; Kandidaten werden pro Szene
+  als zeilenspezifische Checkliste gebündelt
 - H–L–X: nur `H` und `X`; korrekte `L`-Zeilen entfallen
 - Wortarten: nur `STREICHEN` und `ERSETZEN`
 - Szenenlektorat: die ausdrücklich ausgegebenen Befunde der sieben Module
 
-Standardmäßig werden nur Befunde ab Relevanz `mittel` und höchstens 25 Aufgaben pro Szene
-übernommen. Die vollständigen Berichte bleiben unabhängig von dieser Begrenzung erhalten.
+Standardmäßig werden nur Befunde ab Relevanz `mittel` übernommen. Konkrete Grammatik-,
+Zeichensetzungs- und Rechtschreibbefunde bleiben Einzelaufgaben. Unspezifische Hinweise wie
+„Möglicher Tippfehler gefunden“ werden pro Szene als Checkliste gebündelt. Ein Wert von `0` für
+`max_tasks_per_scene` deaktiviert die Begrenzung, damit keine Befunde willkürlich abgeschnitten
+werden. Die vollständigen Berichte bleiben unabhängig von der Aufgabenauswahl erhalten.
 
 ## Vorschau und Synchronisierung
 
@@ -182,7 +186,9 @@ Die projektbezogenen, nicht geheimen Einstellungen gehören in die Serverkonfigu
     "version_prefix": "Überarbeitung",
     "work_package_type": "Aufgabe",
     "minimum_relevance": "mittel",
-    "max_tasks_per_scene": 25
+    "max_tasks_per_scene": 0,
+    "bundle_sagte_per_scene": true,
+    "bundle_generic_typos_per_scene": true
   }
 }
 ```
