@@ -179,6 +179,4 @@ def review_unknown_words(
         if confirm != "j":
             continue
         count, log = replace_word(project, items, shown, replacement, digests)
-        if WORD.fullmatch(replacement):
-            add_word(project_path, replacement)
         output_fn(f"✓ {count} Vorkommen geändert. Protokoll: {log}")

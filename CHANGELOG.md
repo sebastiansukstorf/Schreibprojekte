@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## Unveröffentlicht
 
+- Nur ausdrücklich bestätigte Begriffe werden gelernt; gewöhnliche Korrekturersetzungen blähen das
+  persönliche oder projektspezifische Wörterbuch nicht mehr auf.
 - Bestätigte Wörterbuch-Ersetzungen dürfen auch aus mehreren Wörtern bestehen.
 - Ein vom Nachtlauf unabhängiger Prüfungsdialog wählt Projekt, Gesamtroman/Teil/Datei und Prüfung.
   Seine lernenden persönlichen und projektspezifischen Wörterbücher filtern bestätigte Begriffe

@@ -53,6 +53,9 @@ PROJEKT/woerterbuch/projekt.txt
 
 Das normale Korrektorat und der Nachtlauf lesen beide Wörterbücher automatisch. Bestätigte Wörter
 werden daher in späteren Läufen nicht erneut als unbekannt gemeldet.
+Korrigierte Schreibfehler werden nicht als Wörterbucheinträge gespeichert: Die korrekte Ersetzung
+wird von LanguageTool ohnehin erkannt. Nur eine ausdrückliche Entscheidung mit `p` oder `g` lässt
+das Wörterbuch lernen.
 
 Vor einer Ersetzung prüft das Werkzeug, dass sich die betroffenen Dateien seit der aktuellen
 LanguageTool-Prüfung nicht geändert haben. Es ersetzt nur vollständige, exakt gleich geschriebene
