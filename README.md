@@ -323,7 +323,9 @@ uv run manuskript openproject-preview ../MeinProjekt --run 4
 uv run manuskript openproject-sync ../MeinProjekt --run 4
 ```
 
-Der Sync ist idempotent: Bereits übertragene Befunde werden über feste Kennungen erkannt. Nur ein
+Der Sync ist innerhalb jeder OpenProject-Version idempotent: Bereits in derselben Zielüberarbeitung
+übertragene Befunde werden über feste Kennungen erkannt. Besteht ein Befund in einer späteren
+Überarbeitung fort, wird er dort erneut als Aufgabe angelegt. Nur ein
 vollständig erfolgreicher Lauf, dessen Manuskript-Prüfsummen sich während der Ausführung nicht
 verändert haben, darf übertragen werden. Konfiguration, Aufgabenmodell und sichere Token-Ablage
 beschreibt [Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).

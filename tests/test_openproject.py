@@ -16,6 +16,28 @@ class OpenProjectPreviewTests(unittest.TestCase):
         client = OpenProjectClient("https://example.test", "abc")
         self.assertEqual(client.authorization(), "Basic YXBpa2V5OmFiYw==")
 
+    def test_existing_markers_keep_their_assigned_versions(self) -> None:
+        client = OpenProjectClient("https://example.test", "abc")
+        response = {"_embedded": {"elements": [
+            {
+                "subject": "[LKT-abc] Befund",
+                "_links": {
+                    "self": {"href": "/api/v3/work_packages/10"},
+                    "version": {"href": "/api/v3/versions/2"},
+                },
+            },
+            {
+                "subject": "[LKT-abc] Befund in späterer Version",
+                "_links": {
+                    "self": {"href": "/api/v3/work_packages/11"},
+                    "version": {"href": "/api/v3/versions/3"},
+                },
+            },
+        ]}}
+        with patch.object(client, "request", return_value=response):
+            markers = client.existing_markers(1)
+        self.assertEqual(markers, {"LKT-abc": [(10, 2), (11, 3)]})
+
     def make_run(self, root: Path) -> Path:
         run = root / "run"
         run.mkdir()
@@ -118,6 +140,43 @@ class OpenProjectPreviewTests(unittest.TestCase):
             self.assertTrue(records[0][0].startswith("[LKTSZ-"))
             self.assertTrue(records[1][0].startswith("[LKT-"))
             self.assertEqual(records[1][1]["parent_id"], 11)
+
+    def test_sync_is_idempotent_only_inside_the_target_version(self) -> None:
+        for assigned_version, expected_created, expected_records in ((1, 1, 2), (2, 0, 0)):
+            with self.subTest(assigned_version=assigned_version):
+                with tempfile.TemporaryDirectory() as temp:
+                    run = self.make_run(Path(temp))
+                    manifest_path = run / "manifest.json"
+                    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                    manifest.update({"status": "complete", "source_unchanged": True})
+                    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                    records = []
+
+                    class FakeClient:
+                        def __init__(self, *args, **kwargs): pass
+                        def project(self, identifier):
+                            return {"_links": {"self": {"href": "/api/v3/projects/1"}}}
+                        def versions(self, project_id):
+                            return [{"name": "Überarbeitung 5", "_links": {"self": {"href": "/api/v3/versions/2"}}}]
+                        def project_types(self, project_id):
+                            return [{"name": "Aufgabe", "_links": {"self": {"href": "/api/v3/types/3"}}}]
+                        def existing_markers(self, project_id):
+                            return {"LKT-a": [(99, assigned_version)]}
+                        def create_work_package(self, project_id, type_id, subject, description, **kwargs):
+                            records.append((subject, kwargs))
+                            return {"_links": {"self": {"href": f"/api/v3/work_packages/{10 + len(records)}"}}}
+
+                    config = {"openproject": {
+                        "base_url": "https://projects.example.test",
+                        "project_identifier": "homestories",
+                        "minimum_relevance": "mittel",
+                        "max_tasks_per_scene": 1,
+                    }}
+                    with patch("manuskript.openproject.OpenProjectClient", FakeClient):
+                        result = sync(run, config, token="secret")
+                    self.assertEqual(result["created"], expected_created)
+                    self.assertEqual(result["skipped"], 1 - expected_created)
+                    self.assertEqual(len(records), expected_records)
 
 
 if __name__ == "__main__":

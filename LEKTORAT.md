@@ -422,7 +422,9 @@ zeilenspezifische Unteraufgaben. Unspezifische Tippfehlerhinweise sowie echte
 „sagte“-Redebegleitsätze werden jeweils pro Szene in einer Aufgabe mit zeilenspezifischer
 Checkliste gebündelt. Rein erzählerische Verwendungen wie `sagte nichts` erzeugen keine Aufgabe.
 Eine deaktivierte Szenenobergrenze verhindert, dass Befunde willkürlich abgeschnitten werden.
-Feste Befundkennungen verhindern Dubletten bei wiederholter Synchronisierung. Einzelheiten stehen in
+Feste Befundkennungen verhindern innerhalb derselben OpenProject-Version Dubletten bei wiederholter
+Synchronisierung. Fortbestehende Befunde werden in einer neuen Überarbeitung erneut angelegt, damit
+jede Version eine vollständige Aufgabenliste enthält. Einzelheiten stehen in
 [Lektoratsbefunde in OpenProject](docs/betrieb/OpenProject.md).
 
 ### Projektübergreifende OpenProject-Hierarchie

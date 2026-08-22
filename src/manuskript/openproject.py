@@ -193,15 +193,20 @@ class OpenProjectClient:
         result = self.request("GET", f"/api/v3/projects/{project_id}/types")
         return list(result.get("_embedded", {}).get("elements", []))
 
-    def existing_markers(self, project_id: int) -> dict[str, int]:
+    def existing_markers(self, project_id: int) -> dict[str, list[tuple[int, int | None]]]:
         query = urlencode({"pageSize": 1000})
         result = self.request("GET", f"/api/v3/projects/{project_id}/work_packages?{query}")
-        markers: dict[str, int] = {}
+        markers: dict[str, list[tuple[int, int | None]]] = defaultdict(list)
         for item in result.get("_embedded", {}).get("elements", []):
             subject = str(item.get("subject", ""))
             if subject.startswith(("[LKT-", "[LKTSZ-")) and "]" in subject:
-                markers[subject[1 : subject.index("]")]] = _id_from_href(item)
-        return markers
+                version_href = str(item.get("_links", {}).get("version", {}).get("href", ""))
+                try:
+                    version_id = int(version_href.rstrip("/").rsplit("/", 1)[1]) if version_href else None
+                except (IndexError, ValueError):
+                    version_id = None
+                markers[subject[1 : subject.index("]")]].append((_id_from_href(item), version_id))
+        return dict(markers)
 
     def create_work_package(
         self, project_id: int, type_id: int, subject: str, description: str,
@@ -281,12 +286,20 @@ def sync(run_dir: Path, config: dict, *, token: str | None = None) -> dict:
         raise RuntimeError("Das OpenProject-Projekt stellt keinen Arbeitspakettyp bereit.")
     type_id = _id_from_href(wp_type)
     existing = client.existing_markers(project_id)
+
+    def marker_in_version(marker: str) -> int | None:
+        return next(
+            (work_package_id for work_package_id, assigned_version_id in existing.get(marker, [])
+             if assigned_version_id == version_id),
+            None,
+        )
+
     findings = selected_findings(run_dir, config)
     parents: dict[str, int] = {}
     created = skipped = 0
     for finding in findings:
         marker = f"LKT-{finding['id'][:12]}"
-        if marker in existing:
+        if marker_in_version(marker) is not None:
             skipped += 1
             continue
         file = finding["file"]
@@ -295,8 +308,9 @@ def sync(run_dir: Path, config: dict, *, token: str | None = None) -> dict:
                 f"{manifest['run_id']}\0{file}".encode("utf-8")
             ).hexdigest()[:12]
             parent_marker = f"LKTSZ-{parent_key}"
-            if parent_marker in existing:
-                parents[file] = existing[parent_marker]
+            existing_parent = marker_in_version(parent_marker)
+            if existing_parent is not None:
+                parents[file] = existing_parent
             else:
                 parent = client.create_work_package(
                     project_id, type_id,
@@ -304,14 +318,14 @@ def sync(run_dir: Path, config: dict, *, token: str | None = None) -> dict:
                     f"Befunde aus Lektoratslauf `{manifest['run_id']}` für `{file}`.", version_id=version_id,
                 )
                 parents[file] = _id_from_href(parent)
-                existing[parent_marker] = parents[file]
+                existing.setdefault(parent_marker, []).append((parents[file], version_id))
         location = f":{finding['line']}" if finding.get("line") else ""
         subject = f"[{marker}] [{Path(file).stem}{location}] {finding['category']} prüfen"
         created_work_package = client.create_work_package(
             project_id, type_id, subject, _description(finding, manifest),
             version_id=version_id, parent_id=parents[file],
         )
-        existing[marker] = _id_from_href(created_work_package)
+        existing.setdefault(marker, []).append((_id_from_href(created_work_package), version_id))
         created += 1
     result = {"project": project_name, "version": version_name, "created": created, "skipped": skipped}
     (run_dir / "openproject-sync.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

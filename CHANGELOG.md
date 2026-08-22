@@ -4,6 +4,9 @@ All notable changes to this project are documented in this file.
 
 ## Unveröffentlicht
 
+- OpenProject synchronisiert Befundkennungen versionsbezogen: Wiederholungen derselben
+  Synchronisierung bleiben idempotent, fortbestehende Befunde erscheinen in einer neuen
+  Überarbeitung erneut.
 - Automatische Wiederholungen setzen denselben Lauf mit `resume` fort. Die „sagte“-Prüfung nutzt
   kleinere Pakete und fordert nach drei unvollständigen Paketantworten fehlende Zeilen einzeln an.
 - Der systemd-Wrapper startet einen neuen Überarbeitungsstand auch dann korrekt, wenn dessen

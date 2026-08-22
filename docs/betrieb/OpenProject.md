@@ -237,6 +237,9 @@ OpenProject-Zugang.
 - Sicherungsfassungen wie `_*.md` müssen explizit von Snapshot und Prüfung ausgeschlossen sein.
 - `resume` führt den vorhandenen Lauf fort. Nur ein bewusstes neues `start` für denselben Textstand
   erzeugt ein neues Laufverzeichnis; identische Befunde bleiben über ihren Fingerprint erkennbar.
+- Die Idempotenz gilt je OpenProject-Version: Derselbe Befund wird innerhalb einer Zielüberarbeitung
+  nur einmal angelegt, darf aber in einer späteren Überarbeitung erneut erscheinen, solange er im
+  Manuskript fortbesteht. Dadurch enthält jede Version eine vollständige Aufgabenliste.
 
 Technische Grundlage ist die OpenProject API v3 mit Projekten, Versionen, Arbeitspaketen und
 Elternbeziehungen. Die eingerichtete OpenProject-Version 14.6.3 akzeptiert den API-Token über Basic
