@@ -175,7 +175,7 @@ Modellaufrufe nicht zum regelmäßigen Nachtlauf. Es wird nur für ausgewählte 
 bewusst festgelegten späten Überarbeitungsstand ergänzt.
 
 Für einen guten Kompromiss aus Laufzeit und Prüftiefe verwendet die „sagte“-Prüfung standardmäßig
-drei Kontextzeilen und acht Fundstellen pro Modellaufruf. Die Wortartenprüfung verarbeitet
+drei Kontextzeilen und vier Fundstellen pro Modellaufruf. Die Wortartenprüfung verarbeitet
 sechzehn Fundstellen pro Aufruf. Größere Pakete sparen Modellstarts; noch größere Werte sollten
 wegen möglicher unvollständiger Antworten nur anhand eines Testlaufs gewählt werden.
 

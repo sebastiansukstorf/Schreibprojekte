@@ -322,7 +322,7 @@ def main() -> int:
                 base_url=lektorat_config.get("base_url", "http://127.0.0.1:11434"),
                 model=lektorat_config.get("model", "llama3.1:8b"),
                 context_lines=int(lektorat_config.get("context_lines", 3)),
-                batch_size=int(lektorat_config.get("batch_size", 8)),
+                batch_size=int(lektorat_config.get("batch_size", 4)),
             )
         except (TypeError, ValueError, RuntimeError) as error:
             print(f"❌ Lektorat fehlgeschlagen: {error}", file=sys.stderr)

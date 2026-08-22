@@ -1,6 +1,8 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -9,7 +11,9 @@ from manuskript.sagte_lektorat import (
     add_quotes_to_answer,
     decision_line_numbers,
     keep_expected_decisions,
+    isolate_target,
     remove_duplicate_decisions,
+    run_sagte_lektorat,
     target_quotes,
 )
 
@@ -64,6 +68,37 @@ class SagteReportTests(unittest.TestCase):
         cleaned = keep_expected_decisions(answer, {31})
         self.assertIn("Zeile 31", cleaned)
         self.assertNotIn("Zeile 24", cleaned)
+
+    def test_rescue_excerpt_marks_only_missing_line_as_target(self) -> None:
+        excerpt = (
+            ">>> ZIELZEILE 7: A, sagte er.\n"
+            ">>> ZIELZEILE 9: B, sagte sie."
+        )
+        rescued = isolate_target(excerpt, 9)
+        self.assertIn("Kontext 7: A, sagte er.", rescued)
+        self.assertIn(">>> ZIELZEILE 9: B, sagte sie.", rescued)
+        self.assertEqual(rescued.count(">>> ZIELZEILE"), 1)
+
+    def test_missing_batch_decision_is_requested_individually(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "101.md"
+            source.write_text(
+                "„A“, sagte er.\nPause\n„B“, sagte sie.\n",
+                encoding="utf-8",
+            )
+            incomplete = "- Zeile 1 — BEHALTEN — Sprecher sonst unklar."
+            rescue = "- Zeile 3 — STREICHEN — Sprecherin ist eindeutig."
+            with patch(
+                "manuskript.sagte_lektorat.ollama_generate",
+                side_effect=[incomplete, incomplete, incomplete, rescue],
+            ) as generate:
+                report = run_sagte_lektorat(
+                    source, output=Path(temp) / "report.md", context_lines=0, batch_size=4,
+                )
+            rendered = report.read_text(encoding="utf-8")
+            self.assertEqual(generate.call_count, 4)
+            self.assertIn("Zeile 1 — BEHALTEN", rendered)
+            self.assertIn("Zeile 3 — STREICHEN", rendered)
 
 
 if __name__ == "__main__":

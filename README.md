@@ -97,7 +97,7 @@ Die Ollama-Adresse, das Modell und die Zahl der Kontextzeilen stehen in `.manusk
     "base_url": "http://127.0.0.1:11434",
     "model": "qwen3:4b",
     "context_lines": 3,
-    "batch_size": 8
+    "batch_size": 4
   }
 }
 ```

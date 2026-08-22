@@ -99,7 +99,7 @@ def run_file_check(check: str, source: Path, config: dict) -> Path:
             source, base_url=_setting(config, "lektorat", "base_url", "http://127.0.0.1:11434"),
             model=_setting(config, "lektorat", "model", "qwen3:8b"),
             context_lines=int(_setting(config, "lektorat", "context_lines", 3)),
-            batch_size=int(_setting(config, "lektorat", "batch_size", 8)),
+            batch_size=int(_setting(config, "lektorat", "batch_size", 4)),
         )
     if check == "hlx":
         return run_hlx_lektorat(

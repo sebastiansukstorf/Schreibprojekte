@@ -146,7 +146,7 @@ def run_night_checks(
                     base_url=common.get("base_url", "http://127.0.0.1:11434"),
                     model=common.get("model", "qwen3:8b"),
                     context_lines=int(common.get("context_lines", 3)),
-                    batch_size=int(common.get("batch_size", 8)),
+                    batch_size=int(common.get("batch_size", 4)),
                 ),
             ),
             (

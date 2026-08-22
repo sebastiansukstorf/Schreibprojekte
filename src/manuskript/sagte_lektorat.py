@@ -84,7 +84,7 @@ def extract_sagte_context(content: str, radius: int = 4) -> tuple[str, list[int]
 
 
 def extract_sagte_batches(
-    content: str, radius: int = 3, batch_size: int = 8
+    content: str, radius: int = 3, batch_size: int = 4
 ) -> tuple[list[str], list[int]]:
     """Bilde zusammenhängende Dialogblöcke mit mehreren markierten Fundstellen."""
     lines = content.splitlines()
@@ -192,6 +192,18 @@ def keep_expected_decisions(answer: str, expected: set[int]) -> str:
     return "\n".join(kept)
 
 
+def isolate_target(excerpts: str, target: int) -> str:
+    """Markiere für einen Rettungsversuch nur eine fehlende Zeile als Zielzeile."""
+    return re.sub(
+        r"^>>> ZIELZEILE\s+(\d+):",
+        lambda match: match.group(0)
+        if int(match.group(1)) == target
+        else f"    Kontext {match.group(1)}:",
+        excerpts,
+        flags=re.MULTILINE,
+    )
+
+
 def add_missing_quotes_to_report(report_text: str, source_text: str) -> str:
     """Ergänze Textstellen in älteren Berichten, ohne das Modell erneut aufzurufen."""
     source_lines = source_text.splitlines()
@@ -240,7 +252,7 @@ def run_sagte_lektorat(
     base_url: str = "http://127.0.0.1:11434",
     model: str = "llama3.1:8b",
     context_lines: int = 3,
-    batch_size: int = 8,
+    batch_size: int = 4,
 ) -> Path:
     source = source.resolve()
     if not source.is_file() or source.suffix.lower() != ".md":
@@ -302,10 +314,30 @@ def run_sagte_lektorat(
                 answer = keep_expected_decisions(answer, expected)
                 break
         else:
-            missing = sorted(expected - decisions)
-            raise RuntimeError(
-                f"Ungültige Modellantwort in Paket {number}; fehlend: {missing}."
-            )
+            counts = Counter(value for value in decision_values if value in expected)
+            accepted = {value for value in expected if counts[value] == 1}
+            parts = [keep_expected_decisions(answer, accepted)] if accepted else []
+            missing = sorted(expected - accepted)
+            for target in missing:
+                single_excerpt = isolate_target(excerpts, target)
+                single_prompt = PROMPT.format(
+                    filename=f"{source.name}, Paket {number}/{len(batches)}, Rettung Zeile {target}",
+                    content=single_excerpt,
+                )
+                for rescue_attempt in range(1, 4):
+                    rescue_note = (
+                        f"\nGib exakt ein Urteil ausschließlich für Zeile {target} aus.\n"
+                        f"Versuch {rescue_attempt}/3.\n"
+                    )
+                    rescue = ollama_generate(base_url, model, single_prompt + rescue_note)
+                    if decision_line_numbers(rescue).count(target) == 1:
+                        parts.append(keep_expected_decisions(rescue, {target}))
+                        break
+                else:
+                    raise RuntimeError(
+                        f"Ungültige Modellantwort in Paket {number}; Zeile {target} fehlt auch nach Einzelprüfung."
+                    )
+            answer = "\n".join(part for part in parts if part)
         with report.open("a", encoding="utf-8") as handle:
             handle.write(f"\n## Paket {number}\n\n{add_quotes_to_answer(answer, quotes)}\n")
     return report

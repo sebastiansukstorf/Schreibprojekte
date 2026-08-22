@@ -44,6 +44,14 @@ else
   ARGS=(--revision "$REVISION" --next-revision "$NEXT_REVISION")
 fi
 
+if [[ "$MODE" == "start" ]]; then
+  TEMPORARY_STATE="$(mktemp "$(dirname -- "$STATE_FILE")/$(basename -- "$STATE_FILE").XXXXXX")"
+  chmod 600 "$TEMPORARY_STATE"
+  printf 'PROJECT=%q\nCONFIG=%q\nREVISION=%q\nNEXT_REVISION=%q\nACTION=resume\n' \
+    "$PROJECT" "$CONFIG" "$REVISION" "$NEXT_REVISION" >"$TEMPORARY_STATE"
+  mv -f -- "$TEMPORARY_STATE" "$STATE_FILE"
+fi
+
 echo "Automatischer Lektoratslauf: $MODE · Stand $REVISION · Projekt $PROJECT"
 set +e
 "$MANUSKRIPT" lektorat-nacht "$PROJECT" --config "$CONFIG" "${ARGS[@]}"
